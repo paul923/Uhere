@@ -38,7 +38,12 @@
     "android": {
       "package": "fluid.uhere",
       "googleServicesFile": "./config/google-services.json",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleSignIn": {
+          "certificateHash": "62:A9:46:59:84:CA:BA:3A:EC:C1:57:1F:2E:75:87:EC:DD:4B:D1:89"
+        }
+      }
     }
   }
 }
