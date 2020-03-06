@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "605844819615",
+    "firebase_url": "https://fluid-uhere.firebaseio.com",
+    "project_id": "fluid-uhere",
+    "storage_bucket": "fluid-uhere.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605844819615:android:c1f5f960544be5a5875caa",
+        "android_client_info": {
+          "package_name": "fluid.uhere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "605844819615-gahq93i93cl4gh1bt4ui1mn6pmlndajv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyFSa6JnQLq4P5TUVUVHi1_j6tnLxK7eQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "605844819615-gahq93i93cl4gh1bt4ui1mn6pmlndajv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
