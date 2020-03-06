@@ -1,9 +1,13 @@
 import * as React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
+
+import { Image } from 'react-native-elements';
+
+import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 
 export default class LoginScreen extends React.Component {
   state = { user: null };
@@ -42,9 +46,13 @@ export default class LoginScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Button title="Sign In With Google"
-          onPress={() => this.signInWithGoogle()}
+        <TouchableOpacity onPress={() => this.signInWithGoogle()}>
+          <Image
+            source={googleSignInImage}
+            style={{ width: 200, height: 50 }}
+            PlaceholderContent={<ActivityIndicator />}
           />
+        </TouchableOpacity>
       </View>
     )
   }
