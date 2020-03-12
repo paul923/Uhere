@@ -25,7 +25,25 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "fluid.uhere",
+      "googleServicesFile": "./config/GoogleService-Info.plist",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.605844819615-i95d2ub94fclh0lehc2e8fa4rq9gug02"
+        }
+      },
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "fluid.uhere",
+      "googleServicesFile": "./config/google-services.json",
+      "versionCode": 1,
+      "config": {
+        "googleSignIn": {
+          "certificateHash": "62:A9:46:59:84:CA:BA:3A:EC:C1:57:1F:2E:75:87:EC:DD:4B:D1:89"
+        }
+      }
     }
   }
 }
