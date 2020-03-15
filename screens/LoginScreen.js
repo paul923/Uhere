@@ -115,6 +115,10 @@ export default class LoginScreen extends React.Component {
           onPress={() => this.signOut()}
           />
         <Text h4>Logged in as: {this.state.user}</Text>
+        <Button
+          title="SKIP SCREEN"
+          onPress={() => this.props.navigation.navigate('MainApp')}
+          />
       </View>
     )
   }
