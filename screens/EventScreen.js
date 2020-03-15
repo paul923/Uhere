@@ -1,22 +1,19 @@
 import * as React from 'react';
 import { StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
 import { Image, Button, Text } from 'react-native-elements';
+import AuthContext from '../AuthContext';
 
 
 
 
-export default class EventScreen extends React.Component {
+export default function EventScreen() {
+  const { signIn, signOut } = React.useContext(AuthContext);
 
-  componentDidMount() {
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Event Screen</Text>
-      </View>
-    )
-  }
+  return (
+    <View style={styles.container}>
+      <Text>Event Screen</Text>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
