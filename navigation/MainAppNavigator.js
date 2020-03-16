@@ -6,9 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import FriendScreen from '../screens/FriendScreen';
-
 const BottomTab = createBottomTabNavigator();
-const Stack = createStackNavigator();
 
 export default function MainAppNavigator({ navigation, route }) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -41,6 +39,7 @@ export default function MainAppNavigator({ navigation, route }) {
         options={{
           title: 'Friend',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-person" />,
+          header: null
         }}
       />
       <BottomTab.Screen
@@ -49,6 +48,7 @@ export default function MainAppNavigator({ navigation, route }) {
         options={{
           title: 'Event',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
+          headerMode: 'none'
         }}
       />
     </BottomTab.Navigator>

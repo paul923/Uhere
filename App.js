@@ -125,7 +125,8 @@ export default function App(props) {
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
         <AuthContext.Provider value={authContext}>
-          <Stack.Navigator>
+          <Stack.Navigator
+            headerMode="none">
             {state.userToken == null ? (
               <Stack.Screen name="Login" component={LoginScreen} />
             ) : (
