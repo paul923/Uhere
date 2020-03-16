@@ -10,7 +10,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import useLinking from './navigation/useLinking';
 
-import AppIntroSlider from './components/introSlider';
+import AppIntroSlider from './screens/introSlider';
 
 
 
