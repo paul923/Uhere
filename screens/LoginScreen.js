@@ -5,25 +5,15 @@ import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
-import * as firebase from 'firebase';
 import { Image, Button, Text } from 'react-native-elements';
 import AuthContext from '../AuthContext';
+import firebase from 'firebase';
+import firebaseObject from '../config/firebase';
+
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyAHzlzyQGQDqDxeDwwYs7o9rkgD4z7Tp6Y",
-  authDomain: "fluid-uhere.firebaseapp.com",
-  databaseURL: "https://fluid-uhere.firebaseio.com",
-  projectId: "fluid-uhere",
-  storageBucket: "fluid-uhere.appspot.com",
-  messagingSenderId: "605844819615",
-  appId: "1:605844819615:web:e539873a514255ba875caa",
-  measurementId: "G-XYCTQHJC1Q"
-};
 
-firebase.initializeApp(firebaseConfig);
 
 export default function LoginScreen() {
   const { signIn, signOut } = React.useContext(AuthContext);
@@ -31,17 +21,14 @@ export default function LoginScreen() {
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
 
-    initAsync = async () => {
-      await GoogleSignIn.initAsync({});
-    };
-
     signInWithGoogle = async () => {
       try {
+        await GoogleSignIn.initAsync({});
         await GoogleSignIn.askForPlayServicesAsync();
         const { type, user } = await GoogleSignIn.signInAsync();
         if (type === 'success') {
           const credential = firebase.auth.GoogleAuthProvider.credential(user.auth.idToken, user.auth.accessToken);
-          firebase.auth().signInWithCredential(credential).catch((error) => {
+          firebaseObject.auth().signInWithCredential(credential).catch((error) => {
             // Handle Errors here.
           });
         }
@@ -64,7 +51,7 @@ export default function LoginScreen() {
         });
         if (type === 'success') {
           const credential = firebase.auth.FacebookAuthProvider.credential(token);
-          firebase.auth().signInWithCredential(credential).catch((error) => {
+          firebaseObject.auth().signInWithCredential(credential).catch((error) => {
             // Handle Errors here.
           });
         } else {
@@ -75,25 +62,19 @@ export default function LoginScreen() {
       }
     }
 
-    firebaseSignOut = async () => {
-      firebase.auth().signOut().then(() => {
-      })
-    }
-
     // Listen for authentication state to change.
-    firebase.auth().onAuthStateChanged((user) => {
+    firebaseObject.auth().onAuthStateChanged((user) => {
       if (user != null) {
         console.log("We are authenticated now!");
         signIn(user.uid);
       }
     });
-    initAsync();
   }, []);
 
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => this.signInWithGoogle()}>
+      <TouchableOpacity onPress={() => signInWithGoogle()}>
         <Image
           source={googleSignInImage}
           style={{ width: 200, height: 50 }}
@@ -102,15 +83,7 @@ export default function LoginScreen() {
       </TouchableOpacity>
       <Button
         title="SIGN IN WITH FACEBOOK"
-        onPress={() => this.signInWithFacebook()}
-        />
-      <Button
-        title="SIGN OUT"
-        onPress={() => this.firebaseSignOut()}
-        />
-      <Button
-        title="SKIP SCREEN"
-        onPress={() => this.props.navigation.navigate('MainApp')}
+        onPress={() => signInWithFacebook()}
         />
     </View>
   )
