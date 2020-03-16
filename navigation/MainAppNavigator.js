@@ -34,13 +34,13 @@ export default function MainAppNavigator({ navigation, route }) {
   }, []);
 
   return (
-    <BottomTab.Navigator>
+    <BottomTab.Navigator initialRouteName="Event">
       <BottomTab.Screen
         name="Friend"
         component={FriendScreen}
         options={{
           title: 'Friend',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-login" />,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-person" />,
         }}
       />
       <BottomTab.Screen
@@ -48,7 +48,7 @@ export default function MainAppNavigator({ navigation, route }) {
         component={EventScreen}
         options={{
           title: 'Event',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-login" />,
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
         }}
       />
     </BottomTab.Navigator>

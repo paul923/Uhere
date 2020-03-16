@@ -49,7 +49,6 @@ export default function App(props) {
       userToken: null,
     }
   );
-  console.log(state);
 
   const authContext = React.useMemo(
     () => ({
