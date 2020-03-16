@@ -11,6 +11,7 @@ import BottomTabNavigator from './navigation/BottomTabNavigator';
 import useLinking from './navigation/useLinking';
 
 import AppIntroSlider from './screens/introSlider';
+import AvatarColor from './screens/AvatarColor'
 
 
 
@@ -28,6 +29,8 @@ export default function App(props) {
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen name="Root" component={BottomTabNavigator} />
+            {/** Avatar Color Palette */}
+            <Stack.Screen name="AvatarColor" component={AvatarColor} />
           </Stack.Navigator>
         </NavigationContainer>
       </View>

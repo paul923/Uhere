@@ -5,7 +5,7 @@ import ColorPalette from 'react-native-color-palette';
 
 
 
-export default class ForgotPassword extends Component {
+export default class AvatarColor extends Component {
   state = {
     avatarColor: "#ffffff"
   }
@@ -14,11 +14,6 @@ export default class ForgotPassword extends Component {
   render() {
     return (
       <View>
-        <Text>Forgot Password Screen</Text>
-        <Button
-          title="Go to Details... again"
-          onPress={() => this.props.navigation.push('Forgot Password')}
-        />
         <Avatar
           containerStyle={{ borderWidth: 10, borderColor: this.state.avatarColor, borderStyle: "solid" }}
           rounded

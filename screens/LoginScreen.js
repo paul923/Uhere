@@ -115,6 +115,7 @@ export default class LoginScreen extends React.Component {
           onPress={() => this.signOut()}
           />
         <Text h4>Logged in as: {this.state.user}</Text>
+        <Button title="Avatar Color" onPress={() => this.props.navigation.navigate('AvatarColor')}/>
       </View>
     )
   }
