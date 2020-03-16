@@ -13,7 +13,7 @@ import useLinking from './navigation/useLinking';
 
 const Stack = createStackNavigator();
 
-import AuthContext from './AuthContext';
+import AuthContext from './contexts/AuthContext';
 
 
 export default function App(props) {

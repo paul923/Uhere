@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
 import { Image, Button, Text } from 'react-native-elements';
-import AuthContext from '../AuthContext';
+import AuthContext from '../contexts/AuthContext';
 import firebaseObject from '../config/firebase';
 
 
