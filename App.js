@@ -11,13 +11,17 @@ import LoginScreen from './screens/LoginScreen';
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
 
+import AppIntroSlider from './screens/introSlider';
+
+
+
 const Stack = createStackNavigator();
 
 import AuthContext from './contexts/AuthContext';
 
 
 export default function App(props) {
-  const [isLoadingComplete, setLoadingComplete] = React.useState(false);
+  const [showRealApp, setshowRealApp] = React.useState(false);
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
@@ -95,7 +99,6 @@ export default function App(props) {
     bootstrapAsync();
     async function loadResourcesAndDataAsync() {
       try {
-        SplashScreen.preventAutoHide();
 
         // Load our initial navigation state
         setInitialNavigationState(await getInitialState());
@@ -109,17 +112,14 @@ export default function App(props) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
       } finally {
-        setLoadingComplete(true);
-        SplashScreen.hide();
       }
     }
 
     loadResourcesAndDataAsync();
   }, []);
 
-  if (!isLoadingComplete && !props.skipLoadingScreen) {
-    return null;
-  } else {
+
+  if(showRealApp){
     return (
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
@@ -137,6 +137,13 @@ export default function App(props) {
         </NavigationContainer>
       </View>
     );
+  } else {
+    return <AppIntroSlider
+            slides={slides}
+            onDone={() => {setshowRealApp(true);}}
+            showSkipButton
+            activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
+            />;
   }
 }
 
@@ -146,3 +153,47 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
+
+// Slider contents
+const slides = [
+  {
+    key: 'Dummy1',
+    title: 'Dummy 1',
+    text: 'Please sign in to\ncontinue.',
+    image: require('./assets/images/robot-dev.png'),
+    backgroundColor: '#ffffff',
+    titleStyle: {
+      color: '#000000'
+    },
+    textStyle : {
+      color: '#0f0f0f',
+    }
+  },
+  {
+    key: 'Dummy2',
+    title: 'Dummy 2',
+    text: 'Please sign in to\ncontinue.',
+    image: require('./assets/images/robot-dev.png'),
+    backgroundColor: '#ffffff',
+    titleStyle: {
+      color: '#000000'
+    },
+    textStyle : {
+      color: '#0f0f0f',
+    }
+  },
+  {
+    key: 'Dummy3',
+    title: 'Dummy 3',
+    text: 'Please sign in to\ncontinue.',
+    image: require('./assets/images/robot-dev.png'),
+    backgroundColor: '#ffffff',
+    titleStyle: {
+      color: '#000000'
+    },
+    textStyle : {
+      color: '#0f0f0f'
+    }
+  }
+ ];
