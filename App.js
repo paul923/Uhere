@@ -14,7 +14,9 @@ import useLinking from './navigation/useLinking';
 import AppIntroSlider from './screens/introSlider';
 import AvatarColor from './screens/AvatarColor'
 
-
+import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
+import LocationPermissionScreen from './screens/LocationPermissionScreen'
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,7 @@ import AuthContext from './contexts/AuthContext';
 
 export default function App(props) {
   const [showRealApp, setshowRealApp] = React.useState(false);
+  const [isLocationPermissionGranted, setLocationPermissionGranted] = React.useState(false);
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
@@ -119,8 +122,23 @@ export default function App(props) {
     loadResourcesAndDataAsync();
   }, []);
 
-
-  if(showRealApp){
+  // swithed order of checking
+  if(!showRealApp){
+    return (
+      <AppIntroSlider
+      slides={slides}
+      onDone={() => {setshowRealApp(true);}}
+      showSkipButton
+      activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
+      />
+    );
+  } else if (!isLocationPermissionGranted) {
+    return (
+      <LocationPermissionScreen
+      updateLocationGranted={setLocationPermissionGranted}
+      />
+    );
+  } else {
     return (
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
@@ -138,13 +156,6 @@ export default function App(props) {
         </NavigationContainer>
       </View>
     );
-  } else {
-    return <AppIntroSlider
-            slides={slides}
-            onDone={() => {setshowRealApp(true);}}
-            showSkipButton
-            activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
-            />;
   }
 }
 
