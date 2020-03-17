@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, Linking } from 'react-native';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 
@@ -35,7 +35,7 @@ export default class LocationPermissionScreen extends Component {
             <Text style={styles.paragraph}>
                 Please Allow uhere to access your Location
             </Text>
-            <Button title="Go to Settings" onPress={() => this.getLocationAsync()} />
+            <Button title="Go to Settings" onPress={() => Linking.openURL('app-settings:')} />
         </View>
         );
     }
