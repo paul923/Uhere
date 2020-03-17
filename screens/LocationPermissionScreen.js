@@ -10,12 +10,11 @@ export default class LocationPermissionScreen extends Component {
     }
 
     async getLocationAsync() {
+        // this is messy right now, need to clean up the logic after learning more about returned promises for ios
         const { status: existingStatus } = await Permissions.getAsync(Permissions.LOCATION);
         let finalStatus = existingStatus;
         console.log('Current Status:' + finalStatus);
         if (finalStatus !== 'granted') {
-            // Android remote notification permissions are granted during the app
-            // install, so this will only ask on iOS
             const { status } = await Permissions.askAsync(Permissions.LOCATION);
             console.log('After asking:' + status);
             finalStatus = status;
@@ -27,6 +26,7 @@ export default class LocationPermissionScreen extends Component {
         if (finalStatus !== 'granted') {
             return;
         }
+        // denied(Never) means not allow need to lead user to go to settings cant even ask if tis denied
     }
 
     render () {
@@ -35,7 +35,7 @@ export default class LocationPermissionScreen extends Component {
             <Text style={styles.paragraph}>
                 Please Allow uhere to access your Location
             </Text>
-            <Button title="Ask Permission" onPress={() => this.getLocationAsync()} />
+            <Button title="Go to Settings" onPress={() => this.getLocationAsync()} />
         </View>
         );
     }

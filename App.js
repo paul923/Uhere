@@ -120,6 +120,23 @@ export default function App(props) {
     }
 
     loadResourcesAndDataAsync();
+
+    // in the future this will also have to be checked in bacground -> foreground ???
+    // first time installing app gives you 'undetermined'
+    // granted in ios gives you more detailed wheninuse and always need to take care of these cases later
+    // just simple granted not granted for now
+    async function checkLocationPermissionAsync() {
+      const { status } = await Location.getPermissionsAsync();
+      console.log(status);
+      // first time installing
+      if (status !== 'granted') {
+        // do nothing?
+      } else { // location permission granted
+        setLocationPermissionGranted(true);
+      }
+    }
+
+    checkLocationPermissionAsync()
   }, []);
 
   // swithed order of checking
@@ -209,3 +226,17 @@ const slides = [
     }
   }
  ];
+
+ // this had to be added for Always option in ios
+ const LOCATION_TASK_NAME = 'background-location-task';
+ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+  if (error) {
+    // Error occurred - check `error.message` for more details.
+    return;
+  }
+  if (data) {
+    const { locations } = data;
+    // do something with the locations captured in the background
+    console.log("locations", locations);
+  }
+});
