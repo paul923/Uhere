@@ -14,6 +14,7 @@ function PendingEvent(){
   return (
     <View style={styles.container}>
       <FlatList
+        style={{marginLeft: 5, marginRight: 5}}
         data={[
           { key: 1, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
           { key: 2, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
@@ -30,7 +31,17 @@ function PendingEvent(){
 function OnGoingEvent(){
   return (
     <View style={styles.container}>
-      <Text>On Going Event</Text>
+      <FlatList
+        style={{marginLeft: 5, marginRight: 5}}
+        data={[
+          { key: 1, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 2, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 3, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 4, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 5, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
+        ]}
+        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" />}
+      />
     </View>
   )
 }
@@ -65,8 +76,6 @@ export default function EventScreen() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
       backgroundColor: '#F5FCFF'
     }
 });
