@@ -5,45 +5,12 @@ import AuthContext from '../contexts/AuthContext';
 import firebaseObject from '../config/firebase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSafeArea } from 'react-native-safe-area-context';
+import EventCard from '../components/EventCard';
 
-import { formatDate, formatTime } from "../utils/date";
 const Tab = createMaterialTopTabNavigator();
 
-
-
-
 function PendingEvent(){
-  renderItem = ({ item }) => (
-    <View style={styles.cardContainer}>
-      <View style={styles.card}>
-        <Text h4>{item.name}</Text>
-        <View style={styles.row}>
-          <Icon name="event"/>
-          <View style={styles.cardColumn}>
-            <Text h5 style={styles.cardColumnText}>{formatDate(item.date)}</Text>
-            <Text h5 style={styles.cardColumnText}>{formatTime(item.date)}</Text>
-          </View>
-          <Icon name="remove-circle"/>
-          <View style={styles.cardColumn}>
-            <Text h5 style={styles.cardColumnText}>{item.prize}</Text>
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Icon name="location-on"/>
-          <View style={styles.cardColumn}>
-            <Text h5 style={styles.cardColumnText}>{item.location}</Text>
-          </View>
-        </View>
-        <View style={styles.row}>
-          <Icon name="person"/>
-          <View style={styles.cardColumn}>
-            <Text h5 style={styles.cardColumnText}>{item.members.length + "/" + item.maximumNumberOfMembers}</Text>
-          </View>
-        </View>
-      </View>
-      <Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />
-    </View>
-  )
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -54,8 +21,7 @@ function PendingEvent(){
           { key: 4, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
           { key: 5, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
         ]}
-        renderItem={renderItem}
-        style={styles.list}
+        renderItem={({ item }) => <EventCard item={item} status="PENDING" />}
       />
     </View>
   )
@@ -102,27 +68,5 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: '#F5FCFF'
-    },
-    row: {
-      flex: 1,
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      flexGrow: 0,
-      alignItems: 'center'
-    },
-    cardColumn: {
-      flexBasis: '40%',
-      paddingTop: 2,
-      paddingBottom: 2,
-    },
-    cardColumnText: {
-      paddingLeft: 2
-    },
-    card: {
-      marginTop: 5,
-      marginBottom: 5,
-      paddingLeft: 5,
-      paddingRight: 5,
-      backgroundColor: '#C4C4C4'
     }
 });
