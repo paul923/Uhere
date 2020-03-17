@@ -123,15 +123,16 @@ export default function App(props) {
 
     // in the future this will also have to be checked in bacground -> foreground ???
     // first time installing app gives you 'undetermined'
-    // granted in ios gives you more detailed wheninuse and always need to take care of these cases later
-    // just simple granted not granted for now
     async function checkLocationPermissionAsync() {
-      const { status } = await Location.getPermissionsAsync();
-      console.log(status);
+      const { status, expires, canAskAgain, ios, android } = await Location.getPermissionsAsync();
+      console.log('status', status);
+      console.log('expires', expires);
+      console.log('canAskAgain', canAskAgain);
+      console.log('ios', ios == null ? 'not ios' : ios.scope);
+      console.log('android', android == null ? 'not android' : android.scope);
+    
       // first time installing
-      if (status !== 'granted') {
-        // do nothing?
-      } else { // location permission granted
+      if (status === 'granted') {
         setLocationPermissionGranted(true);
       }
     }
@@ -163,7 +164,7 @@ export default function App(props) {
         <AuthContext.Provider value={authContext}>
           <Stack.Navigator
             headerMode="none">
-            {state.userToken !== null ? (// temporarily changed to test on Expo Client App
+            {state.userToken == null ? (// temporarily changed to test on Expo Client App
               <Stack.Screen name="Login" component={LoginScreen} />
             ) : (
               <Stack.Screen name="MainApp" component={MainAppNavigator} />

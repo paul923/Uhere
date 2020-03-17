@@ -11,9 +11,13 @@ export default class LocationPermissionScreen extends Component {
 
     async getLocationAsync() {
         // this is messy right now, need to clean up the logic after learning more about returned promises for ios
-        const { status: existingStatus } = await Permissions.getAsync(Permissions.LOCATION);
+        const { status: existingStatus, expires, canAskAgain, granted, permissions } = await Permissions.getAsync(Permissions.LOCATION);
         let finalStatus = existingStatus;
-        console.log('Current Status:' + finalStatus);
+        console.log('Current Status:' + existingStatus);
+        console.log('Current Status:' + expires);
+        console.log('Current Status:' + canAskAgain);
+        console.log('Current Status:' + granted);
+        console.log('Current Status:' + permissions);
         if (finalStatus !== 'granted') {
             const { status } = await Permissions.askAsync(Permissions.LOCATION);
             console.log('After asking:' + status);
