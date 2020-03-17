@@ -5,16 +5,12 @@ import AuthContext from '../contexts/AuthContext';
 import firebaseObject from '../config/firebase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSafeArea } from 'react-native-safe-area-context';
+
+import { formatDate, formatTime } from "../utils/date";
 const Tab = createMaterialTopTabNavigator();
 
 
-function formatDate(date){
-  return date.getMonth() + " " + date.getDate() + ", " + date.getFullYear();
-}
 
-function formatTime(date){
-  return date.getHours() + ":" + date.getMinutes();
-}
 
 function PendingEvent(){
   renderItem = ({ item }) => (
@@ -52,14 +48,11 @@ function PendingEvent(){
     <View style={styles.container}>
       <FlatList
         data={[
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
-          { name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
+          { key: 1, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 2, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 3, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 4, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
+          { key: 5, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
         ]}
         contentContainerStyle={{flexGrow: 1, alignItems: 'center'}}
         renderItem={renderItem}
@@ -122,6 +115,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     cardColumn: {
+      padding: 5,
       width: '40%'
     },
     card: {
