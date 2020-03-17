@@ -25,6 +25,13 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "NSLocationWhenInUseUsageDescription": "This app uses NSLocationWhenInUseUsageDescription.",
+      "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses NSLocationAlwaysAndWhenInUseUsageDescription.",
+      "NSLocationAlwaysUsageDescription": "This app uses NSLocationAlwaysUsageDescription.",
+      "UIBackgroundModes": [
+        "location",
+        "fetch"
+      ],
       "bundleIdentifier": "fluid.uhere",
       "googleServicesFile": "./config/GoogleService-Info.plist",
       "config": {
