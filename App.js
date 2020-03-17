@@ -12,6 +12,7 @@ import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
 
 import AppIntroSlider from './screens/introSlider';
+import AvatarColor from './screens/AvatarColor'
 
 
 
