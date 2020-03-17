@@ -131,7 +131,7 @@ export default function App(props) {
       console.log('ios', ios == null ? 'not ios' : ios.scope);
       console.log('android', android == null ? 'not android' : android.scope);
     
-      // first time installing
+      // first time installing give you undetermined
       if (status === 'granted') {
         setLocationPermissionGranted(true);
       }
@@ -164,7 +164,7 @@ export default function App(props) {
         <AuthContext.Provider value={authContext}>
           <Stack.Navigator
             headerMode="none">
-            {state.userToken == null ? (// temporarily changed to test on Expo Client App
+            {state.userToken !== null ? (// temporarily changed to test on Expo Client App
               <Stack.Screen name="Login" component={LoginScreen} />
             ) : (
               <Stack.Screen name="MainApp" component={MainAppNavigator} />

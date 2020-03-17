@@ -1,23 +1,51 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Linking } from 'react-native';
+import { StyleSheet, Text, View, Button, Linking , AppState} from 'react-native';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
 
 export default class LocationPermissionScreen extends Component {
    
+    state = {
+        appState : AppState.currentState,
+    }
+
     componentDidMount() {
+        AppState.addEventListener('change', this._handleAppStateChange);
         this.getLocationAsync();
     }
 
+    componentWillUnmount(){
+        AppState.removeEventListener('change', this._handleAppStateChange);
+    }
+
+    _handleAppStateChange = (nextAppState) => {
+        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+          console.log('App has come to the foreground!');
+          this.checkWhenforeground();
+        }
+        this.setState({appState: nextAppState});
+      };
+
+    async checkWhenforeground() {
+        // this is messy right now, need to clean up the logic after learning more about returned promises for ios
+        const { status: existingStatus } = await Permissions.getAsync(Permissions.LOCATION);
+        let finalStatus = existingStatus;
+        console.log('Current Status:' + finalStatus);
+        if (finalStatus !== 'granted') {
+            const { status } = await Permissions.askAsync(Permissions.LOCATION);
+            console.log('After asking:' + status);
+            finalStatus = status;
+        }
+        if (existingStatus === 'granted' || finalStatus === 'granted'){
+            this.props.updateLocationGranted(true);
+        }
+    }
+    
     async getLocationAsync() {
         // this is messy right now, need to clean up the logic after learning more about returned promises for ios
-        const { status: existingStatus, expires, canAskAgain, granted, permissions } = await Permissions.getAsync(Permissions.LOCATION);
+        const { status: existingStatus } = await Permissions.getAsync(Permissions.LOCATION);
         let finalStatus = existingStatus;
-        console.log('Current Status:' + existingStatus);
-        console.log('Current Status:' + expires);
-        console.log('Current Status:' + canAskAgain);
-        console.log('Current Status:' + granted);
-        console.log('Current Status:' + permissions);
+        console.log('Current Status:' + finalStatus);
         if (finalStatus !== 'granted') {
             const { status } = await Permissions.askAsync(Permissions.LOCATION);
             console.log('After asking:' + status);
