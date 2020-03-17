@@ -226,17 +226,3 @@ const slides = [
     }
   }
  ];
-
- // this had to be added for Always option in ios
- const LOCATION_TASK_NAME = 'background-location-task';
- TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
-  if (error) {
-    // Error occurred - check `error.message` for more details.
-    return;
-  }
-  if (data) {
-    const { locations } = data;
-    // do something with the locations captured in the background
-    console.log("locations", locations);
-  }
-});
