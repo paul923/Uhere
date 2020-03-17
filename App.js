@@ -123,12 +123,12 @@ export default function App(props) {
   if(showRealApp){
     return (
       <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
         <AuthContext.Provider value={authContext}>
           <Stack.Navigator
             headerMode="none">
-            {state.userToken == null ? (
+            {state.userToken !== null ? (// temporarily changed to test on Expo Client App
               <Stack.Screen name="Login" component={LoginScreen} />
             ) : (
               <Stack.Screen name="MainApp" component={MainAppNavigator} />
