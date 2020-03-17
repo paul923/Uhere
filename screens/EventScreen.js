@@ -14,30 +14,30 @@ const Tab = createMaterialTopTabNavigator();
 
 function PendingEvent(){
   renderItem = ({ item }) => (
-    <View>
+    <View style={styles.cardContainer}>
       <View style={styles.card}>
         <Text h4>{item.name}</Text>
         <View style={styles.row}>
           <Icon name="event"/>
           <View style={styles.cardColumn}>
-            <Text h5>{formatDate(item.date)}</Text>
-            <Text h5>{formatTime(item.date)}</Text>
+            <Text h5 style={styles.cardColumnText}>{formatDate(item.date)}</Text>
+            <Text h5 style={styles.cardColumnText}>{formatTime(item.date)}</Text>
           </View>
           <Icon name="remove-circle"/>
           <View style={styles.cardColumn}>
-            <Text h5>{item.prize}</Text>
+            <Text h5 style={styles.cardColumnText}>{item.prize}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <Icon name="location-on"/>
           <View style={styles.cardColumn}>
-            <Text h5>{item.location}</Text>
+            <Text h5 style={styles.cardColumnText}>{item.location}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <Icon name="person"/>
           <View style={styles.cardColumn}>
-            <Text h5>{item.members.length + "/" + item.maximumNumberOfMembers}</Text>
+            <Text h5 style={styles.cardColumnText}>{item.members.length + "/" + item.maximumNumberOfMembers}</Text>
           </View>
         </View>
       </View>
@@ -54,7 +54,6 @@ function PendingEvent(){
           { key: 4, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' },
           { key: 5, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
         ]}
-        contentContainerStyle={{flexGrow: 1, alignItems: 'center'}}
         renderItem={renderItem}
         style={styles.list}
       />
@@ -104,24 +103,26 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       backgroundColor: '#F5FCFF'
     },
-    list: {
-      width: '100%',
-    },
     row: {
-      width: '100%',
       flex: 1,
       flexDirection: 'row',
-      justifyContent: 'flex-start',
+      flexWrap: 'wrap',
+      flexGrow: 0,
       alignItems: 'center'
     },
     cardColumn: {
-      padding: 5,
-      width: '40%'
+      flexBasis: '40%',
+      paddingTop: 2,
+      paddingBottom: 2,
+    },
+    cardColumnText: {
+      paddingLeft: 2
     },
     card: {
-      marginTop: 10,
-      marginBottom: 10,
-      width: '100%',
+      marginTop: 5,
+      marginBottom: 5,
+      paddingLeft: 5,
+      paddingRight: 5,
       backgroundColor: '#C4C4C4'
     }
 });
