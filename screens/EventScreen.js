@@ -23,6 +23,7 @@ function PendingEvent(){
           { key: 5, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
         ]}
         renderItem={({ item }) => <EventCard item={item} status="PENDING" />}
+        keyExtractor={(item) => item.key.toString()}
       />
     </View>
   )
@@ -41,6 +42,7 @@ function OnGoingEvent(){
           { key: 5, name: 'GAZUA', date: new Date(), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
         ]}
         renderItem={({ item }) => <EventCard item={item} status="ON-GOING" />}
+        keyExtractor={(item) => item.key.toString()}
       />
     </View>
   )
