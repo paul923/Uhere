@@ -100,7 +100,7 @@ export default function App(props) {
 
     async function checkIfFirstLaunchedAsync() {
       try {
-        let isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
+        let isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch') === 'false' ? false : true;
         setIsFirstLaunch(isFirstLaunch);
       } catch (e) {
         // Restoring token failed
@@ -129,9 +129,19 @@ export default function App(props) {
     loadFontAsync();
   }, []);
 
+  storeIsFirstLaunch = async (flag) => {
+     await AsyncStorage.setItem('isFirstLaunch', JSON.stringify(flag));
+  }
 
-
-  if(showRealApp){
+  if (isFirstLaunch && !showRealApp) {
+   return <AppIntroSlider
+     slides={slides}
+     onDone={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
+     onSkip={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
+     showSkipButton
+     activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
+     />;
+ } else {
     return (
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
@@ -149,15 +159,6 @@ export default function App(props) {
         </NavigationContainer>
       </View>
     );
-  } else if (isFirstLaunch) {
-    // Render tutorial
-  } else {
-    return <AppIntroSlider
-            slides={slides}
-            onDone={() => {setshowRealApp(true);}}
-            showSkipButton
-            activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
-            />;
   }
 }
 
