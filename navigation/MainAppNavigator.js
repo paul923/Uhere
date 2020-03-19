@@ -6,6 +6,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import FriendScreen from '../screens/FriendScreen';
+import JayTestScreen from '../screens/debug/JayTestScreen';
+import JustinTestScreen from '../screens/debug/JustinTestScreen';
+import PaulTestScreen from '../screens/debug/PaulTestScreen';
 const BottomTab = createBottomTabNavigator();
 
 export default function MainAppNavigator({ navigation, route }) {
@@ -47,6 +50,32 @@ export default function MainAppNavigator({ navigation, route }) {
         component={EventScreen}
         options={{
           title: 'Event',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
+          headerMode: 'none'
+        }}
+      />
+      <BottomTab.Screen
+        name="Justin"
+        component={JustinTestScreen}
+        options={{
+          title: 'Justin',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
+          headerMode: 'none'
+        }}
+      /><BottomTab.Screen
+        name="Jay"
+        component={JayTestScreen}
+        options={{
+          title: 'Jay',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
+          headerMode: 'none'
+        }}
+      />
+      <BottomTab.Screen
+        name="Paul"
+        component={PaulTestScreen}
+        options={{
+          title: 'Paul',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
           headerMode: 'none'
         }}
