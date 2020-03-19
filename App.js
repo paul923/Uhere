@@ -82,7 +82,7 @@ export default function App(props) {
   React.useEffect(() => {
 
     // Fetch the token from storage then navigate to our appropriate place
-    async function bootstrapAsync() {
+    async function restoreUserTokenAsync() {
       let userToken;
 
       try {
@@ -98,7 +98,7 @@ export default function App(props) {
       dispatch({ type: 'RESTORE_TOKEN', token: userToken });
     };
 
-    async function checkIfFirstLaunched() {
+    async function checkIfFirstLaunchedAsync() {
       try {
         let isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
         setIsFirstLaunch(isFirstLaunch);
@@ -106,9 +106,8 @@ export default function App(props) {
         // Restoring token failed
       }
     }
-    checkIfFirstLaunched();
-    bootstrapAsync();
-    async function loadResourcesAndDataAsync() {
+
+    async function loadFontAsync() {
       try {
 
         // Load our initial navigation state
@@ -125,8 +124,9 @@ export default function App(props) {
       } finally {
       }
     }
-
-    loadResourcesAndDataAsync();
+    checkIfFirstLaunchedAsync();
+    restoreUserTokenAsync();
+    loadFontAsync();
   }, []);
 
 
