@@ -23,6 +23,7 @@ import AuthContext from './contexts/AuthContext';
 
 export default function App(props) {
   const [showRealApp, setshowRealApp] = React.useState(false);
+  const [isFirstLaunch, setIsFirstLaunch] = React.useState(true);
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
@@ -97,6 +98,15 @@ export default function App(props) {
       dispatch({ type: 'RESTORE_TOKEN', token: userToken });
     };
 
+    async function checkIfFirstLaunched() {
+      try {
+        let isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
+        setIsFirstLaunch(isFirstLaunch);
+      } catch (e) {
+        // Restoring token failed
+      }
+    }
+    checkIfFirstLaunched();
     bootstrapAsync();
     async function loadResourcesAndDataAsync() {
       try {
@@ -120,6 +130,7 @@ export default function App(props) {
   }, []);
 
 
+
   if(showRealApp){
     return (
       <View style={styles.container}>
@@ -138,6 +149,8 @@ export default function App(props) {
         </NavigationContainer>
       </View>
     );
+  } else if (isFirstLaunch) {
+    // Render tutorial
   } else {
     return <AppIntroSlider
             slides={slides}
