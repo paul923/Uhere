@@ -20,6 +20,7 @@ export default function LoginScreen() {
   const [ loginPassword, setLoginPassword] = React.useState("");
   const [ registerEmail, setRegisterEmail] = React.useState("");
   const [ registerPassword, setRegisterPassword] = React.useState("");
+  const [ forgotPasswordEmail, setForgotPasswordEmail] = React.useState("");
   const { signIn, signOut } = React.useContext(AuthContext);
 
 
@@ -27,22 +28,40 @@ export default function LoginScreen() {
   React.useEffect(() => {
     // Listen for authentication state to change.
     firebaseObject.auth().onAuthStateChanged((user) => {
-      if (user != null) {
+      if (user && user.emailVerified) {
         console.log("We are authenticated now!");
         signIn(user.uid);
+      } else if (user && !user.emailVerified) {
+        alert("Email is not verified. Please verify the email");
+        user.sendEmailVerification().then(function() {
+          alert("Please check your email to verify");
+        }).catch(function(error) {
+          // An error happened.
+          var errorMessage = error.message;
+          alert(errorMessage);
+        });
       }
     });
   }, []);
 
+  resetPassword = async () => {
+    firebaseObject.auth()
+                  .sendPasswordResetEmail(forgotPasswordEmail)
+                  .then(function() {
+                    alert("Please check your email to reset password");
+                  }).catch(function(error) {
+                    // An error happened.
+                    var errorMessage = error.message;
+                    alert(errorMessage);
+                  });
+  }
   registerWithEmail = async () => {
     firebaseObject.auth()
             .createUserWithEmailAndPassword(registerEmail, registerPassword)
             .catch(function(error) {
               // Handle Errors here.
-              var errorCode = error.code;
               var errorMessage = error.message;
-              console.log(errorCode);
-              console.log(errorMessage);
+              alert(errorMessage);
             });
   }
 
@@ -51,8 +70,8 @@ export default function LoginScreen() {
             .signInWithEmailAndPassword(loginEmail, loginPassword)
             .catch(function(error) {
               // Handle Errors here.
-              var errorCode = error.code;
               var errorMessage = error.message;
+              alert(errorMessage);
             });
   }
 
@@ -65,6 +84,8 @@ export default function LoginScreen() {
         const credential = firebase.auth.GoogleAuthProvider.credential(user.auth.idToken, user.auth.accessToken);
         firebaseObject.auth().signInWithCredential(credential).catch((error) => {
           // Handle Errors here.
+          var errorMessage = error.message;
+          alert(errorMessage);
         });
       }
     } catch ({ message }) {
@@ -88,6 +109,8 @@ export default function LoginScreen() {
         const credential = firebase.auth.FacebookAuthProvider.credential(token);
         firebaseObject.auth().signInWithCredential(credential).catch((error) => {
           // Handle Errors here.
+          var errorMessage = error.message;
+          alert(errorMessage);
         });
       } else {
         // type === 'cancel'
@@ -142,8 +165,7 @@ export default function LoginScreen() {
         title="SIGN IN WITH FACEBOOK"
         onPress={signInWithFacebook}
         />
-      <Divider style={{ height: 1, margin: 30, backgroundColor: 'blue' }} />
-      <Text h5>Do Not Have Account Yet?</Text>
+      <Text style={{marginTop: 10}} h5>Do Not Have Account Yet?</Text>
       <Input
         placeholder='Email'
         leftIcon={
@@ -174,6 +196,24 @@ export default function LoginScreen() {
       <Button
         title="REGISTER"
         onPress={registerWithEmail}
+        />
+      <Text style={{marginTop: 10}} h5>Forgot Password?</Text>
+      <Input
+        placeholder='Email'
+        leftIcon={
+          <Icon
+            name='email'
+            size={24}
+            color='black'
+          />
+        }
+        onChangeText={text => setForgotPasswordEmail(text)}
+        value={forgotPasswordEmail}
+        textContentType="emailAddress"
+      />
+      <Button
+        title="RESET PASSWORD"
+        onPress={resetPassword}
         />
     </View>
   )
