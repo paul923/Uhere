@@ -5,7 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
-import { Image, Button, Text, Input, Icon } from 'react-native-elements';
+import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
@@ -16,8 +16,10 @@ import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn
 
 
 export default function LoginScreen() {
-  const [ email, setEmail] = React.useState("");
-  const [ password, setPassword] = React.useState("");
+  const [ loginEmail, setLoginEmail] = React.useState("");
+  const [ loginPassword, setLoginPassword] = React.useState("");
+  const [ registerEmail, setRegisterEmail] = React.useState("");
+  const [ registerPassword, setRegisterPassword] = React.useState("");
   const { signIn, signOut } = React.useContext(AuthContext);
 
 
@@ -32,12 +34,26 @@ export default function LoginScreen() {
     });
   }, []);
 
+  registerWithEmail = async () => {
+    firebaseObject.auth()
+            .createUserWithEmailAndPassword(registerEmail, registerPassword)
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              console.log(errorCode);
+              console.log(errorMessage);
+            });
+  }
+
   signInWithEmail = async () => {
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-    });
+    firebaseObject.auth()
+            .signInWithEmailAndPassword(loginEmail, loginPassword)
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+            });
   }
 
   signInWithGoogle = async () => {
@@ -93,8 +109,8 @@ export default function LoginScreen() {
             color='black'
           />
         }
-        onChangeText={text => {setEmail(text); console.log(text)}}
-        value={email}
+        onChangeText={text => setLoginEmail(text)}
+        value={loginEmail}
         textContentType="emailAddress"
       />
       <Input
@@ -106,16 +122,16 @@ export default function LoginScreen() {
             color='black'
           />
         }
-        onChangeText={text => setPassword(text)}
-        value={password}
+        onChangeText={text => setLoginPassword(text)}
+        value={loginPassword}
         textContentType="password"
         secureTextEntry
       />
       <Button
         title="SIGN IN"
-        onPress={() => signInWithEmail()}
+        onPress={signInWithEmail}
         />
-      <TouchableOpacity onPress={() => signInWithGoogle()}>
+      <TouchableOpacity onPress={signInWithGoogle}>
         <Image
           source={googleSignInImage}
           style={{ width: 200, height: 50 }}
@@ -124,7 +140,40 @@ export default function LoginScreen() {
       </TouchableOpacity>
       <Button
         title="SIGN IN WITH FACEBOOK"
-        onPress={() => signInWithFacebook()}
+        onPress={signInWithFacebook}
+        />
+      <Divider style={{ height: 1, margin: 30, backgroundColor: 'blue' }} />
+      <Text h5>Do Not Have Account Yet?</Text>
+      <Input
+        placeholder='Email'
+        leftIcon={
+          <Icon
+            name='email'
+            size={24}
+            color='black'
+          />
+        }
+        onChangeText={text => setRegisterEmail(text)}
+        value={registerEmail}
+        textContentType="emailAddress"
+      />
+      <Input
+        placeholder='Password'
+        leftIcon={
+          <Icon
+            name='lock'
+            size={24}
+            color='black'
+          />
+        }
+        onChangeText={text => setRegisterPassword(text)}
+        value={registerPassword}
+        textContentType="password"
+        secureTextEntry
+      />
+      <Button
+        title="REGISTER"
+        onPress={registerWithEmail}
         />
     </View>
   )
