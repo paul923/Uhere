@@ -5,7 +5,7 @@ import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 import LoginScreen from './screens/LoginScreen';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
@@ -157,6 +157,7 @@ export default function App(props) {
           </Stack.Navigator>
           </AuthContext.Provider>
         </NavigationContainer>
+        <KeyboardSpacer/>
       </View>
     );
   }
