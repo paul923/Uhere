@@ -45,7 +45,6 @@ export default function EventCard({item, status}) {
           </View>
         )}
       </View>
-      <Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />
     </View>
   )
 }
