@@ -6,6 +6,7 @@ import firebaseObject from '../config/firebase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSafeArea } from 'react-native-safe-area-context';
 import EventCard from '../components/EventCard';
+import EventFilter from '../components/EventFilter';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -42,13 +43,7 @@ function PendingEvent(){
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
-        ListHeaderComponent={() => (
-          <SearchBar
-            placeholder="Search"
-            lightTheme
-            round
-          />
-        )}
+        ListHeaderComponent={EventFilter}
         ItemSeparatorComponent={() => (<Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />)}
       />
     </View>
@@ -87,13 +82,7 @@ function OnGoingEvent(){
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
-        ListHeaderComponent={() => (
-          <SearchBar
-            placeholder="Search"
-            lightTheme
-            round
-          />
-        )}
+        ListHeaderComponent={EventFilter}
         ItemSeparatorComponent={() => (<Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />)}
       />
     </View>
