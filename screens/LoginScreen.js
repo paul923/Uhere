@@ -28,7 +28,10 @@ export default function LoginScreen() {
   React.useEffect(() => {
     // Listen for authentication state to change.
     firebaseObject.auth().onAuthStateChanged((user) => {
-      if (user && user.emailVerified) {
+      if (user && !user.email) {
+        console.log("We are authenticated now!");
+        signIn(user.uid);
+      } else if (user && user.email && user.emailVerified) {
         console.log("We are authenticated now!");
         signIn(user.uid);
       } else if (user && !user.emailVerified) {
