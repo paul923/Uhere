@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput  } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -123,37 +123,54 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Input
-        placeholder='Email'
-        leftIcon={
-          <Icon
-            name='email'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setLoginEmail(text)}
-        value={loginEmail}
-        textContentType="emailAddress"
-      />
-      <Input
-        placeholder='Password'
-        leftIcon={
-          <Icon
-            name='lock'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setLoginPassword(text)}
-        value={loginPassword}
-        textContentType="password"
-        secureTextEntry
-      />
-      <Button
-        title="SIGN IN"
-        onPress={signInWithEmail}
+      <Text style={styles.logoContainer}>
+        <Text style={styles.logoU}>u</Text>
+        <Text style={styles.logoHere}>Here</Text>
+      </Text>
+
+      {/** ID block */}
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Email"
+          placeholderTextColor="#003f5c"
+          onChangeText={text => setLoginEmail(text)}
+          value={loginEmail}
+          textContentType="emailAddress"
         />
+      </View> 
+
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Password"
+          placeholderTextColor="#003f5c"
+          onChangeText={text => setLoginPassword(text)}
+          value={loginPassword}
+          textContentType="password"
+          secureTextEntry
+        />
+      </View>
+
+
+      <TouchableOpacity>
+        <Text style={styles.forgot}>Forgot password?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.loginBtn}
+        onPress={signInWithEmail}
+      >
+        <Text style={styles.loginText}>LOGIN</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity>
+        <Text style={styles.loginText}>Do Not Have Account Yet?</Text>
+      </TouchableOpacity>
+
+      <FontAwesome name="stepforward"/>
+
+
       <TouchableOpacity onPress={signInWithGoogle}>
         <Image
           source={googleSignInImage}
@@ -161,10 +178,12 @@ export default function LoginScreen() {
           PlaceholderContent={<ActivityIndicator />}
         />
       </TouchableOpacity>
+
       <Button
         title="SIGN IN WITH FACEBOOK"
         onPress={signInWithFacebook}
         />
+
       <Text style={{marginTop: 10}} h5>Do Not Have Account Yet?</Text>
       <Input
         placeholder='Email'
@@ -220,10 +239,57 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF'
-    }
+  container: {
+    flex: 1,
+    backgroundColor: '#003f5c',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  inputView: {
+    width: "70%",
+    backgroundColor: "#465881",
+    borderRadius: 20,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 20
+  },
+
+  inputText: {
+    height: 50,
+    color: 'white'
+  },
+
+  forgot: {
+    color: "white",
+    fontSize: 11
+  },
+  loginBtn: {
+    width: "80%",
+    backgroundColor: "#fb5b5a",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 20
+  },
+  loginText: {
+    color: "white",
+    fontWeight: "bold"
+  },
+  logoU: {
+    fontSize: 50,
+    fontWeight: "bold",
+    color: "white"
+  }, 
+  logoHere: {
+    fontSize: 50,
+    fontWeight: "bold",
+    color: "#fb5b5a"
+  },
+  logoContainer: {
+    margin: 30,
+  }
 });
