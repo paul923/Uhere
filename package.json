@@ -42,6 +42,7 @@
     "react-native-safe-area-view": "^1.0.0",
     "react-native-screens": "2.0.0-alpha.12",
     "react-native-tab-view": "^2.13.0",
+    "react-native-vector-icons": "^6.6.0",
     "react-native-web": "^0.11.7"
   },
   "devDependencies": {

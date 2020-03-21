@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput  } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
@@ -164,27 +164,43 @@ export default function LoginScreen() {
         <Text style={styles.loginText}>LOGIN</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity>
-        <Text style={styles.loginText}>Do Not Have Account Yet?</Text>
-      </TouchableOpacity>
+      <View style={{flexDirection: 'row', width: '80%', justifyContent: 'space-between', alignItems: 'center', }}>
+        <View style={styles.horizontalLine}></View>
+        <Text style={{color: 'white'}}>Or</Text>
+        <View style={styles.horizontalLine}></View>
+      </View>
 
-      <FontAwesome name="stepforward"/>
+      <View style={styles.loginIconContainer}>
+        <TouchableOpacity onPress={signInWithGoogle}>
+          <Icon 
+            name="google--with-circle" 
+            type="entypo" 
+            color="white"
+            size={40}
+            iconStyle={{marginHorizontal: 10}}
+          />
+        </TouchableOpacity>
+        
+        <TouchableOpacity onPress={signInWithFacebook}>
+          <Icon 
+            name="facebook-with-circle" 
+            type="entypo" 
+            color="white"
+            size={40}
+            style={styles.loginIcon}
+            iconStyle={{marginHorizontal: 10}}
+          />
+        </TouchableOpacity>
+        
+      </View>
 
-
-      <TouchableOpacity onPress={signInWithGoogle}>
-        <Image
-          source={googleSignInImage}
-          style={{ width: 200, height: 50 }}
-          PlaceholderContent={<ActivityIndicator />}
-        />
-      </TouchableOpacity>
-
-      <Button
-        title="SIGN IN WITH FACEBOOK"
-        onPress={signInWithFacebook}
-        />
-
-      <Text style={{marginTop: 10}} h5>Do Not Have Account Yet?</Text>
+      <View style={{flexDirection: 'row'}}>
+        <Text style={{color: 'white'}}>Don't have account?</Text>
+        <TouchableOpacity>
+          <Text style={{color: '#7f9fad'}}> Register</Text>
+        </TouchableOpacity>
+      </View>
+      
       <Input
         placeholder='Email'
         leftIcon={
@@ -216,7 +232,6 @@ export default function LoginScreen() {
         title="REGISTER"
         onPress={registerWithEmail}
         />
-      <Text style={{marginTop: 10}} h5>Forgot Password?</Text>
       <Input
         placeholder='Email'
         leftIcon={
@@ -291,5 +306,14 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     margin: 30,
+  },
+  loginIconContainer: {
+    margin: 10,
+    flexDirection: 'row',
+  },
+  horizontalLine: {
+    backgroundColor: 'white',
+    width: '45%',
+    height: 1,
   }
 });
