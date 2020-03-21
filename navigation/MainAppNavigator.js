@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
+import CreateEventScreen from '../screens/CreateEventScreen';
 import FriendScreen from '../screens/FriendScreen';
 import JayTestScreen from '../screens/debug/JayTestScreen';
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
@@ -56,7 +57,7 @@ export default function MainAppNavigator({ navigation, route }) {
       />
       <BottomTab.Screen
         name="Justin"
-        component={JustinTestScreen}
+        component={CreateEventScreen}
         options={{
           title: 'Justin',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
