@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
-import { Image, Button, Text, ListItem, Divider, Icon, SearchBar } from 'react-native-elements';
+import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import AuthContext from '../contexts/AuthContext';
 import firebaseObject from '../config/firebase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -96,7 +96,7 @@ function EventHistory(){
   )
 }
 
-export default function EventScreen() {
+export default function EventScreen({ navigation, route }) {
   const insets = useSafeArea();
   const { signIn, signOut } = React.useContext(AuthContext);
   firebaseSignOut = async () => {
@@ -105,14 +105,18 @@ export default function EventScreen() {
     })
   }
   return (
-    <Tab.Navigator
-    tabBarOptions={{
-      style: { paddingTop: insets.top },
-    }}>
-      <Tab.Screen name="Pending Event" component={PendingEvent} />
-      <Tab.Screen name="On-Going Event" component={OnGoingEvent} />
-      <Tab.Screen name="Event History" component={EventHistory} />
-    </Tab.Navigator>
+    <View style={styles.container}>
+      <Header
+        leftComponent={{icon: 'notifications', color: '#fff'}}
+        centerComponent={{ text: 'EVENT', style: { color: '#fff' } }}
+        rightComponent={{icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event")}}
+        />
+      <Tab.Navigator>
+        <Tab.Screen name="Pending Event" component={PendingEvent} />
+        <Tab.Screen name="On-Going Event" component={OnGoingEvent} />
+        <Tab.Screen name="Event History" component={EventHistory} />
+      </Tab.Navigator>
+    </View>
   )
 }
 

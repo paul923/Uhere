@@ -17,7 +17,7 @@ import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn
 
 
 
-export default function CreateEventScreen() {
+export default function CreateEventScreen({navigation}) {
   const [ step, setStep] = React.useState("Event Detail");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDate, setEventDate] = React.useState(new Date());
@@ -153,7 +153,7 @@ export default function CreateEventScreen() {
     let name = (step === 'Event Detail') ? 'close' : 'chevron-left';
     let onPress;
     if (step === 'Event Detail') {
-      onPress = () => cancel();
+      onPress = () => navigation.navigate("Event");
     } else if (step === 'Location') {
       onPress = () => setStep('Event Detail');
     } else {

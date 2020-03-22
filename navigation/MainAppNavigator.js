@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import CreateEventScreen from '../screens/CreateEventScreen';
+import EventNavigator from './EventNavigator';
 import FriendScreen from '../screens/FriendScreen';
 import JayTestScreen from '../screens/debug/JayTestScreen';
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
@@ -17,22 +18,6 @@ export default function MainAppNavigator({ navigation, route }) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    async function loadResourcesAndDataAsync() {
-      try {
-
-        // Load fonts
-        await Font.loadAsync({
-          ...Ionicons.font
-        });
-      } catch (e) {
-        // We might want to provide this error information to an error reporting service
-        console.warn(e);
-      } finally {
-        setLoadingComplete(true);
-      }
-    }
-
-    loadResourcesAndDataAsync();
   }, []);
 
   return (
@@ -48,7 +33,7 @@ export default function MainAppNavigator({ navigation, route }) {
       />
       <BottomTab.Screen
         name="Event"
-        component={EventScreen}
+        component={EventNavigator}
         options={{
           title: 'Event',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
