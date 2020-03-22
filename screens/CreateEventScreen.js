@@ -6,11 +6,12 @@ import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
-import DatePicker from 'react-native-datepicker'
+import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
 
+import {formatDate, formatTime} from '../utils/date';
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 
@@ -19,6 +20,9 @@ import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn
 export default function CreateEventScreen() {
   const [ eventName, setEventName] = React.useState("");
   const [ eventDate, setEventDate] = React.useState(new Date());
+  const [ eventTime, setEventTime] = React.useState(new Date());
+  const [ showDatePicker, setShowDatePicker] = React.useState(false);
+  const [ showTimePicker, setShowTimePicker] = React.useState(false);
   const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(0);
   const [ reminder, setReminder] = React.useState(15);
   const [ location, setLocation] = React.useState("");
@@ -50,20 +54,30 @@ export default function CreateEventScreen() {
       <View style={styles.row}>
         <View>
           <View style={styles.row}>
-          <Text h4>Event Date</Text>
+            <Text h4>Event Date</Text>
           </View>
           <View style={styles.row}>
-          <DatePicker
-            style={{width: 200}}
-            date={eventDate}
-            mode="datetime"
-            format="MMM Do, YYYY | hh:mm a"
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            showIcon={false}
-            onDateChange={(date) => setEventDate(date)}
-          />
+            <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(true); setShowTimePicker(false)}}>
+              <Text style={styles.textCenter}>{formatDate(eventDate)}</Text>
+            </TouchableOpacity>
           </View>
+          <View style={styles.row}>
+            <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(false); setShowTimePicker(true)}}>
+              <Text style={styles.textCenter}>{formatTime(eventTime)}</Text>
+            </TouchableOpacity>
+          </View>
+          {showDatePicker && <DateTimePicker
+            value={eventDate}
+            mode="date"
+            display="default"
+            onChange={(event, date) => {setShowDatePicker(false); setEventDate(date)}}
+          />}
+          {showTimePicker && <DateTimePicker
+            value={eventTime}
+            mode="time"
+            display="default"
+            onChange={(event, date) => {setShowTimePicker(false); setEventTime(date)}}
+          />}
         </View>
       </View>
       <View style={styles.row}>
@@ -72,13 +86,13 @@ export default function CreateEventScreen() {
             <Text h4>How many friends are coming</Text>
             </View>
           <View style={styles.row}>
-            <TouchableOpacity style={styles.columnButton}>
+            <TouchableOpacity style={styles.columnButton} onPress={() => setMaximumNumberOfMembers(maximumNumberOfMembers+1)}>
               <Icon name="plus" type="antdesign" color="black"/>
             </TouchableOpacity>
             <View style={styles.column}>
               <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
             </View>
-            <TouchableOpacity style={styles.columnButton}>
+            <TouchableOpacity style={styles.columnButton} onPress={() => maximumNumberOfMembers > 0 && setMaximumNumberOfMembers(maximumNumberOfMembers-1)}>
               <Icon name="minus" type="antdesign" color="black"/>
             </TouchableOpacity>
           </View>
@@ -91,18 +105,15 @@ export default function CreateEventScreen() {
           <Text h4>Reminder</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.textCenter}>Before</Text>
-          </View>
-          <View style={styles.row}>
             <Picker
-              style={styles.onePicker} itemStyle={styles.onePickerItem}
+              style={styles.onePicker}
               selectedValue={reminder}
               onValueChange={(itemValue) => setReminder(itemValue)}
             >
-              <Picker.Item label="15 min" value="15" />
-              <Picker.Item label="30 min" value="30" />
-              <Picker.Item label="45 min" value="45" />
-              <Picker.Item label="60 min" value="60" />
+              <Picker.Item label="Before 15 min" value="15" />
+              <Picker.Item label="Before 30 min" value="30" />
+              <Picker.Item label="Before 45 min" value="45" />
+              <Picker.Item label="Before 60 min" value="60" />
             </Picker>
           </View>
         </View>
@@ -113,10 +124,10 @@ export default function CreateEventScreen() {
 
 const styles = StyleSheet.create({
     container: {
+      margin: 30,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white'
     },
     row: {
       flex: 1,
@@ -136,14 +147,7 @@ const styles = StyleSheet.create({
     },
     onePicker: {
       width: 200,
-      height: 44,
       backgroundColor: '#FFF0E0',
-      borderColor: 'black',
-      borderWidth: 1,
-    },
-    onePickerItem: {
-      height: 44,
-      color: 'red'
     },
     textCenter: {
       textAlign: 'center'
