@@ -15,7 +15,7 @@ import firebaseObject from '../config/firebase';
 import {formatDate, formatTime} from '../utils/date';
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
-
+import penaltyImage from '../assets/images/robot-dev.png';
 
 
 export default function CreateEventScreen({navigation}) {
@@ -28,7 +28,8 @@ export default function CreateEventScreen({navigation}) {
   const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(0);
   const [ reminder, setReminder] = React.useState(15);
   const [ location, setLocation] = React.useState("");
-  const [ penalty, setPenalty] = React.useState("");
+  const [ penalty, setPenalty] = React.useState("cigarette");
+  const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
 
 
   // Load any resources or data that we need prior to rendering the app
@@ -150,7 +151,35 @@ export default function CreateEventScreen({navigation}) {
   function Penalty() {
     return (
       <View style={styles.formContainer}>
-        <Text>Penalty</Text>
+        <View style={styles.row}>
+          <Text h4>Choose the penalty</Text>
+        </View>
+        <View style={styles.row}>
+          <Image
+            source={penaltyImage}
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
+        <View style={styles.row}>
+          <Picker
+            style={styles.onePicker}
+            selectedValue={penalty}
+            onValueChange={(itemValue) => setPenalty(itemValue)}
+          >
+            <Picker.Item label="Buys cig" value="cigarette" />
+            <Picker.Item label="Buys americano" value="americano" />
+            <Picker.Item label="Money" value="money" />
+          </Picker>
+        </View>
+        <View style={styles.row}>
+          <Picker
+            style={styles.onePicker}
+            selectedValue={penaltyGame}
+            onValueChange={(itemValue) => setPenaltyGame(itemValue)}
+          >
+            <Picker.Item label="ROULETTE" value="roulette" />
+          </Picker>
+        </View>
       </View>
     )
   }
@@ -247,7 +276,6 @@ const styles = StyleSheet.create({
       margin: 0,
       flex: 10,
       justifyContent: 'center',
-      alignItems: 'stretch',
     },
     row: {
       flex: 1,
