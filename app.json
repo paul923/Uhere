@@ -39,6 +39,9 @@
       "googleServicesFile": "./config/google-services.json",
       "versionCode": 1,
       "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyA48eQfCJl6zwKsbvzG63T_PlHk2Ff6ld4"
+        },
         "googleSignIn": {
           "certificateHash": "62:A9:46:59:84:CA:BA:3A:EC:C1:57:1F:2E:75:87:EC:DD:4B:D1:89"
         }

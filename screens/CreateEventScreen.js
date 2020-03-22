@@ -4,8 +4,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
+import MapView from 'react-native-maps';
 import * as Facebook from 'expo-facebook';
-import { Image, Button, Text, Input, Icon, Divider, Header } from 'react-native-elements';
+import { Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
@@ -44,7 +45,7 @@ export default function CreateEventScreen({navigation}) {
 
   function EventDetail() {
     return (
-      <View>
+      <View style={styles.formContainer}>
         <View style={styles.row}>
           <View>
             <View style={styles.row}>
@@ -134,15 +135,21 @@ export default function CreateEventScreen({navigation}) {
 
   function Location() {
     return (
-      <View>
-        <Text>LOCATION</Text>
+      <View style={styles.formContainer}>
+        <SearchBar
+          style={styles.locationSearch}
+          placeholder="Type Address..."
+          onChangeText={setLocation}
+          value={location}
+        />
+        <MapView style={styles.mapStyle} />
       </View>
     )
   }
 
   function Penalty() {
     return (
-      <View>
+      <View style={styles.formContainer}>
         <Text>Penalty</Text>
       </View>
     )
@@ -186,21 +193,6 @@ export default function CreateEventScreen({navigation}) {
     }
   }
 
-  function nextStep() {
-    let object = {color: '#fff'};
-    if (step === "Event Detail"){
-      object.icon = 'close';
-    } else {
-      object.icon = 'chevron-left'
-    }
-
-    return object
-  }
-
-  function prevStep() {
-
-  }
-
   return (
     <View style={styles.container}>
       <Header
@@ -219,11 +211,9 @@ export default function CreateEventScreen({navigation}) {
             <Text style={styles.stepText}>Penalty</Text>
           </View>
         </View>
-        <View style={styles.formContainer}>
-          {step === "Event Detail" && EventDetail()}
-          {step === "Location" && Location()}
-          {step === "Penalty" && Penalty()}
-        </View>
+        {step === "Event Detail" && EventDetail()}
+        {step === "Location" && Location()}
+        {step === "Penalty" && Penalty()}
     </View>
 
   )
@@ -233,7 +223,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'stretch'
     },
     stepContainer: {
       flex: 1,
@@ -254,10 +244,10 @@ const styles = StyleSheet.create({
       height: '100%'
     },
     formContainer: {
-      margin: 20,
+      margin: 0,
       flex: 10,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'stretch',
     },
     row: {
       flex: 1,
@@ -281,5 +271,11 @@ const styles = StyleSheet.create({
     },
     textCenter: {
       textAlign: 'center'
+    },
+    locationSearch: {
+      flex: 1
+    },
+    mapStyle: {
+      flex: 10
     }
 });
