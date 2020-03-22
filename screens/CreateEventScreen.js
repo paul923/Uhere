@@ -217,7 +217,7 @@ export default function CreateEventScreen({navigation}) {
     } else {
       onPress = () => publish();
       return (
-        <Icon text="PUBLISH" color='#fff' onPress={onPress}/>
+        <Text style={{color: '#fff' }} onPress={onPress}>PUBLISH</Text>
       )
     }
   }
