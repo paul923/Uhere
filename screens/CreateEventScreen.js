@@ -4,7 +4,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
-import MapView from 'react-native-maps';
 import * as Facebook from 'expo-facebook';
 import { Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -143,7 +142,6 @@ export default function CreateEventScreen({navigation}) {
           onChangeText={setLocation}
           value={location}
         />
-        <MapView style={styles.mapStyle} />
       </View>
     )
   }
@@ -324,7 +322,4 @@ const styles = StyleSheet.create({
     locationSearch: {
       flex: 1
     },
-    mapStyle: {
-      flex: 10
-    }
 });
