@@ -148,6 +148,16 @@ export default function CreateEventScreen({navigation}) {
     )
   }
 
+  function Members() {
+    return (
+      <View style={styles.formContainer}>
+        <View style={styles.row}>
+          <Text h4>Members</Text>
+        </View>
+      </View>
+    )
+  }
+
   function Penalty() {
     return (
       <View style={styles.formContainer}>
@@ -192,8 +202,10 @@ export default function CreateEventScreen({navigation}) {
       onPress = () => navigation.navigate("Event");
     } else if (step === 'Location') {
       onPress = () => setStep('Event Detail');
-    } else {
+    } else if (step === 'Members') {
       onPress = () => setStep('Location');
+    } else {
+      onPress = () => setStep('Members');
     }
     return (
       <Icon name={name} color='#fff' onPress={onPress}/>
@@ -210,6 +222,11 @@ export default function CreateEventScreen({navigation}) {
         <Icon name="chevron-right" color='#fff' onPress={onPress}/>
       )
     } else if (step === 'Location') {
+      onPress = () => setStep('Members');
+      return (
+        <Icon name="chevron-right" color='#fff' onPress={onPress}/>
+      )
+    } else if (step === 'Members') {
       onPress = () => setStep('Penalty');
       return (
         <Icon name="chevron-right" color='#fff' onPress={onPress}/>
@@ -233,8 +250,11 @@ export default function CreateEventScreen({navigation}) {
           <View style={styles.stepComplete}>
             <Text style={styles.stepText}>Event Detail</Text>
           </View>
-          <View style={step === 'Event Detail' ? styles.step : styles.stepComplete}>
+          <View style={step !== 'Event Detail' ? styles.stepComplete : styles.step}>
             <Text style={styles.stepText}>Location</Text>
+          </View>
+          <View style={step === 'Members' || step === 'Penalty' ? styles.stepComplete : styles.step}>
+            <Text style={styles.stepText}>Members</Text>
           </View>
           <View style={step === 'Penalty' ? styles.stepComplete : styles.step}>
             <Text style={styles.stepText}>Penalty</Text>
@@ -242,6 +262,7 @@ export default function CreateEventScreen({navigation}) {
         </View>
         {step === "Event Detail" && EventDetail()}
         {step === "Location" && Location()}
+        {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
     </View>
 
