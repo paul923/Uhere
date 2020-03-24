@@ -25,10 +25,33 @@ import AuthContext from './contexts/AuthContext';
 
 export default function App(props) {
   const [showRealApp, setshowRealApp] = React.useState(false);
-  const [isLocationPermissionGranted, setLocationPermissionGranted] = React.useState(false);
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
+
+  const [isLocationPermissionGranted, _setLocationPermissionGranted] = React.useState(false);
+  const isLocationPermissionGrantedRef = React.useRef(isLocationPermissionGranted);
+  React.useEffect(() => {
+    checkLocationPermissionAsync();
+  }, []);
+  
+  // first time installing app gives you 'undetermined' == ask Next Time
+  async function checkLocationPermissionAsync() {
+    const { status, ios, android } = await Location.getPermissionsAsync();
+    console.log('status', status);
+    console.log('ios', ios == null ? 'not ios' : ios.scope);
+    console.log('android', android == null ? 'not android' : android.scope);
+    // first time installing give you undetermined
+    if (status === 'granted' && ios.scope === 'always') {
+      setLocationPermissionGranted(true);
+    } else {
+      setLocationPermissionGranted(false);
+    }
+  }
+  const setLocationPermissionGranted = (value) => {
+    isLocationPermissionGrantedRef.current = value;
+    _setLocationPermissionGranted(value);
+  }
 
   const [appState, _setAppState] = React.useState(AppState.currentState);
   const appStateRef = React.useRef(appState);
@@ -40,6 +63,7 @@ export default function App(props) {
   const handleAppStatechange = (nextAppState) => {
     if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
       console.log('App has come to the foreground!');
+      checkLocationPermissionAsync();
     }
     setAppState(nextAppState);
   };
@@ -139,24 +163,6 @@ export default function App(props) {
     }
 
     loadResourcesAndDataAsync();
-
-    // in the future this will also have to be checked in bacground -> foreground ???
-    // first time installing app gives you 'undetermined'
-    async function checkLocationPermissionAsync() {
-      const { status, expires, canAskAgain, ios, android } = await Location.getPermissionsAsync();
-      console.log('status', status);
-      console.log('expires', expires);
-      console.log('canAskAgain', canAskAgain);
-      console.log('ios', ios == null ? 'not ios' : ios.scope);
-      console.log('android', android == null ? 'not android' : android.scope);
-    
-      // first time installing give you undetermined
-      if (status === 'granted') {
-        setLocationPermissionGranted(true);
-      }
-    }
-
-    checkLocationPermissionAsync()
   }, []);
 
   // swithed order of checking
