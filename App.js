@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState } from 'react-native';
 import { SplashScreen } from 'expo';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
@@ -14,7 +14,9 @@ import useLinking from './navigation/useLinking';
 import AppIntroSlider from './screens/introSlider';
 import AvatarColor from './screens/AvatarColor'
 
-
+import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
+import LocationPermissionScreen from './screens/LocationPermissionScreen'
 
 const Stack = createStackNavigator();
 
@@ -27,6 +29,50 @@ export default function App(props) {
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
+
+  const [isLocationPermissionGranted, _setLocationPermissionGranted] = React.useState(false);
+  const isLocationPermissionGrantedRef = React.useRef(isLocationPermissionGranted);
+  React.useEffect(() => {
+    checkLocationPermissionAsync();
+  }, []);
+
+  // first time installing app gives you 'undetermined' == ask Next Time
+  async function checkLocationPermissionAsync() {
+    const { status, ios, android } = await Location.getPermissionsAsync();
+    console.log('status', status);
+    console.log('ios', ios == null ? 'not ios' : ios.scope);
+    console.log('android', android == null ? 'not android' : android.scope);
+    // first time installing give you undetermined
+    if (Platform.OS === 'ios' ? (status === 'granted' && ios.scope === 'always') : (status === 'granted' && android.scope === 'fine')) {
+      setLocationPermissionGranted(true);
+    } else {
+      setLocationPermissionGranted(false);
+    }
+  }
+  const setLocationPermissionGranted = (value) => {
+    isLocationPermissionGrantedRef.current = value;
+    _setLocationPermissionGranted(value);
+  }
+
+  const [appState, _setAppState] = React.useState(AppState.currentState);
+  const appStateRef = React.useRef(appState);
+
+  React.useEffect(() => {
+    AppState.addEventListener('change', handleAppStatechange);
+  }, []);
+
+  const handleAppStatechange = (nextAppState) => {
+    if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('App has come to the foreground!');
+      checkLocationPermissionAsync();
+    }
+    setAppState(nextAppState);
+  };
+  const setAppState = (nextAppState) => {
+    appStateRef.current = nextAppState;
+    _setAppState(nextAppState);
+  }
+
 
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
@@ -141,15 +187,21 @@ export default function App(props) {
      showSkipButton
      activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
      />;
+ }  else if (!isLocationPermissionGranted) {
+   return (
+     <LocationPermissionScreen
+     updateLocationGranted={setLocationPermissionGranted}
+     />
+   );
  } else {
     return (
       <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
         <AuthContext.Provider value={authContext}>
           <Stack.Navigator
             headerMode="none">
-            {state.userToken == null ? (
+            {state.userToken !== null ? (// temporarily changed to test on Expo Client App
               <Stack.Screen name="Login" component={LoginScreen} />
             ) : (
               <Stack.Screen name="MainApp" component={MainAppNavigator} />
