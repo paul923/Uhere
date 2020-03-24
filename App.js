@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState } from 'react-native';
 import { SplashScreen } from 'expo';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
@@ -29,6 +29,25 @@ export default function App(props) {
   const [initialNavigationState, setInitialNavigationState] = React.useState();
   const containerRef = React.useRef();
   const { getInitialState } = useLinking(containerRef);
+
+  const [appState, _setAppState] = React.useState(AppState.currentState);
+  const appStateRef = React.useRef(appState);
+  
+  React.useEffect(() => {
+    AppState.addEventListener('change', handleAppStatechange);  
+  }, []);
+  
+  const handleAppStatechange = (nextAppState) => {
+    if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
+      console.log('App has come to the foreground!');
+    }
+    setAppState(nextAppState);
+  };
+  const setAppState = (nextAppState) => {
+    appStateRef.current = nextAppState;
+    _setAppState(nextAppState);
+  }
+
 
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
