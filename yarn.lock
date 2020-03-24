@@ -2727,6 +2727,11 @@ expo-app-loader-provider@~8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/expo-app-loader-provider/-/expo-app-loader-provider-8.0.0.tgz#c18ef20a24153f5a0dbb297106ef0bcb5de57180"
 
+expo-application@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-application/-/expo-application-2.0.0.tgz#5021684c48b1326e11914b259653e62977ad4ca8"
+  integrity sha512-pRJCO6qqDOOnmc53sQD1yxO3S9OZHDjlomV7rbXdoWFTbeT2XzqlEvtApnq+V1rv4DZ/KJVrgwzcL5hkZSbLfg==
+
 expo-asset@~8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/expo-asset/-/expo-asset-8.0.0.tgz#400c7cf8693711ddc87da02d20a7d47bd517afeb"
@@ -2766,6 +2771,11 @@ expo-google-sign-in@~8.0.0:
   resolved "https://registry.yarnpkg.com/expo-google-sign-in/-/expo-google-sign-in-8.0.0.tgz#3cf50b255a947045a6961fc798978ed0aaa13251"
   dependencies:
     invariant "^2.2.4"
+
+expo-intent-launcher@~8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/expo-intent-launcher/-/expo-intent-launcher-8.0.0.tgz#1242d4e9122f69a1ec9637a621a35caf6ae73cca"
+  integrity sha512-Rf+AprbFKJx4YH1+DooCGg92Y4jjlP3iMpW3rpinTD4N1TJzqkpsflMphARGsF/GKxcrhzvqX52D/JrmXrcjhA==
 
 expo-keep-awake@~8.0.0:
   version "8.0.0"
