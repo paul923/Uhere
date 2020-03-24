@@ -15,7 +15,7 @@ import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn
 
 
 
-export default function LoginScreen() {
+export default function LoginScreen({navigation}) {
   const [ loginEmail, setLoginEmail] = React.useState("");
   const [ loginPassword, setLoginPassword] = React.useState("");
   const [ registerEmail, setRegisterEmail] = React.useState("");
@@ -148,12 +148,11 @@ export default function LoginScreen() {
           onChangeText={text => setLoginPassword(text)}
           value={loginPassword}
           textContentType="password"
-          secureTextEntry
         />
       </View>
 
 
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgot}>Forgot password?</Text>
       </TouchableOpacity>
 
@@ -196,7 +195,7 @@ export default function LoginScreen() {
 
       <View style={{flexDirection: 'row'}}>
         <Text style={{color: 'white'}}>Don't have account?</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
           <Text style={{color: '#7f9fad'}}> Register</Text>
         </TouchableOpacity>
       </View>
@@ -226,7 +225,7 @@ export default function LoginScreen() {
         onChangeText={text => setRegisterPassword(text)}
         value={registerPassword}
         textContentType="password"
-        secureTextEntry
+        
       />
       <Button
         title="REGISTER"

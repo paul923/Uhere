@@ -10,6 +10,7 @@ import LoginScreen from './screens/LoginScreen';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
+import LoginNavigator from './navigation/LoginNavigator';
 
 import AppIntroSlider from './screens/introSlider';
 import AvatarColor from './screens/AvatarColor'
@@ -150,7 +151,7 @@ export default function App(props) {
           <Stack.Navigator
             headerMode="none">
             {state.userToken == null ? (
-              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
             ) : (
               <Stack.Screen name="MainApp" component={MainAppNavigator} />
             )}
