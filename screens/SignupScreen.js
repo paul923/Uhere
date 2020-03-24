@@ -3,20 +3,41 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import {Icon} from 'react-native-elements'
 
 
+import firebaseObject from '../config/firebase';
+
+
+
+
 
 export default class Login extends Component {
+
+
+  registerWithEmail = async () => {
+    if(this.state.registerPassword !== this.state.cPassword){
+      alert('Please confirm your password');
+    } else {
+      firebaseObject.auth()
+            .createUserWithEmailAndPassword(this.state.registerEmail, this.state.registerPassword)
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorMessage = error.message;
+              alert(errorMessage);
+      });
+    }
+    
+  }
+
   state = {
     firstName: "",
     lastName: "",
-    email: "",
-    password: "",
-    cpassword: "",
+    registerEmail: "",
+    registerPassword: "",
+    cPassword: "",
   }
   render(){
     return (
       <View style={styles.container}>
-        {headerBar}
-
+        {this.headerBar()}
 
         <View style={styles.bodyContainer}>
           <View style={styles.inputContainer}>
@@ -25,7 +46,7 @@ export default class Login extends Component {
               <TextInput
                 style={styles.inputText}
                 placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({email: text})}/>
+                onChangeText={text => this.setState({firstName: text})}/>
             </View>
           </View>
 
@@ -35,7 +56,7 @@ export default class Login extends Component {
               <TextInput
                 style={styles.inputText}
                 placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({email: text})}/>
+                onChangeText={text => this.setState({lastName: text})}/>
             </View>
           </View>
 
@@ -45,7 +66,10 @@ export default class Login extends Component {
               <TextInput
                 style={styles.inputText}
                 placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({email: text})}/>
+                onChangeText={text => this.setState({registerEmail: text})}
+                value={this.state.registerEmail}
+                textContentType="emailAddress"
+              />
             </View>
           </View>
 
@@ -55,7 +79,10 @@ export default class Login extends Component {
               <TextInput
                 style={styles.inputText}
                 placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({password:text})}/>
+                onChangeText={text => this.setState({registerPassword: text})}
+                value={this.state.registerPassword}
+                textContentType="password"
+              />
             </View>
           </View>
 
@@ -65,12 +92,15 @@ export default class Login extends Component {
               <TextInput
                 style={styles.inputText}
                 placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({password:text})}/>
+                onChangeText={text => this.setState({cPassword:text})}/>
             </View>
           </View>
 
 
-          <TouchableOpacity style={styles.confirmButton}>
+          <TouchableOpacity 
+            style={styles.confirmButton} 
+            onPress={this.registerWithEmail}
+          >
             <Text style={styles.loginText}>SIGN UP</Text>
           </TouchableOpacity>
           
@@ -79,45 +109,48 @@ export default class Login extends Component {
       </View>
     );
   }
-}
 
-const headerBar = 
+  headerBar() {
+    return(
       <View
         style={{
           height: 50,
-          padding: 10,
           width: '100%',
           marginTop: 20,
           backgroundColor: 'transparent',
           justifyContent: 'center',
           flexDirection: 'row'
         }}>
-          <View>
-            <TouchableOpacity>
+          
+          <View style={{width: "10%", justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={()=> this.props.navigation.goBack()}>
               <Icon
-                name="left"
-                type="antdesign"
+                name="arrow-left"
+                type="entypo"
                 color= "white"
-                size= '25'
+                size= "30"
               />
             </TouchableOpacity>
           </View>
 
-          <View>
+          <View style={{width: "80%", justifyContent: 'center', alignItems: 'center'}}>
             <Text
               style={{
                 color: 'white',
-                textAlign: 'center',
                 fontWeight: 'bold',
                 fontSize: 30,
               }}>
               Create Account
             </Text>
           </View>
-          <View>
+          <View style={{width: "10%"}}>
 
           </View>
-      </View>
+        </View>
+    )}
+}
+
+      
 
 const styles = StyleSheet.create({
   container: {
@@ -128,7 +161,6 @@ const styles = StyleSheet.create({
   },
 
   bodyContainer:{
-    overflow: 'scroll',
     padding: 20,
     width: '100%',
     alignItems: 'center'
@@ -153,7 +185,7 @@ const styles = StyleSheet.create({
     fontSize: 11
   },
   confirmButton: {
-    width: "80%",
+    width: "100%",
     backgroundColor: "#00cc66",
     borderRadius: 25,
     height: 50,

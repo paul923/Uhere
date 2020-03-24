@@ -44,26 +44,7 @@ export default function LoginScreen({navigation}) {
     });
   }, []);
 
-  resetPassword = async () => {
-    firebaseObject.auth()
-                  .sendPasswordResetEmail(forgotPasswordEmail)
-                  .then(function() {
-                    alert("Please check your email to reset password");
-                  }).catch(function(error) {
-                    // An error happened.
-                    var errorMessage = error.message;
-                    alert(errorMessage);
-                  });
-  }
-  registerWithEmail = async () => {
-    firebaseObject.auth()
-            .createUserWithEmailAndPassword(registerEmail, registerPassword)
-            .catch(function(error) {
-              // Handle Errors here.
-              var errorMessage = error.message;
-              alert(errorMessage);
-            });
-  }
+
 
   signInWithEmail = async () => {
     firebaseObject.auth()
@@ -128,7 +109,6 @@ export default function LoginScreen({navigation}) {
         <Text style={styles.logoHere}>Here</Text>
       </Text>
 
-      {/** ID block */}
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
@@ -199,55 +179,6 @@ export default function LoginScreen({navigation}) {
           <Text style={{color: '#7f9fad'}}> Register</Text>
         </TouchableOpacity>
       </View>
-      
-      <Input
-        placeholder='Email'
-        leftIcon={
-          <Icon
-            name='email'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setRegisterEmail(text)}
-        value={registerEmail}
-        textContentType="emailAddress"
-      />
-      <Input
-        placeholder='Password'
-        leftIcon={
-          <Icon
-            name='lock'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setRegisterPassword(text)}
-        value={registerPassword}
-        textContentType="password"
-        
-      />
-      <Button
-        title="REGISTER"
-        onPress={registerWithEmail}
-        />
-      <Input
-        placeholder='Email'
-        leftIcon={
-          <Icon
-            name='email'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setForgotPasswordEmail(text)}
-        value={forgotPasswordEmail}
-        textContentType="emailAddress"
-      />
-      <Button
-        title="RESET PASSWORD"
-        onPress={resetPassword}
-        />
     </View>
   )
 }
@@ -261,7 +192,7 @@ const styles = StyleSheet.create({
   },
 
   inputView: {
-    width: "70%",
+    width: "80%",
     backgroundColor: "#465881",
     borderRadius: 20,
     height: 50,

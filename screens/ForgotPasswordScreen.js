@@ -1,38 +1,93 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import {Icon} from 'react-native-elements'
+
+import firebaseObject from '../config/firebase';
+
 
 export default class Login extends Component {
-  state = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    cpassword: "",
+  resetPassword = async () => {
+    firebaseObject.auth()
+                  .sendPasswordResetEmail(this.state.forgotPasswordEmail)
+                  .then(function() {
+                    alert("Please check your email to reset password");
+                  }).catch(function(error) {
+                    // An error happened.
+                    var errorMessage = error.message;
+                    alert(errorMessage);
+                  });
   }
+
+  state = {
+    forgotPasswordEmail: "",
+  }
+
   render(){
     return (
       <View style={styles.container}>
+        {this.headerBar()}
 
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.inputDetail}>This is forgot Password</Text>
-          <View style={styles.inputView}>
-            <TextInput
-              style={styles.inputText}
-              placeholderTextColor="#003f5c"
-              onChangeText={text => this.setState({email: text})}/>
+        <View style={styles.bodyContainer}>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputView}>
+              <TextInput
+                style={styles.inputText}
+                placeholderTextColor="#003f5c"
+                value={this.state.forgotPasswordEmail}
+                textContentType="emailAddress"
+                onChangeText={text => this.setState({email: text})}
+                placeholder='Type Your Email'
+              />
+            </View>
           </View>
+
+          <TouchableOpacity style={styles.confirmButton} onPress={this.resetPassword}>
+            <Text style={styles.loginText}>SIGN UP</Text>
+          </TouchableOpacity>
+
         </View>
-
-
-
-        <TouchableOpacity style={styles.confirmButton}>
-          <Text style={styles.loginText}>SIGN UP</Text>
-        </TouchableOpacity>
-
       </View>
     );
   }
+
+  headerBar() {
+    return(
+      <View
+        style={{
+          height: 50,
+          width: '100%',
+          marginTop: 20,
+          backgroundColor: 'transparent',
+          justifyContent: 'center',
+          flexDirection: 'row'
+        }}>
+          
+          <View style={{width: "10%", justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={()=> this.props.navigation.goBack()}>
+              <Icon
+                name="arrow-left"
+                type="entypo"
+                color= "white"
+                size= "30"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={{width: "80%", justifyContent: 'center', alignItems: 'center'}}>
+            <Text
+              style={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: 25,
+              }}>
+              Forgot Password
+            </Text>
+          </View>
+          <View style={{width: "10%"}}>
+
+          </View>
+        </View>
+    )}
 }
 
 const styles = StyleSheet.create({
@@ -41,6 +96,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#003f5c',
     alignItems: 'center',
+  },
+
+  bodyContainer:{
+    padding: 20,
+    width: '100%',
+    alignItems: 'center'
   },
 
   inputView: {
@@ -62,7 +123,7 @@ const styles = StyleSheet.create({
     fontSize: 11
   },
   confirmButton: {
-    width: "80%",
+    width: "100%",
     backgroundColor: "#00cc66",
     borderRadius: 25,
     height: 50,
@@ -89,7 +150,7 @@ const styles = StyleSheet.create({
     margin: 30,
   },
   inputContainer: {
-    width: "80%"
+    width: "100%"
   },
   inputDetail: {
     fontSize: 15,
