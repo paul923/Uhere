@@ -5,7 +5,7 @@ import {Icon, Header} from 'react-native-elements'
 import firebaseObject from '../config/firebase';
 
 
-export default class Login extends Component {
+export default class ForgotPasswordScreen extends Component {
   resetPassword = async () => {
     firebaseObject.auth()
                   .sendPasswordResetEmail(this.state.forgotPasswordEmail)

@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      "react-native-color-palette@2.2.0",
+      "C:\\Users\\Gyooms\\Desktop\\Project\\expoPractice"
+    ]
+  ],
+  "_from": "react-native-color-palette@2.2.0",
+  "_id": "react-native-color-palette@2.2.0",
+  "_inBundle": false,
+  "_integrity": "sha512-5sAh7veeSMg7KOijnBTj4/A54JzfFfOjo7r9YYCnEF9HWgpMHr6oSjERM18qzP561FFVMElVOh3nCit1pvq6xQ==",
+  "_location": "/react-native-color-palette",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "react-native-color-palette@2.2.0",
+    "name": "react-native-color-palette",
+    "escapedName": "react-native-color-palette",
+    "rawSpec": "2.2.0",
+    "saveSpec": null,
+    "fetchSpec": "2.2.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-color-palette/-/react-native-color-palette-2.2.0.tgz",
+  "_spec": "2.2.0",
+  "_where": "C:\\Users\\Gyooms\\Desktop\\Project\\expoPractice",
+  "author": {
+    "name": "Holman Strategic Ventures"
+  },
+  "bugs": {
+    "url": "https://github.com/holmansv/react-native-color-palette/issues"
+  },
+  "dependencies": {},
+  "description": "A react native module for simple hex color selection",
+  "devDependencies": {
+    "@babel/runtime": "^7.2.0",
+    "prop-types": "15.7.2"
+  },
+  "homepage": "https://github.com/holmansv/react-native-color-palette#readme",
+  "keywords": [
+    "react",
+    "react-native",
+    "colors",
+    "color-picker",
+    "color-palette",
+    "palette"
+  ],
+  "license": "MIT",
+  "main": "src/index.js",
+  "name": "react-native-color-palette",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holmansv/react-native-color-palette.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "2.2.0"
+}

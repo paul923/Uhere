@@ -12,7 +12,7 @@ import useLinking from './navigation/useLinking';
 import LoginNavigator from './navigation/LoginNavigator';
 
 import AppIntroSlider from './screens/introSlider';
-import AvatarColor from './screens/AvatarColor'
+import AvatarScreen from './screens/AvatarScreen'
 
 
 
