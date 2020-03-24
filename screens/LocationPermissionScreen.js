@@ -1,20 +1,28 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button, Linking , AppState} from 'react-native';
-import * as Permissions from 'expo-permissions';
+import { StyleSheet, Text, View, Button, Linking } from 'react-native';
+import * as IntentLauncher from 'expo-intent-launcher';
+import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 
 export default class LocationPermissionScreen extends Component {
     
     render () {
         return (
-        // need separate logic for android
         <View style={styles.container}>
             <Text style={styles.paragraph}>
                 Please Allow uhere to access your Location "Always"
             </Text>
-            <Button title="Go to Settings" onPress={() => Linking.openURL('app-settings:')} />
-        </View>
-        );
+            {Platform.OS === 'ios' ? (
+              <Button title="Go to Settings" onPress={() => Linking.openURL('app-settings:')} />
+            ) : (
+              <Button title="Go to Settings" onPress={() => IntentLauncher.startActivityAsync(
+                IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+                {
+                  data: `package:${Application.applicationId}`,
+                }
+              )} />
+            )}
+        </View>);
     }
 }
 
