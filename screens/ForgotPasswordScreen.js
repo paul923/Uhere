@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import {Icon} from 'react-native-elements'
+import {Icon, Header} from 'react-native-elements'
 
 import firebaseObject from '../config/firebase';
 
@@ -25,7 +25,23 @@ export default class Login extends Component {
   render(){
     return (
       <View style={styles.container}>
-        {this.headerBar()}
+        <Header
+          leftComponent={
+            <Icon
+              name="arrow-left"
+              type="entypo"
+              color= "white"
+              size= "30"
+              underlayColor= "transparent"
+              onPress={()=> this.props.navigation.goBack()}
+            />
+          }
+          centerComponent={{text: 'Forgot Password', style: {color: 'white', fontSize: 25, fontWeight: 'bold'}}}
+          containerStyle={{
+            backgroundColor: 'transparent',
+            borderBottomWidth: 0
+          }}
+        />
 
         <View style={styles.bodyContainer}>
           <View style={styles.inputContainer}>
@@ -50,44 +66,6 @@ export default class Login extends Component {
     );
   }
 
-  headerBar() {
-    return(
-      <View
-        style={{
-          height: 50,
-          width: '100%',
-          marginTop: 20,
-          backgroundColor: 'transparent',
-          justifyContent: 'center',
-          flexDirection: 'row'
-        }}>
-          
-          <View style={{width: "10%", justifyContent: 'center', alignItems: 'center'}}>
-            <TouchableOpacity onPress={()=> this.props.navigation.goBack()}>
-              <Icon
-                name="arrow-left"
-                type="entypo"
-                color= "white"
-                size= "30"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={{width: "80%", justifyContent: 'center', alignItems: 'center'}}>
-            <Text
-              style={{
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: 25,
-              }}>
-              Forgot Password
-            </Text>
-          </View>
-          <View style={{width: "10%"}}>
-
-          </View>
-        </View>
-    )}
 }
 
 const styles = StyleSheet.create({

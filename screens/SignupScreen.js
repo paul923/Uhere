@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import {Icon} from 'react-native-elements'
+import {Icon, Header} from 'react-native-elements'
 
 
 import firebaseObject from '../config/firebase';
@@ -37,7 +37,23 @@ export default class Login extends Component {
   render(){
     return (
       <View style={styles.container}>
-        {this.headerBar()}
+        <Header
+          leftComponent={
+            <Icon
+              name="arrow-left"
+              type="entypo"
+              color= "white"
+              size= "30"
+              underlayColor= "transparent"
+              onPress={()=> this.props.navigation.goBack()}
+            />
+          }
+          centerComponent={{text: 'Create Account', style: {color: 'white', fontSize: 25, fontWeight: 'bold'}}}
+          containerStyle={{
+            backgroundColor: 'transparent',
+            borderBottomWidth: 0
+          }}
+        />
 
         <View style={styles.bodyContainer}>
           <View style={styles.inputContainer}>

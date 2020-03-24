@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage, Keyboard, TouchableWithoutFeedback, } from 'react-native';
 import { SplashScreen } from 'expo';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
