@@ -42,8 +42,8 @@ export default class Login extends Component {
             <Icon
               name="arrow-left"
               type="entypo"
-              color= "white"
-              size= "30"
+              color="white"
+              size={30}
               underlayColor= "transparent"
               onPress={()=> this.props.navigation.goBack()}
             />

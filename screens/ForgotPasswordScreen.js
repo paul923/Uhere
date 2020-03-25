@@ -31,7 +31,7 @@ export default class ForgotPasswordScreen extends Component {
               name="arrow-left"
               type="entypo"
               color= "white"
-              size= "30"
+              size={30}
               underlayColor= "transparent"
               onPress={()=> this.props.navigation.goBack()}
             />
