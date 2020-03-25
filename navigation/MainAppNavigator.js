@@ -10,6 +10,10 @@ import FriendScreen from '../screens/FriendScreen';
 import JayTestScreen from '../screens/debug/JayTestScreen';
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
 import PaulTestScreen from '../screens/debug/PaulTestScreen';
+
+import AvatarNavigator from './AvatarNavigator'
+
+
 const BottomTab = createBottomTabNavigator();
 
 export default function MainAppNavigator({ navigation, route }) {
@@ -58,13 +62,14 @@ export default function MainAppNavigator({ navigation, route }) {
       />
       <BottomTab.Screen
         name="Paul"
-        component={PaulTestScreen}
+        component={AvatarNavigator}
         options={{
           title: 'Paul',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
           headerMode: 'none'
         }}
       />
+
     </BottomTab.Navigator>
   )
 }

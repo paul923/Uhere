@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput, KeyboardAvoidingView  } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
@@ -15,7 +15,7 @@ import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn
 
 
 
-export default function LoginScreen() {
+export default function LoginScreen({navigation}) {
   const [ loginEmail, setLoginEmail] = React.useState("");
   const [ loginPassword, setLoginPassword] = React.useState("");
   const [ registerEmail, setRegisterEmail] = React.useState("");
@@ -47,26 +47,7 @@ export default function LoginScreen() {
     });
   }, []);
 
-  resetPassword = async () => {
-    firebaseObject.auth()
-                  .sendPasswordResetEmail(forgotPasswordEmail)
-                  .then(function() {
-                    alert("Please check your email to reset password");
-                  }).catch(function(error) {
-                    // An error happened.
-                    var errorMessage = error.message;
-                    alert(errorMessage);
-                  });
-  }
-  registerWithEmail = async () => {
-    firebaseObject.auth()
-            .createUserWithEmailAndPassword(registerEmail, registerPassword)
-            .catch(function(error) {
-              // Handle Errors here.
-              var errorMessage = error.message;
-              alert(errorMessage);
-            });
-  }
+
 
   signInWithEmail = async () => {
     firebaseObject.auth()
@@ -126,107 +107,146 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Input
-        placeholder='Email'
-        leftIcon={
-          <Icon
-            name='email'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setLoginEmail(text)}
-        value={loginEmail}
-        textContentType="emailAddress"
-      />
-      <Input
-        placeholder='Password'
-        leftIcon={
-          <Icon
-            name='lock'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setLoginPassword(text)}
-        value={loginPassword}
-        textContentType="password"
-        secureTextEntry
-      />
-      <Button
-        title="SIGN IN"
-        onPress={signInWithEmail}
+      <Text style={styles.logoContainer}>
+        <Text style={styles.logoU}>u</Text>
+        <Text style={styles.logoHere}>Here</Text>
+      </Text>
+
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Email"
+          placeholderTextColor="#003f5c"
+          onChangeText={text => setLoginEmail(text)}
+          value={loginEmail}
+          textContentType="emailAddress"
         />
-      <TouchableOpacity onPress={signInWithGoogle}>
-        <Image
-          source={googleSignInImage}
-          style={{ width: 200, height: 50 }}
-          PlaceholderContent={<ActivityIndicator />}
+      </View>
+
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.inputText}
+          placeholder="Password"
+          placeholderTextColor="#003f5c"
+          onChangeText={text => setLoginPassword(text)}
+          value={loginPassword}
+          textContentType="password"
         />
+      </View>
+
+
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+        <Text style={styles.forgot}>Forgot password?</Text>
       </TouchableOpacity>
-      <Button
-        title="SIGN IN WITH FACEBOOK"
-        onPress={signInWithFacebook}
-        />
-      <Text style={{marginTop: 10}} h5>Do Not Have Account Yet?</Text>
-      <Input
-        placeholder='Email'
-        leftIcon={
+
+      <TouchableOpacity
+        style={styles.loginBtn}
+        onPress={signInWithEmail}
+      >
+        <Text style={styles.loginText}>LOGIN</Text>
+      </TouchableOpacity>
+
+      <View style={{flexDirection: 'row', width: '80%', justifyContent: 'space-between', alignItems: 'center', }}>
+        <View style={styles.horizontalLine}></View>
+        <Text style={{color: 'white'}}>Or</Text>
+        <View style={styles.horizontalLine}></View>
+      </View>
+
+      <View style={styles.loginIconContainer}>
+        <TouchableOpacity onPress={signInWithGoogle}>
           <Icon
-            name='email'
-            size={24}
-            color='black'
+            name="google--with-circle"
+            type="entypo"
+            color="white"
+            size={40}
+            iconStyle={{marginHorizontal: 10}}
           />
-        }
-        onChangeText={text => setRegisterEmail(text)}
-        value={registerEmail}
-        textContentType="emailAddress"
-      />
-      <Input
-        placeholder='Password'
-        leftIcon={
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={signInWithFacebook}>
           <Icon
-            name='lock'
-            size={24}
-            color='black'
+            name="facebook-with-circle"
+            type="entypo"
+            color="white"
+            size={40}
+            style={styles.loginIcon}
+            iconStyle={{marginHorizontal: 10}}
           />
-        }
-        onChangeText={text => setRegisterPassword(text)}
-        value={registerPassword}
-        textContentType="password"
-        secureTextEntry
-      />
-      <Button
-        title="REGISTER"
-        onPress={registerWithEmail}
-        />
-      <Text style={{marginTop: 10}} h5>Forgot Password?</Text>
-      <Input
-        placeholder='Email'
-        leftIcon={
-          <Icon
-            name='email'
-            size={24}
-            color='black'
-          />
-        }
-        onChangeText={text => setForgotPasswordEmail(text)}
-        value={forgotPasswordEmail}
-        textContentType="emailAddress"
-      />
-      <Button
-        title="RESET PASSWORD"
-        onPress={resetPassword}
-        />
+        </TouchableOpacity>
+
+      </View>
+
+      <View style={{flexDirection: 'row'}}>
+        <Text style={{color: 'white'}}>Don't have account?</Text>
+        <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
+          <Text style={{color: '#7f9fad'}}> Register</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF'
-    }
+  container: {
+    flex: 1,
+    backgroundColor: '#003f5c',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  inputView: {
+    width: "80%",
+    backgroundColor: "#465881",
+    borderRadius: 20,
+    height: 50,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 20
+  },
+
+  inputText: {
+    height: 50,
+    color: 'white'
+  },
+
+  forgot: {
+    color: "white",
+    fontSize: 11
+  },
+  loginBtn: {
+    width: "80%",
+    backgroundColor: "#fb5b5a",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    marginBottom: 20
+  },
+  loginText: {
+    color: "white",
+    fontWeight: "bold"
+  },
+  logoU: {
+    fontSize: 50,
+    fontWeight: "bold",
+    color: "white"
+  },
+  logoHere: {
+    fontSize: 50,
+    fontWeight: "bold",
+    color: "#fb5b5a"
+  },
+  logoContainer: {
+    margin: 30,
+  },
+  loginIconContainer: {
+    margin: 10,
+    flexDirection: 'row',
+  },
+  horizontalLine: {
+    backgroundColor: 'white',
+    width: '45%',
+    height: 1,
+  }
 });
