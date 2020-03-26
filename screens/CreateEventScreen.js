@@ -275,21 +275,24 @@ const styles = StyleSheet.create({
     },
     stepContainer: {
       flex: 1,
-      flexDirection: 'row'
+      flexDirection: 'row',
     },
     stepComplete: {
       flex: 1,
       backgroundColor: 'rgba(0,0,0,1)',
+      height: 30
     },
     step: {
       flex: 1,
       backgroundColor: 'rgba(0,0,0,0.6)',
+      height: 30
     },
     stepText: {
       color: 'white',
       textAlign: 'center',
       textAlignVertical: 'center',
-      height: '100%'
+      height: '100%',
+      fontWeight: 'bold'
     },
     formContainer: {
       margin: 0,
