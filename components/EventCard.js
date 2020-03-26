@@ -36,10 +36,10 @@ export default function EventCard({item, status}) {
         </View>
         {status === 'PENDING' && (
           <View style={styles.cardButtonContainer}>
-            <View style={{...styles.cardButton, backgroundColor: '#A0A0A0'}}>
+            <View style={{...styles.cardButton, backgroundColor: '#A0A0A0', borderTopRightRadius: 10}}>
               <Icon name="close" color="white"/>
             </View>
-            <View style={{...styles.cardButton, backgroundColor: '#5A5A5A'}}>
+            <View style={{...styles.cardButton, backgroundColor: '#5A5A5A', borderBottomRightRadius: 10}}>
               <Icon name="check" color="white"/>
             </View>
           </View>
@@ -59,7 +59,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 5,
     paddingLeft: 5,
-    backgroundColor: '#C4C4C4'
+    backgroundColor: '#C4C4C4',
+    borderRadius: 10,
   },
   cardContentContainer: {
     flex: 4,

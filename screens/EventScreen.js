@@ -15,7 +15,7 @@ function PendingEvent(){
   return (
     <View style={styles.container}>
       <SectionList
-        style={{marginLeft: 5, marginRight: 5}}
+        style={styles.listContainer}
         sections={[
           {
             title: "Mar 20",
@@ -54,7 +54,7 @@ function OnGoingEvent(){
   return (
     <View style={styles.container}>
       <SectionList
-        style={{marginLeft: 5, marginRight: 5}}
+        style={styles.listContainer}
         sections={[
           {
             title: "Mar 20",
@@ -124,5 +124,9 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#F5FCFF'
+    },
+    listContainer: {
+      marginLeft: 20,
+      marginRight: 20
     }
 });
