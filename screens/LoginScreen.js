@@ -15,7 +15,7 @@ import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn
 
 
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen({route, navigation}) {
   const [ loginEmail, setLoginEmail] = React.useState("");
   const [ loginPassword, setLoginPassword] = React.useState("");
   const [ registerEmail, setRegisterEmail] = React.useState("");
@@ -23,28 +23,32 @@ export default function LoginScreen({navigation}) {
   const [ forgotPasswordEmail, setForgotPasswordEmail] = React.useState("");
   const { signIn, signOut } = React.useContext(AuthContext);
 
-
+  let firebaseUnsubscribe;
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    // Listen for authentication state to change.
-    firebaseObject.auth().onAuthStateChanged((user) => {
-      if (user && !user.email) {
-        console.log("We are authenticated now!");
-        signIn(user.uid);
-      } else if (user && user.email && user.emailVerified) {
-        console.log("We are authenticated now!");
-        signIn(user.uid);
-      } else if (user && !user.emailVerified) {
-        alert("Email is not verified. Please verify the email");
-        user.sendEmailVerification().then(function() {
-          alert("Please check your email to verify");
-        }).catch(function(error) {
-          // An error happened.
-          var errorMessage = error.message;
-          alert(errorMessage);
-        });
-      }
+    // Add Firebase listener when this screen is focused
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      // Listen for authentication state to change.
+      firebaseUnsubscribe = firebaseObject.auth().onAuthStateChanged((user) => {
+        if (user && !user.email) {
+          console.log("We are authenticated now!");
+          signIn(user.uid);
+        } else if (user && user.email && user.emailVerified) {
+          console.log("We are authenticated now!");
+          signIn(user.uid);
+        } else if (user && !user.emailVerified) {
+          alert("Email is not verified. Please verify the email");
+        }
+      });
     });
+
+    // Remove firebase listener when this screen is not focused
+    const unsubscribeBlur = navigation.addListener('blur', () => {
+      firebaseUnsubscribe();
+    });
+
+    return unsubscribeFocus && unsubscribeBlur;
+
   }, []);
 
 

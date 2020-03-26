@@ -7,8 +7,6 @@ import firebaseObject from '../config/firebase';
 
 
 
-
-
 export default class Login extends Component {
 
 
@@ -18,11 +16,21 @@ export default class Login extends Component {
     } else {
       firebaseObject.auth()
             .createUserWithEmailAndPassword(this.state.registerEmail, this.state.registerPassword)
-            .catch(function(error) {
+            .then((newUser) => {
+              newUser.user.sendEmailVerification().then(() => {
+                alert("Please check your email to verify");
+                firebaseObject.auth().signOut();
+                this.props.navigation.goBack();
+              }).catch((error) => {
+                // An error happened.
+                var errorMessage = error.message;
+                alert(errorMessage);
+              });
+            }, (error) => {
               // Handle Errors here.
               var errorMessage = error.message;
               alert(errorMessage);
-      });
+            })
     }
 
   }
