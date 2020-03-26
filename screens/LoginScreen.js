@@ -38,6 +38,7 @@ export default function LoginScreen({route, navigation}) {
           signIn(user.uid);
         } else if (user && !user.emailVerified) {
           alert("Email is not verified. Please verify the email");
+          firebaseObject.auth().signOut();
         }
       });
     });
