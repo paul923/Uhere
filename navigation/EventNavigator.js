@@ -6,10 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import CreateEventScreen from '../screens/CreateEventScreen';
-import FriendScreen from '../screens/FriendScreen';
-import JayTestScreen from '../screens/debug/JayTestScreen';
-import JustinTestScreen from '../screens/debug/JustinTestScreen';
-import PaulTestScreen from '../screens/debug/PaulTestScreen';
+import FilterEventScreen from '../screens/FilterEventScreen';
 const Stack = createStackNavigator();
 
 export default function EventNavigator({ navigation, route }) {
@@ -27,6 +24,10 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Create Event"
         component={CreateEventScreen}
+      />
+      <Stack.Screen
+        name="Filter Event"
+        component={FilterEventScreen}
       />
     </Stack.Navigator>
   )

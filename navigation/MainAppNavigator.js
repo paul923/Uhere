@@ -31,6 +31,8 @@ function showTab(route) {
       return true;
     case 'Create Event':
       return false;
+    case 'Filter Event':
+      return false;
   }
 
 }

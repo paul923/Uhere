@@ -2,14 +2,16 @@ import * as React from 'react';
 import { formatDate, formatTime } from "../utils/date";
 import { StyleSheet, View } from 'react-native';
 import { Text, Divider, Icon, Button } from 'react-native-elements';
-
+import { useNavigation } from '@react-navigation/native';
 
 export default function EventFilter({item, status}) {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
         <Button title="DATE"
-          buttonStyle={styles.button}/>
+          buttonStyle={styles.button}
+          onPress={() => navigation.navigate('Filter Event')}/>
       </View>
       <View style={{flex: 1}}>
         <Button title="FRIENDS"
