@@ -46,7 +46,7 @@ export default function App(props) {
     if (Platform.OS === 'ios' ? (status === 'granted' && ios.scope === 'always') : (status === 'granted' && android.scope === 'fine')) {
       setLocationPermissionGranted(true);
     } else {
-      setLocationPermissionGranted(false);
+      setLocationPermissionGranted(true);
     }
   }
   const setLocationPermissionGranted = (value) => {
