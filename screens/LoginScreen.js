@@ -197,10 +197,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#003f5c',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-
   inputView: {
     width: "80%",
     backgroundColor: "#465881",

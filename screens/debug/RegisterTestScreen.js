@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import {Icon, Header} from 'react-native-elements'
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 
@@ -30,77 +31,85 @@ export default class RegisterTestScreen extends Component {
           }
           centerComponent={{text: 'Create Account', style: {color: 'white', fontSize: 25, fontWeight: 'bold'}}}
           containerStyle={{
+            marginTop: 10,
             backgroundColor: 'transparent',
             borderBottomWidth: 0
           }}
         />
-
-        <View style={styles.bodyContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputDetail}>First Name</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({firstName: text})}/>
+        <ScrollView 
+          centerContent
+          contentContainerStyle={{
+            alignItems: 'center',
+            padding: 20,
+          }}
+        >
+          <View style={styles.bodyContainer}>
+          
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputDetail}>First Name</Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholderTextColor="#003f5c"
+                  onChangeText={text => this.setState({firstName: text})}/>
+              </View>
             </View>
-          </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputDetail}>Last Name</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({lastName: text})}/>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputDetail}>Last Name</Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholderTextColor="#003f5c"
+                  onChangeText={text => this.setState({lastName: text})}/>
+              </View>
             </View>
-          </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputDetail}>Email</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({registerEmail: text})}
-                value={this.state.registerEmail}
-                textContentType="emailAddress"
-              />
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputDetail}>Email</Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholderTextColor="#003f5c"
+                  onChangeText={text => this.setState({registerEmail: text})}
+                  value={this.state.registerEmail}
+                  textContentType="emailAddress"
+                />
+              </View>
             </View>
-          </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputDetail}>Password (6 or more character)</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({registerPassword: text})}
-                value={this.state.registerPassword}
-                textContentType="password"
-              />
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputDetail}>Password (6 or more character)</Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholderTextColor="#003f5c"
+                  onChangeText={text => this.setState({registerPassword: text})}
+                  value={this.state.registerPassword}
+                  textContentType="password"
+                />
+              </View>
             </View>
-          </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputDetail}>Confirm Password</Text>
-            <View style={styles.inputView}>
-              <TextInput
-                style={styles.inputText}
-                placeholderTextColor="#003f5c"
-                onChangeText={text => this.setState({cPassword:text})}/>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputDetail}>Confirm Password</Text>
+              <View style={styles.inputView}>
+                <TextInput
+                  style={styles.inputText}
+                  placeholderTextColor="#003f5c"
+                  onChangeText={text => this.setState({cPassword:text})}/>
+              </View>
             </View>
+
+
+            <TouchableOpacity
+              style={styles.confirmButton}
+            >
+              <Text style={styles.loginText}>SIGN UP</Text>
+            </TouchableOpacity>
+
           </View>
-
-
-          <TouchableOpacity
-            style={styles.confirmButton}
-          >
-            <Text style={styles.loginText}>SIGN UP</Text>
-          </TouchableOpacity>
-
-        </View>
-
+        </ScrollView>
       </View>
     );
   }
@@ -149,16 +158,13 @@ export default class RegisterTestScreen extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
     flex: 1,
     backgroundColor: '#003f5c',
-    alignItems: 'center',
   },
 
   bodyContainer:{
-    padding: 20,
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   inputView: {
