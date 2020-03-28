@@ -107,81 +107,88 @@ export default function LoginScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logoContainer}>
-        <Text style={styles.logoU}>u</Text>
-        <Text style={styles.logoHere}>Here</Text>
-      </Text>
-
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Email"
-          placeholderTextColor="#003f5c"
-          onChangeText={text => setLoginEmail(text)}
-          value={loginEmail}
-          textContentType="emailAddress"
-        />
-      </View>
-
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Password"
-          placeholderTextColor="#003f5c"
-          onChangeText={text => setLoginPassword(text)}
-          value={loginPassword}
-          textContentType="password"
-        />
-      </View>
-
-
-      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-        <Text style={styles.forgot}>Forgot password?</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.loginBtn}
-        onPress={signInWithEmail}
+      <ScrollView 
+        centerContent
+        contentContainerStyle={{
+          alignItems: 'center',
+        }}
       >
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
+        <Text style={styles.logoContainer}>
+          <Text style={styles.logoU}>u</Text>
+          <Text style={styles.logoHere}>Here</Text>
+        </Text>
 
-      <View style={{flexDirection: 'row', width: '80%', justifyContent: 'space-between', alignItems: 'center', }}>
-        <View style={styles.horizontalLine}></View>
-        <Text style={{color: 'white'}}>Or</Text>
-        <View style={styles.horizontalLine}></View>
-      </View>
-
-      <View style={styles.loginIconContainer}>
-        <TouchableOpacity onPress={signInWithGoogle}>
-          <Icon
-            name="google--with-circle"
-            type="entypo"
-            color="white"
-            size={40}
-            iconStyle={{marginHorizontal: 10}}
+        <View style={styles.inputView}>
+          <TextInput
+            style={styles.inputText}
+            placeholder="Email"
+            placeholderTextColor="#003f5c"
+            onChangeText={text => setLoginEmail(text)}
+            value={loginEmail}
+            textContentType="emailAddress"
           />
-        </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity onPress={signInWithFacebook}>
-          <Icon
-            name="facebook-with-circle"
-            type="entypo"
-            color="white"
-            size={40}
-            style={styles.loginIcon}
-            iconStyle={{marginHorizontal: 10}}
+        <View style={styles.inputView}>
+          <TextInput
+            style={styles.inputText}
+            placeholder="Password"
+            placeholderTextColor="#003f5c"
+            onChangeText={text => setLoginPassword(text)}
+            value={loginPassword}
+            textContentType="password"
           />
+        </View>
+
+
+        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+          <Text style={styles.forgot}>Forgot password?</Text>
         </TouchableOpacity>
 
-      </View>
-
-      <View style={{flexDirection: 'row'}}>
-        <Text style={{color: 'white'}}>Don't have account?</Text>
-        <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
-          <Text style={{color: '#7f9fad'}}> Register</Text>
+        <TouchableOpacity
+          style={styles.loginBtn}
+          onPress={signInWithEmail}
+        >
+          <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
-      </View>
+
+        <View style={{flexDirection: 'row', width: '80%', justifyContent: 'space-between', alignItems: 'center', }}>
+          <View style={styles.horizontalLine}></View>
+          <Text style={{color: 'white'}}>Or</Text>
+          <View style={styles.horizontalLine}></View>
+        </View>
+
+        <View style={styles.loginIconContainer}>
+          <TouchableOpacity onPress={signInWithGoogle}>
+            <Icon
+              name="google--with-circle"
+              type="entypo"
+              color="white"
+              size={40}
+              iconStyle={{marginHorizontal: 10}}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={signInWithFacebook}>
+            <Icon
+              name="facebook-with-circle"
+              type="entypo"
+              color="white"
+              size={40}
+              style={styles.loginIcon}
+              iconStyle={{marginHorizontal: 10}}
+            />
+          </TouchableOpacity>
+
+        </View>
+
+        <View style={{flexDirection: 'row'}}>
+          <Text style={{color: 'white'}}>Don't have account?</Text>
+          <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
+            <Text style={{color: '#7f9fad'}}> Register</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   )
 }
