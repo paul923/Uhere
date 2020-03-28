@@ -12,13 +12,13 @@ import firebaseObject from '../config/firebase';
 
 export default class Login extends Component {
 
-
   registerWithEmail = async () => {
     if(this.state.registerPassword !== this.state.cPassword){
       alert('Please confirm your password');
     } else {
       firebaseObject.auth()
             .createUserWithEmailAndPassword(this.state.registerEmail, this.state.registerPassword)
+            .then(user=>this.props.navigation.goBack())
             .catch(function(error) {
               // Handle Errors here.
               var errorMessage = error.message;
