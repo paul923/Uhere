@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
-import { Image, Button, Text } from 'react-native-elements';
+import { Image, Button, Text, ListItem, Icon } from 'react-native-elements';
 import AuthContext from '../../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../../config/firebase';
+import Collpase from '../../components/Collapse';
 
 export default function JustinTestScreen() {
   const { signIn, signOut } = React.useContext(AuthContext);
@@ -16,7 +17,7 @@ export default function JustinTestScreen() {
     });
   }
 
-  clearTutorialCompletion = async () => {
+  async function clearTutorialCompletion(){
     await AsyncStorage.removeItem('isFirstLaunch');
   }
 
@@ -30,6 +31,17 @@ export default function JustinTestScreen() {
         title="CLEAR TUTORIAL COMPLETION"
         onPress={() => clearTutorialCompletion()}
         />
+      <Collpase
+        title="Location"
+        content={
+          <View>
+            <Text>
+              Bacon ipsum dolor amet chuck turducken landjaeger tongue spare
+              ribs
+            </Text>
+          </View>
+        }
+      />
     </View>
   )
 }
@@ -38,7 +50,8 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'stretch',
       backgroundColor: '#F5FCFF'
-    }
+    },
+
 });
