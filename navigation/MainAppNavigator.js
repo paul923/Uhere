@@ -16,6 +16,23 @@ import AvatarNavigator from './AvatarNavigator'
 
 const BottomTab = createBottomTabNavigator();
 
+function showTab(route) {
+  const routeName = route.state
+    ? // Get the currently active route name in the tab navigator
+      route.state.routes[route.state.index].name
+    : // If state doesn't exist, we need to default to `screen` param if available, or the initial screen
+      // In our case, it's "Feed" as that's the first screen inside the navigator
+      route.params?.screen || 'Event';
+
+  switch (routeName) {
+    case 'Event':
+      return true;
+    case 'Create Event':
+      return false;
+  }
+
+}
+
 export default function MainAppNavigator({ navigation, route }) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
 
@@ -37,11 +54,12 @@ export default function MainAppNavigator({ navigation, route }) {
       <BottomTab.Screen
         name="Event"
         component={EventNavigator}
-        options={{
+        options={({ route }) => ({
           title: 'Event',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
-          headerMode: 'none'
-        }}
+          headerMode: 'none',
+          tabBarVisible: showTab(route)
+        })}
       />
       <BottomTab.Screen
         name="Justin"
