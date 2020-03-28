@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { BackHandler } from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useFocusEffect } from '@react-navigation/native';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import EventNavigator from './EventNavigator';
@@ -36,6 +38,19 @@ function showTab(route) {
 export default function MainAppNavigator({ navigation, route }) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        BackHandler.exitApp()
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
   }, []);
