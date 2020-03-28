@@ -126,6 +126,7 @@ export default function LoginScreen({navigation}) {
             onChangeText={text => setLoginEmail(text)}
             value={loginEmail}
             textContentType="emailAddress"
+            keyboardType="email-address"
           />
         </View>
 
@@ -137,6 +138,7 @@ export default function LoginScreen({navigation}) {
             onChangeText={text => setLoginPassword(text)}
             value={loginPassword}
             textContentType="password"
+            autoCapitalize= 'none'
           />
         </View>
 

@@ -16,6 +16,11 @@ export default class AvatarScreen extends Component {
     user : firebase.auth().currentUser
   }
 
+  componentDidUpdate(){
+    console.log(this.props)
+    console.log(this.state.user.email)
+  }
+
 
 
   render() {
@@ -35,13 +40,13 @@ export default class AvatarScreen extends Component {
            }}
           showEditButton
           editButton={{ name: 'mode-edit', type: 'material', color: 'white', underlayColor: 'white'}}
-          onEditPress={()=> this.props.navigation.navigate('AvatarImages')}
+          onEditPress={()=> this.props.navigation.navigate('AvatarImages', {initial: this.state.user.email.substr(0, 2).toUpperCase()})}
           rounded
           size="xlarge"
-          title={(this.props.route.params ? undefined : (this.state.user && this.state.user.email ? this.state.user.email.substr(0, 2).toUpperCase(): undefined))}
-          source={{
-            uri : this.props.route.params ? this.props.route.params.uri : undefined
+          source={this.props.route.params && this.props.route.params.uri && {
+              uri: this.props.route.params.uri
           }}
+          title={this.props.route.params && this.props.route.params.uri ? undefined : this.state.user.email.substr(0, 2).toUpperCase()}
         />
 
         <ColorPalette
