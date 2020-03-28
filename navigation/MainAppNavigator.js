@@ -24,7 +24,7 @@ export default function MainAppNavigator({ navigation, route }) {
   }, []);
 
   return (
-    <BottomTab.Navigator initialRouteName="Event">
+    <BottomTab.Navigator initialRouteName="Event" tabBarOptions={{keyboardHidesTabBar: true}}>
       <BottomTab.Screen
         name="Friend"
         component={FriendScreen}
@@ -68,6 +68,7 @@ export default function MainAppNavigator({ navigation, route }) {
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
           headerMode: 'none'
         }}
+        
       />
 
     </BottomTab.Navigator>

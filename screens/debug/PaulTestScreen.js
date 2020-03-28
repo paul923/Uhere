@@ -19,6 +19,16 @@ export default function PaulTestScreen({navigation}) {
         buttonStyle={styles.button}
         onPress={()=> navigation.navigate('KeyboardTestScreen')}
       />
+      <Button
+        title='Log-in : Keyboard Layout'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate('LoginTestScreen')}
+      />
+      <Button
+        title='Register : Keyboard Layout'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate('RegisterTestScreen')}
+      />
     </View>
   )
 }

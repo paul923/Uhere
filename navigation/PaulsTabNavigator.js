@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import PaulTestScreen from '../screens/debug/PaulTestScreen'
 import AvatarNavigator from './AvatarNavigator'
 import KeyboardTestScreen from '../screens/debug/KeyboardTestScreen';
+import LoginTestScreen from '../screens/debug/LoginTestScreen'
+import RegisterTestScreen from '../screens/debug/RegisterTestScreen'
 
 const Stack = createStackNavigator();
 
@@ -25,6 +27,14 @@ export default function PaulsTabNavigator({ navigation, route }) {
       <Stack.Screen
         name="KeyboardTestScreen"
         component={KeyboardTestScreen}
+      />
+      <Stack.Screen
+        name="LoginTestScreen"
+        component={LoginTestScreen}
+      />
+      <Stack.Screen
+        name="RegisterTestScreen"
+        component={RegisterTestScreen}
       />
 
     </Stack.Navigator>
