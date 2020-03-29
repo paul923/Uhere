@@ -64,6 +64,9 @@ const styles = StyleSheet.create({
   },
   cardContentContainer: {
     flex: 4,
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingBottom: 5
   },
   cardButtonContainer: {
     flex: 1,

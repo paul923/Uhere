@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#F5FCFF'
     },
     listContainer: {
-      marginLeft: 20,
-      marginRight: 20
+      marginLeft: 15,
+      marginRight: 15
     }
 });
