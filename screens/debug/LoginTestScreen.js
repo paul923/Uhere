@@ -28,7 +28,8 @@ export default function LoginTestScreen({navigation}) {
         centerContent
         contentContainerStyle={{
           alignItems: 'center',
-          borderWidth: 5
+          borderWidth: 5,
+          
         }}
       >
         <Text style={styles.logoContainer}>
