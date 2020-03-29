@@ -274,7 +274,6 @@ const styles = StyleSheet.create({
       alignItems: 'stretch'
     },
     stepContainer: {
-      flex: 1,
       flexDirection: 'row',
     },
     stepComplete: {
