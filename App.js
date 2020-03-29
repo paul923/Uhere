@@ -38,7 +38,7 @@ export default function App(props) {
 
   // first time installing app gives you 'undetermined' == ask Next Time
   async function checkLocationPermissionAsync() {
-    const { status, ios, android } = await Location.getPermissionsAsync();
+    const { status, ios, android } = await Location.requestPermissionsAsync();
     console.log('status', status);
     console.log('ios', ios == null ? 'not ios' : ios.scope);
     console.log('android', android == null ? 'not android' : android.scope);
@@ -46,7 +46,7 @@ export default function App(props) {
     if (Platform.OS === 'ios' ? (status === 'granted' && ios.scope === 'always') : (status === 'granted' && android.scope === 'fine')) {
       setLocationPermissionGranted(true);
     } else {
-      setLocationPermissionGranted(true);
+      setLocationPermissionGranted(false);
     }
   }
   const setLocationPermissionGranted = (value) => {
