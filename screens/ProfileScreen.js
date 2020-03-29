@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage } from 'react-native';
-import { Icon, Avatar, Header, Button } from 'react-native-elements';
+import { Overlay, Icon, Avatar, Header, Button } from 'react-native-elements';
 import ColorPalette from '../components/react-native-color-palette/src';
 import { ScrollView } from 'react-native-gesture-handler';
 import AuthContext from '../contexts/AuthContext';
@@ -16,6 +16,7 @@ export default function ProfileScreen({navigation, route}){
   const [ nickname, setNickname] = React.useState("");
   const [ avatarColor, setAvatarColor] = React.useState(initColor);
   const [ user ] = React.useState(firebase.auth().currentUser);
+  const [ showSuccessOverlay, setShowSuccessOverlay] = React.useState(false);
   const { skipProfile } = React.useContext(AuthContext);
 
 
@@ -33,10 +34,11 @@ export default function ProfileScreen({navigation, route}){
       }
     }
     checkIfSkip();
-  }, []);
+  }, [showSuccessOverlay]);
 
   function setProfile(){
-    AsyncStorage.setItem('skipProfile', 'true');
+    setShowSuccessOverlay(true)
+    setTimeout(() => {skipProfile(); AsyncStorage.setItem('skipProfile', 'true')}, 3000)
   }
 
   return (
@@ -49,6 +51,16 @@ export default function ProfileScreen({navigation, route}){
           borderBottomWidth: 0
         }}
       />
+      <Overlay
+        isVisible={showSuccessOverlay}
+        overlayBackgroundColor="white"
+        fullScreen
+      >
+        <View style={styles.successContainer}>
+          <Icon name="check" size={100}/>
+          <Text>GOOD</Text>
+        </View>
+      </Overlay>
       <ScrollView
         centerContent
         contentContainerStyle={{
@@ -118,6 +130,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#003f5c',
     alignItems: 'center',
+  },
+  successContainer: {
+    padding: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
 
   bodyContainer:{
