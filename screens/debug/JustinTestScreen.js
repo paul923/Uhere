@@ -21,6 +21,10 @@ export default function JustinTestScreen() {
     await AsyncStorage.removeItem('isFirstLaunch');
   }
 
+  async function clearSkipProfile(){
+    await AsyncStorage.removeItem('skipProfile');
+  }
+
   return (
     <View style={styles.container}>
       <Button
@@ -30,6 +34,10 @@ export default function JustinTestScreen() {
       <Button
         title="CLEAR TUTORIAL COMPLETION"
         onPress={() => clearTutorialCompletion()}
+        />
+      <Button
+        title="CLEAR SKIP PROFILE"
+        onPress={() => clearSkipProfile()}
         />
       <Collpase
         title="Location"

@@ -45,7 +45,7 @@ const avatarImages = [
     name: 'initial',
     uri: undefined
   },
-  
+
 ]
 
 
@@ -86,7 +86,7 @@ export default class AvatarImageScreen extends Component {
                     }}
                     title={u.uri ? undefined : this.props.route.params.initial}
                     onPress={()=>{
-                      this.props.navigation.navigate('AvatarScreen', {uri: u.uri})
+                      this.props.navigation.navigate('ProfileScreen', {uri: u.uri})
                     }}
                   />
                 </View>

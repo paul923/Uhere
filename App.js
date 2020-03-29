@@ -10,9 +10,9 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
 import LoginNavigator from './navigation/LoginNavigator';
+import ProfileNavigator from './navigation/ProfileNavigator';
 
 import AppIntroSlider from './screens/introSlider';
-import AvatarScreen from './screens/AvatarScreen'
 
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
@@ -94,11 +94,17 @@ export default function App(props) {
             isLoggedIn: false,
             userToken: null,
           };
+        case 'SKIP_PROFILE':
+          return {
+            ...prevState,
+            skipProfile: true
+          }
       }
     },
     {
       isLoggedIn: false,
       userToken: null,
+      skipProfile: false
     }
   );
 
@@ -120,6 +126,9 @@ export default function App(props) {
 
         dispatch({ type: 'SIGN_IN', token: data });
       },
+      skipProfile: () => {
+        dispatch({ type: 'SKIP_PROFILE'})
+      }
     }),
     []
   );
@@ -173,6 +182,7 @@ export default function App(props) {
     checkIfFirstLaunchedAsync();
     restoreUserTokenAsync();
     loadFontAsync();
+    console.log(state.skipProfile);
   }, []);
 
   storeIsFirstLaunch = async (flag) => {
@@ -205,7 +215,11 @@ export default function App(props) {
               {state.userToken == null ? (
                 <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
               ) : (
-                <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                  !state.skipProfile ? (
+                    <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
+                  ) : (
+                    <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                  )
               )}
             </Stack.Navigator>
             </AuthContext.Provider>
