@@ -13,7 +13,7 @@ export default function AvatarNavigator({ navigation, route }) {
   React.useEffect(() => {
   }, []);
   return (
-    <Stack.Navigator initialRouteName="Avatar" headerMode="none">
+    <Stack.Navigator initialRouteName="AvatarScreen" headerMode="none">
       <Stack.Screen
         name="AvatarScreen"
         component={AvatarScreen}

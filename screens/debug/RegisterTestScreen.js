@@ -4,36 +4,9 @@ import {Icon, Header} from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 
 
-import firebaseObject from '../config/firebase';
 
+export default class RegisterTestScreen extends Component {
 
-
-export default class Login extends Component {
-
-  registerWithEmail = async () => {
-    if(this.state.registerPassword !== this.state.cPassword){
-      alert('Please confirm your password');
-    } else {
-      firebaseObject.auth()
-            .createUserWithEmailAndPassword(this.state.registerEmail, this.state.registerPassword)
-            .then((newUser) => {
-              newUser.user.sendEmailVerification().then(() => {
-                alert("Please check your email to verify");
-                firebaseObject.auth().signOut();
-                this.props.navigation.goBack();
-              }).catch((error) => {
-                // An error happened.
-                var errorMessage = error.message;
-                alert(errorMessage);
-              });
-            }, (error) => {
-              // Handle Errors here.
-              var errorMessage = error.message;
-              alert(errorMessage);
-            })
-    }
-
-  }
 
   state = {
     firstName: "",
@@ -63,15 +36,15 @@ export default class Login extends Component {
             borderBottomWidth: 0
           }}
         />
-        <ScrollView
+        <ScrollView 
           centerContent
           contentContainerStyle={{
             alignItems: 'center',
             padding: 20,
           }}
         >
-
           <View style={styles.bodyContainer}>
+          
             <View style={styles.inputContainer}>
               <Text style={styles.inputDetail}>First Name</Text>
               <View style={styles.inputView}>
@@ -131,7 +104,6 @@ export default class Login extends Component {
 
             <TouchableOpacity
               style={styles.confirmButton}
-              onPress={this.registerWithEmail}
             >
               <Text style={styles.loginText}>SIGN UP</Text>
             </TouchableOpacity>
@@ -142,7 +114,44 @@ export default class Login extends Component {
     );
   }
 
+  headerBar() {
+    return(
+      <View
+        style={{
+          height: 50,
+          width: '100%',
+          marginTop: 20,
+          backgroundColor: 'transparent',
+          justifyContent: 'center',
+          flexDirection: 'row'
+        }}>
 
+          <View style={{width: "10%", justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity onPress={()=> this.props.navigation.goBack()}>
+              <Icon
+                name="arrow-left"
+                type="entypo"
+                color= "white"
+                size= "30"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={{width: "80%", justifyContent: 'center', alignItems: 'center'}}>
+            <Text
+              style={{
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: 30,
+              }}>
+              Create Account
+            </Text>
+          </View>
+          <View style={{width: "10%"}}>
+
+          </View>
+        </View>
+    )}
 }
 
 

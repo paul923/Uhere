@@ -11,30 +11,41 @@ const avatarImages = [
     uri: 'https://img.insight.co.kr/static/2018/05/01/700/f9v32iy7li764c61kj2k.jpg'
   },
   {
-    key: '1',
+    key: '2',
     name: 'Image2',
     uri: 'https://img.insight.co.kr/static/2019/12/04/700/2pyx44485s6q97u8z8dd.jpg'
   },
   {
-    key: '1',
+    key: '3',
     name: 'Image3',
     uri: 'https://i.ytimg.com/vi/ljUwX9a2Cr4/maxresdefault.jpg'
   },
   {
-    key: '1',
+    key: '4',
     name: 'Image4',
     uri: 'https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory2&fname=http%3A%2F%2Fcfile4.uf.tistory.com%2Fimage%2F996B483A5D73B72B34D12F'
   },
   {
-    key: '1',
+    key: '5',
     name: 'Image5',
-    uri: 'https://lh3.googleusercontent.com/proxy/_2txXPzwe8cBYyYvWAPqQQ2ecVaI2Nflnk5kECHmJBjQ-zGjRokEoSK53mmLyWto3-CNScz3L5n9YJe75Ds2pr_KUWE7F8YrQItr3NXPmxbarZ64LtPbNuv3sdjoAUfxCzkcpT_heDlKeZk5614DmqWI9uwX51Pn178SffwyEgk'
+    uri: 'https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg'
   },
   {
-    key: '1',
+    key: '6',
     name: 'Image6',
     uri: 'https://img.insight.co.kr/static/2019/12/13/700/09yeacn8uz5cpkhf78qf.jpg'
-  }
+  },
+  {
+    key: '7',
+    name: 'Image7',
+    uri: 'https://cdn.ppomppu.co.kr/zboard/data3/tf_news/2017/0325/m_201712241490410521.jpg'
+  },
+  {
+    key: 'initial',
+    name: 'initial',
+    uri: undefined
+  },
+  
 ]
 
 
@@ -65,14 +76,15 @@ export default class AvatarImageScreen extends Component {
           {
             avatarImages.map((u, i) => {
               return(
-                <View style={{margin: 5}}>
+                <View style={{margin: 5}} key={i}>
                   <Avatar
-                    key={i}
+                    key={u.key}
                     rounded
                     size={100}
-                    source={{
+                    source={u.uri && {
                       uri : u.uri
                     }}
+                    title={u.uri ? undefined : this.props.route.params.initial}
                     onPress={()=>{
                       this.props.navigation.navigate('AvatarScreen', {uri: u.uri})
                     }}
