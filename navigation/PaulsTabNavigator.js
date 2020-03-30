@@ -7,6 +7,8 @@ import AvatarNavigator from './AvatarNavigator'
 import KeyboardTestScreen from '../screens/debug/KeyboardTestScreen';
 import LoginTestScreen from '../screens/debug/LoginTestScreen'
 import RegisterTestScreen from '../screens/debug/RegisterTestScreen'
+import FriendsTestScreen from '../screens/FriendsTestScreen'
+
 
 const Stack = createStackNavigator();
 
@@ -35,6 +37,10 @@ export default function PaulsTabNavigator({ navigation, route }) {
       <Stack.Screen
         name="RegisterTestScreen"
         component={RegisterTestScreen}
+      />
+      <Stack.Screen
+        name="FriendsTestScreen"
+        component={FriendsTestScreen}
       />
 
     </Stack.Navigator>
