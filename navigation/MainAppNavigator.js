@@ -35,6 +35,8 @@ function showTab(route) {
       return false;
     case 'FriendsTestScreen':
       return false;
+    case 'RegisterTestScreen':
+      return false;
   }
 
 }

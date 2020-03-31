@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import ColorPalette from '../components/react-native-color-palette/src';
 
@@ -76,7 +76,7 @@ export default class AvatarImageScreen extends Component {
           {
             avatarImages.map((u, i) => {
               return(
-                <View style={{margin: 5}} key={i}>
+                <View style={{margin: 5,}} key={i}>
                   <Avatar
                     key={u.key}
                     rounded
@@ -105,12 +105,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   imageContainer: {
-    flex: 1,
     marginTop: 30,
-    alignSelf: 'center',
     flexDirection: 'row',
     backgroundColor: '#fff',
-    width: '90%',
+    borderWidth: 5,
     flexWrap: 'wrap',
   }
 });

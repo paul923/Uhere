@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   inputView: {
     backgroundColor: "#465881",
     borderRadius: 15,
-    height: 50,
+    height: 45,
     marginBottom: 10,
     justifyContent: "center",
     padding: 20
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
+    marginTop: 20,
     marginBottom: 10
   },
   loginText: {
