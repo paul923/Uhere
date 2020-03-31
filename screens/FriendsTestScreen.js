@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
-import {Icon, Header, Avatar, Input, Button} from 'react-native-elements'
+import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
 import FriendCard from '../components/FriendCard';
 import Collapse from '../components/Collapse';
@@ -8,6 +8,22 @@ import Collapse from '../components/Collapse';
 
 
 export default class FriendsScreen extends Component {
+  state = {
+    searchText: "",
+    data: friendsData,
+    filteredData: []
+  };
+
+  search = (searchText) => {
+    this.setState({searchText: searchText});
+
+    let filteredData = this.state.data.filter(function (item) {
+      return item.displayName.toLowerCase().includes(searchText.toLowerCase()) || item.userId.toLowerCase().includes(searchText.toLowerCase())
+    });
+
+    this.setState({filteredData: filteredData})
+  }
+
 
   renderItem = ({ item }) => (
     <FriendCard
@@ -25,18 +41,24 @@ export default class FriendsScreen extends Component {
         <Collapse
           title= "Search Bar (Click to expand)"
           content= {
-            <Input 
-              placeholder="Search"
-              leftIcon={{ type: 'antdesign', name: 'search1' }}
+            <SearchBar
+              round={true}
+              lightTheme={true}
+              placeholder="Search..."
+              autoCapitalize='none'
+              autoCorrect={false}
+              onChangeText={this.search}
+              value={this.state.searchText}
             />
           }
         />
+        
         <View style={{flex:1}}>
-        <FlatList
-          data={friendsData}
-          renderItem={this.renderItem}
-          keyExtractor={(item) => item.userId}
-        />
+          <FlatList
+            data={this.state.filteredData && this.state.filteredData.length > 0 ? this.state.filteredData : (this.state.searchText.length === 0 && this.state.data)}
+            renderItem={this.renderItem}
+            keyExtractor={(item) => item.userId}
+          />
         </View>
         <Button title="button"/>
       </View>
