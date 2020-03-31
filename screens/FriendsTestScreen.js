@@ -1,79 +1,86 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import {Icon, Header, Avatar, Input} from 'react-native-elements'
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
+import {Icon, Header, Avatar, Input, Button} from 'react-native-elements'
+import { ScrollView, FlatList } from 'react-native-gesture-handler';
 import FriendCard from '../components/FriendCard';
+import Collapse from '../components/Collapse';
 
 
 
 export default class FriendsScreen extends Component {
 
+  renderItem = ({ item }) => (
+    <FriendCard
+      avatarUrl= {item.pictureUrl}
+      avatarTitle= {item.userInitial}
+      displayName = {item.displayName}
+      userId = {item.userId}
+    />
+  )
+
   render(){
     return (
       <View style={styles.container}>
         <Header/>
-        <Input 
-          placeholder="Search"
-          leftIcon={{ type: 'antdesign', name: 'search1' }}
+        <Collapse
+          title= "Search Bar (Click to expand)"
+          content= {
+            <Input 
+              placeholder="Search"
+              leftIcon={{ type: 'antdesign', name: 'search1' }}
+            />
+          }
         />
-        <ScrollView
-          centerContent
-          contentContainerStyle={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 1,
-          }}
-        >
-          <FriendCard
-            avatarUrl= "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg"
-            avatarTitle= ""
-            displayName = "Justin Choi"
-            userId = "Crescent9723"
-          />
-        </ScrollView>
+        <View style={{flex:1}}>
+        <FlatList
+          data={friendsData}
+          renderItem={this.renderItem}
+          keyExtractor={(item) => item.userId}
+        />
+        </View>
+        <Button title="button"/>
       </View>
     );
   }
 
 }
 
-const DATA = [
+const friendsData = [
   {
     displayName: "Justin Choi",
     userId : "Crescent1234",
-    pictureUrl : "",
-    userInitial : ""
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
   },
   {
     displayName: "Paul Kim",
     userId : "pk1234",
-    pictureUrl : "",
-    userInitial : ""
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
   },
   {
     displayName: "Jay Suhr",
     userId : "js1234",
-    pictureUrl : "",
-    userInitial : ""
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
   },
   {
     displayName: "Matthew Kim",
     userId : "mk1234",
-    pictureUrl : "",
-    userInitial : ""
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
   },
   {
     displayName: "JYP",
-    userId : "and wondergirls",
-    pictureUrl : "",
-    userInitial : ""
+    userId : "andWondergirls",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
   },
   {
     displayName: "You Hee Yeol",
     userId : "uhere",
-    pictureUrl : "",
-    userInitial : ""
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
   },
 ]
 
@@ -82,6 +89,8 @@ const DATA = [
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent : 'center'
+    justifyContent: "center",
+    borderWidth: 5,
+    borderColor: 'blue'
   },
 });

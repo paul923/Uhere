@@ -1,52 +1,93 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Input } from 'react-native-elements'
+import { Button, Input, ListItem, Avatar } from 'react-native-elements'
 
 import AvatarScreen from '../AvatarScreen'
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView, FlatList } from 'react-native-gesture-handler';
 
 
 
 export default function KeyboardTestScreen({navigation}) {
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
-        <Input
-          placeholder='input field'/>
+      <FlatList
+        data={DATA}
+        renderItem={({item}) => (
+          <Input placeholder={item.placeholder}/>
+        )}
+      />
+      
         <Button
           title="This is a button"
           buttonStyle={{margin: 10}}
         />
-      </ScrollView>
     </View>
   )
 }
+
+
+const DATA = [
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+  {
+    placeholder: "input"
+  },
+]
 
 const styles = StyleSheet.create({
     container: {
