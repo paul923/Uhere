@@ -27,7 +27,7 @@ export default function CreateEventScreen({navigation}) {
   const [ eventTime, setEventTime] = React.useState(new Date());
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
   const [ showTimePicker, setShowTimePicker] = React.useState(false);
-  const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(0);
+  const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(1);
   const [ reminder, setReminder] = React.useState(15);
   const [ locationQuery, setLocationQuery] = React.useState("");
   const [ location, setLocation] = React.useState(null);
@@ -179,7 +179,7 @@ export default function CreateEventScreen({navigation}) {
               title={item.text}
               subtitle={item.properties.address}
               onPress={() => setLocation(item)}
-              rightIcon={item.id === location.id ? { name: 'check' } : null}
+              rightIcon={location && item.id === location.id ? { name: 'check' } : null}
               bottomDivider
             />
           ))}
@@ -256,25 +256,30 @@ export default function CreateEventScreen({navigation}) {
     let name = (step !== 'Penalty') && 'chevron-right';
     let text = (step === 'Penalty') && 'PUBLISH';
     let onPress;
+    let condition;
     if (step === 'Event Detail') {
+      condition = (eventName && eventDate && eventTime && reminder && maximumNumberOfMembers) ? true : false
       onPress = () => setStep('Location');
       return (
-        <Icon name="chevron-right" color='#fff' onPress={onPress}/>
+        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
       )
     } else if (step === 'Location') {
+      condition = location ? true : false;
       onPress = () => setStep('Members');
       return (
-        <Icon name="chevron-right" color='#fff' onPress={location && onPress}/>
+        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
       )
     } else if (step === 'Members') {
+      condition = true;
       onPress = () => setStep('Penalty');
       return (
-        <Icon name="chevron-right" color='#fff' onPress={onPress}/>
+        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
       )
     } else {
+      condition = penalty ? true : false;
       onPress = () => publish();
       return (
-        <Text style={{color: '#fff' }} onPress={onPress}>PUBLISH</Text>
+        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>PUBLISH</Text>
       )
     }
   }
