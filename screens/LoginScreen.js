@@ -45,7 +45,7 @@ export default function LoginScreen({route, navigation}) {
 
     // Remove firebase listener when this screen is not focused
     const unsubscribeBlur = navigation.addListener('blur', () => {
-      firebaseUnsubscribe();
+      if (firebaseUnsubscribe) firebaseUnsubscribe();
     });
 
     return unsubscribeFocus && unsubscribeBlur;
