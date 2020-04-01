@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, Picker } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
+import * as Location from 'expo-location';
+import qs from 'qs';
 import { Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
+
 
 import {formatDate, formatTime} from '../utils/date';
 
@@ -26,7 +29,7 @@ export default function CreateEventScreen({navigation}) {
   const [ showTimePicker, setShowTimePicker] = React.useState(false);
   const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(0);
   const [ reminder, setReminder] = React.useState(15);
-  const [ location, setLocation] = React.useState("");
+  const [ locationQuery, setLocationQuery] = React.useState("");
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
 
@@ -42,6 +45,7 @@ export default function CreateEventScreen({navigation}) {
   function cancel() {
 
   }
+
 
   function EventDetail() {
     return (
@@ -132,16 +136,40 @@ export default function CreateEventScreen({navigation}) {
       </View>
     )
   }
-
-  function Location() {
+  async function searchLocation() {
+    let url = '';
+    let location = await Location.getCurrentPositionAsync({});
+    try {
+      url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + locationQuery + '.json?' + qs.stringify({
+        proximity: location.coords.longitude + ',' + location.coords.latitude,
+        access_token: 'pk.eyJ1IjoiY3Jlc2NlbnQ5NzIzIiwiYSI6ImNrOGdtbzhjZjAxZngzbHBpb3NubnRwd3gifQ.wesLzeTF2LjrYjgmrfrySQ',
+        limit: 10
+      });
+      console.log(url);
+      let response = await fetch(url);
+      let responseJson = await response.json();
+      console.log(responseJson);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  function LocationSearch() {
     return (
-      <View style={styles.formContainer}>
-        <SearchBar
-          style={styles.locationSearch}
-          placeholder="Type Address..."
-          onChangeText={setLocation}
-          value={location}
-        />
+      <View style={{flex: 1}}>
+        <View style={{flexDirection: 'row'}}>
+          <Input
+            containerStyle={{flex: 1}}
+            value={locationQuery}
+            onChangeText={setLocationQuery}
+            placeholder="Type Address..."
+            />
+          <Button
+            icon={
+              <Icon name="search" size={25} color="white" />
+            }
+            onPress={searchLocation}
+          />
+        </View>
       </View>
     )
   }
@@ -259,7 +287,7 @@ export default function CreateEventScreen({navigation}) {
           </View>
         </View>
         {step === "Event Detail" && EventDetail()}
-        {step === "Location" && Location()}
+        {step === "Location" && LocationSearch()}
         {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
     </View>
