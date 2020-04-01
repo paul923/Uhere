@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
-import { ScrollView, FlatList } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import FriendCard from '../components/FriendCard';
 import Collapse from '../components/Collapse';
 
@@ -25,7 +25,7 @@ export default class FriendsScreen extends Component {
   }
 
 
-  renderItem = ({ item }) => (
+  renderFriends = ({ item }) => (
     <FriendCard
       avatarUrl= {item.pictureUrl}
       avatarTitle= {item.userInitial}
@@ -56,7 +56,7 @@ export default class FriendsScreen extends Component {
         <View style={{flex:1}}>
           <FlatList
             data={this.state.filteredData && this.state.filteredData.length > 0 ? this.state.filteredData : (this.state.searchText.length === 0 && this.state.data)}
-            renderItem={this.renderItem}
+            renderItem={this.renderFriends}
             keyExtractor={(item) => item.userId}
           />
         </View>
