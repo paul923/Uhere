@@ -7,7 +7,7 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import * as Location from 'expo-location';
 import qs from 'qs';
-import { Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
+import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
@@ -30,6 +30,8 @@ export default function CreateEventScreen({navigation}) {
   const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(0);
   const [ reminder, setReminder] = React.useState(15);
   const [ locationQuery, setLocationQuery] = React.useState("");
+  const [ location, setLocation] = React.useState(null);
+  const [ locationResult, setLocationResult] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
 
@@ -148,7 +150,7 @@ export default function CreateEventScreen({navigation}) {
       console.log(url);
       let response = await fetch(url);
       let responseJson = await response.json();
-      console.log(responseJson);
+      setLocationResult(responseJson.features);
     } catch (error) {
       console.error(error);
     }
@@ -169,6 +171,18 @@ export default function CreateEventScreen({navigation}) {
             }
             onPress={searchLocation}
           />
+        </View>
+        <View style={{flex: 1}}>
+          {locationResult.map((item, index) => (
+            <ListItem
+              key={index}
+              title={item.text}
+              subtitle={item.properties.address}
+              onPress={() => setLocation(item)}
+              rightIcon={item.id === location.id ? { name: 'check' } : null}
+              bottomDivider
+            />
+          ))}
         </View>
       </View>
     )
@@ -250,7 +264,7 @@ export default function CreateEventScreen({navigation}) {
     } else if (step === 'Location') {
       onPress = () => setStep('Members');
       return (
-        <Icon name="chevron-right" color='#fff' onPress={onPress}/>
+        <Icon name="chevron-right" color='#fff' onPress={location && onPress}/>
       )
     } else if (step === 'Members') {
       onPress = () => setStep('Penalty');
