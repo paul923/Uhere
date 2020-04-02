@@ -67,6 +67,7 @@ export default function ProfileScreen({navigation, route}){
           alignItems: 'center',
           padding: 20,
         }}
+        showsVerticalScrollIndicator={false}
       >
         <Avatar
           containerStyle={{
