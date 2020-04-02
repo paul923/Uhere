@@ -291,6 +291,7 @@ export default function CreateEventScreen({navigation}) {
         centerComponent={{ text: 'CREATE EVENT', style: { color: '#fff' } }}
         rightComponent={RightComponent}
         />
+      <ScrollView>
         <View style={styles.stepContainer}>
           <View style={styles.stepComplete}>
             <Text style={styles.stepText}>Event Detail</Text>
@@ -309,6 +310,7 @@ export default function CreateEventScreen({navigation}) {
         {step === "Location" && LocationSearch()}
         {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
+        </ScrollView>
     </View>
 
   )
@@ -317,8 +319,7 @@ export default function CreateEventScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'stretch'
+      alignItems: 'center'
     },
     stepContainer: {
       flexDirection: 'row',
