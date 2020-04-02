@@ -115,16 +115,15 @@ export default function LoginScreen({route, navigation}) {
       <ScrollView
         centerContent
         contentContainerStyle={{
-          flex: 1,
+          flexGrow:1,
           alignItems: 'center',
           justifyContent: 'center',
-          borderWidth: 5,
         }}
       >
-        <Text style={styles.logoContainer}>
+        <View style={styles.logoContainer}>
           <Text style={styles.logoU}>u</Text>
           <Text style={styles.logoHere}>Here</Text>
-        </Text>
+        </View>
 
         <View style={styles.inputView}>
           <TextInput
@@ -135,6 +134,7 @@ export default function LoginScreen({route, navigation}) {
             value={loginEmail}
             textContentType="emailAddress"
             keyboardType="email-address"
+            autoCapitalize= 'none'
           />
         </View>
 
@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     margin: 30,
+    flexDirection: 'row'
   },
   loginIconContainer: {
     margin: 10,

@@ -205,28 +205,26 @@ export default function App(props) {
    );
  } else {
     return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
-          <AuthContext.Provider value={authContext}>
-            <Stack.Navigator
-              headerMode="none">
-              {state.userToken == null ? (
-                <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
-              ) : (
-                  !state.skipProfile ? (
-                    <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
-                  ) : (
-                    <Stack.Screen name="MainApp" component={MainAppNavigator} />
-                  )
-              )}
-            </Stack.Navigator>
-            </AuthContext.Provider>
-          </NavigationContainer>
-          <KeyboardSpacer/>
-        </View>
-      </TouchableWithoutFeedback>
+      <View style={styles.container}>
+        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+        <AuthContext.Provider value={authContext}>
+          <Stack.Navigator
+            headerMode="none">
+            {state.userToken == null ? (
+              <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+            ) : (
+                !state.skipProfile ? (
+                  <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
+                ) : (
+                  <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                )
+            )}
+          </Stack.Navigator>
+          </AuthContext.Provider>
+        </NavigationContainer>
+        <KeyboardSpacer/>
+      </View>
     );
   }
 }

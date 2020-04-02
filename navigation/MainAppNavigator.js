@@ -33,6 +33,10 @@ function showTab(route) {
       return false;
     case 'Filter Event':
       return false;
+    case 'FriendsTestScreen':
+      return false;
+    case 'RegisterTestScreen':
+      return false;
   }
 
 }
@@ -98,11 +102,12 @@ export default function MainAppNavigator({ navigation, route }) {
       <BottomTab.Screen
         name="Paul"
         component={PaulsTabNavigator}
-        options={{
+        options={({ route }) => ({
           title: 'Paul',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
-          headerMode: 'none'
-        }}
+          headerMode: 'none',
+          tabBarVisible: showTab(route)
+        })}
         
       />
 

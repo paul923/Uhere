@@ -27,9 +27,10 @@ export default function LoginTestScreen({navigation}) {
       <ScrollView 
         centerContent
         contentContainerStyle={{
+          justifyContent: 'center',
           alignItems: 'center',
           borderWidth: 5,
-          
+          flex: 1
         }}
       >
         <Text style={styles.logoContainer}>
