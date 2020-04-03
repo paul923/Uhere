@@ -1,17 +1,19 @@
-import * as React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
+import { ScrollView } from 'react-native-gesture-handler';
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
+import Collapse from '../components/Collapse';
 
 
 
-
-export default class FriendScreen extends React.Component {
+export default class AddFriendsScreen extends Component {
   state = {
     searchText: "",
     data: friendsData,
     filteredData: [],
+    selectedFriends: []
   };
 
   componentDidMount(){
@@ -19,7 +21,9 @@ export default class FriendScreen extends React.Component {
     this.setState({data: friendsData});
   }
 
-  
+  componentDidUpdate(){
+    console.log(this.state.selectedFriends)
+  }
 
   search = (searchText) => {
     this.setState({searchText: searchText});
@@ -46,12 +50,46 @@ export default class FriendScreen extends React.Component {
     />
   )
 
-  render() {
+  renderFriendsTile = ({ item }) => (
+    <FriendTile
+      avatarUrl= {item.pictureUrl}
+      avatarTitle= {item.userInitial}
+      displayName = {item.displayName}
+      userId = {item.userId}
+    />
+  )
+
+  render(){
     return (
       <View style={styles.container}>
         <Header
-          centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
+          leftComponent={
+            <Icon
+              name="arrow-left"
+              type="entypo"
+              color= "white"
+              size={30}
+              underlayColor= "transparent"
+              onPress={()=> this.props.navigation.goBack()}
+            />
+          }
         />
+        <View style={{
+          width: "100%",
+          minHeight: 90,
+          backgroundColor: "#E1E1E1"
+        }}>
+          <FlatList
+            data={this.state.selectedFriends}
+            renderItem={this.renderFriendsTile}
+            contentContainerStyle={{
+              padding: 10,
+            }}
+            keyExtractor={(item) => item.userId}
+            horizontal
+            bounces = {false}
+          />
+        </View>
 
 
         <SearchBar
@@ -96,17 +134,10 @@ export default class FriendScreen extends React.Component {
           bounces={false}
         />
       </View>
-    )
+    );
   }
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "white"
-  },
-});
+}
 
 const friendsData = [
   {
@@ -146,3 +177,13 @@ const friendsData = [
     userInitial : "",
   },
 ]
+
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "white"
+  },
+});

@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     marginTop: 30,
+    justifyContent: "center",
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderWidth: 5,

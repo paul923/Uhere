@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker, FlatList } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -13,6 +13,9 @@ import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
 
+
+import FriendCard from '../components/FriendCard';
+import FriendTile from '../components/FriendTile';
 
 import {formatDate, formatTime} from '../utils/date';
 
@@ -34,6 +37,10 @@ export default function CreateEventScreen({navigation}) {
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
+  const [ searchText, setSearchText] = React.useState("");
+  const [ friends, setFriends] = React.useState(friendsData);
+  const [ filteredData, setFilteredData] = React.useState([]);
+  const [ selectedFriends, setSelectedFriends] = React.useState([]);
 
 
   // Load any resources or data that we need prior to rendering the app
@@ -47,6 +54,40 @@ export default function CreateEventScreen({navigation}) {
   function cancel() {
 
   }
+
+  function friendSearch(text) {
+    setSearchText(text);
+
+    let filtered = friends.filter(function (item) {
+      return item.displayName.toLowerCase().includes(text.toLowerCase()) || item.userId.toLowerCase().includes(text.toLowerCase())
+    });
+
+    setFilteredData(filtered)
+  }
+
+  function renderFriendsCard({ item }){
+    return (
+    <FriendCard
+      avatarUrl= {item.pictureUrl}
+      avatarTitle= {item.userInitial}
+      displayName = {item.displayName}
+      userId = {item.userId}
+      onPress= {()=> {
+        setSelectedFriends([...selectedFriends, item])
+      }}
+    />
+    )
+  }
+
+  function renderFriendsTile({ item }){
+    return (
+    <FriendTile
+      avatarUrl= {item.pictureUrl}
+      avatarTitle= {item.userInitial}
+      displayName = {item.displayName}
+      userId = {item.userId}
+    />
+  )}
 
 
   function EventDetail() {
@@ -190,11 +231,66 @@ export default function CreateEventScreen({navigation}) {
 
   function Members() {
     return (
-      <View style={styles.formContainer}>
-        <View style={styles.row}>
-          <Text h4>Members</Text>
+        <View style={{flex: 1, justifyContent: "center", backgroundColor: "white"}}>
+          <View style={{
+            minHeight: 90,
+            backgroundColor: "#E1E1E1",
+          }}>
+            <FlatList
+              data={selectedFriends}
+              renderItem={renderFriendsTile}
+              contentContainerStyle={{
+                padding: 10,
+              }}
+              keyExtractor={(item) => item.userId}
+              horizontal
+              bounces = {false}
+            />
+          </View>
+
+
+          <SearchBar
+            round={true}
+            lightTheme={true}
+            placeholder="Search..."
+            autoCapitalize='none'
+            autoCorrect={false}
+            onChangeText={friendSearch}
+            value={searchText}
+            containerStyle={{
+              backgroundColor:"white",
+              margin: 10,
+              borderColor: "#C4C4C4",
+              borderWidth: 1,
+              borderRadius: 10,
+              padding: 3
+            }}
+            inputContainerStyle={{
+              backgroundColor:"white"
+            }}
+            inputStyle={{
+              backgroundColor:"white"
+            }}
+            leftIconContainerStyle={{
+              backgroundColor:"white"
+            }}
+            rightIconContainerStyle={{
+              backgroundColor:"white"
+            }}
+          />
+          
+          <FlatList
+            data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
+            renderItem={renderFriendsCard}
+            keyExtractor={(item) => item.userId}
+            contentContainerStyle={{
+              paddingLeft: 20,
+              paddingRight: 20,
+              backgroundColor: "white"
+            }}
+            bounces={false}
+          />
         </View>
-      </View>
     )
   }
 
@@ -291,7 +387,6 @@ export default function CreateEventScreen({navigation}) {
         centerComponent={{ text: 'CREATE EVENT', style: { color: '#fff' } }}
         rightComponent={RightComponent}
         />
-      <ScrollView>
         <View style={styles.stepContainer}>
           <View style={styles.stepComplete}>
             <Text style={styles.stepText}>Event Detail</Text>
@@ -306,11 +401,11 @@ export default function CreateEventScreen({navigation}) {
             <Text style={styles.stepText}>Penalty</Text>
           </View>
         </View>
+        
         {step === "Event Detail" && EventDetail()}
         {step === "Location" && LocationSearch()}
         {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
-        </ScrollView>
     </View>
 
   )
@@ -319,7 +414,7 @@ export default function CreateEventScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'center'
+      justifyContent: "center"
     },
     stepContainer: {
       flexDirection: 'row',
@@ -373,3 +468,42 @@ const styles = StyleSheet.create({
       flex: 1
     },
 });
+
+const friendsData = [
+  {
+    displayName: "Justin Choi",
+    userId : "Crescent1234",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
+  },
+  {
+    displayName: "Paul Kim",
+    userId : "pk1234",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
+  },
+  {
+    displayName: "Jay Suhr",
+    userId : "js1234",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
+  },
+  {
+    displayName: "Matthew Kim",
+    userId : "mk1234",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
+  },
+  {
+    displayName: "JYP",
+    userId : "andWondergirls",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
+  },
+  {
+    displayName: "You Hee Yeol",
+    userId : "uhere",
+    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+    userInitial : "",
+  },
+]
