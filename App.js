@@ -179,6 +179,18 @@ export default function App(props) {
       } finally {
       }
     }
+    async function checkIfSkip() {
+      try {
+        //TODO: Check Database instead of AsyncStorage
+        let skipProfileFlag = await AsyncStorage.getItem('skipProfile') === 'true' ? true : false;
+        if (skipProfileFlag){
+          console.log("skipProfile");
+          authContext.skipProfile();
+        }
+      } catch (e) {
+      }
+    }
+    checkIfSkip();
     checkIfFirstLaunchedAsync();
     restoreUserTokenAsync();
     loadFontAsync();
