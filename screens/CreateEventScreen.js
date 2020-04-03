@@ -90,13 +90,13 @@ export default function CreateEventScreen({navigation}) {
               value={eventDate}
               mode="date"
               display="default"
-              onChange={(event, date) => {setShowDatePicker(false); setEventDate(date)}}
+              onChange={(event, date) => {setShowDatePicker(false); date && setEventDate(date)}}
             />}
             {showTimePicker && <DateTimePicker
               value={eventTime}
               mode="time"
               display="default"
-              onChange={(event, date) => {setShowTimePicker(false); setEventTime(date)}}
+              onChange={(event, date) => {setShowTimePicker(false); date && setEventTime(date)}}
             />}
           </View>
         </View>
