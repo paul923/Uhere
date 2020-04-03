@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, StatusBar, Platform, View, ScrollView, Dimensions } from 'react-native';
-import { Avatar, Header, Button , Icon} from 'react-native-elements';
+import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import Constants from 'expo-constants';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -17,19 +17,19 @@ const members = [
     name: 'Matthew Kim',
     initial: 'MK',
     color: '#fc0f03',
-    location : { latitude: 49.3049901, longitude: -122.8332702 },
+    location: { latitude: 49.3049901, longitude: -122.8332702 },
   },
   {
     name: 'Paul Kim',
     initial: 'PK',
     color: '#0362fc',
-    location : { latitude: 49.2620402, longitude: -122.8763948 },
+    location: { latitude: 49.2620402, longitude: -122.8763948 },
   },
   {
     name: 'Justin Choi',
     initial: 'JC',
     color: '#fcba03',
-    location : { latitude: 49.2509886, longitude: -122.8920569 },
+    location: { latitude: 49.2509886, longitude: -122.8920569 },
   },
 ]
 
@@ -46,7 +46,7 @@ export default class JayTestScreen extends React.Component {
   _getLocationAsync = async () => {
     let location = await Location.getCurrentPositionAsync({});
     let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
-    this.setState({ mapRegion: region});
+    this.setState({ mapRegion: region });
   };
 
   async _goToMyLocation() {
@@ -64,7 +64,7 @@ export default class JayTestScreen extends React.Component {
     coordinates.push(meetingLocation);
     // members' locations
     members.map((u) => coordinates.push(u.location))
-    this.mapView.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },animated: true });
+    this.mapView.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
   };
 
   render() {
@@ -74,12 +74,12 @@ export default class JayTestScreen extends React.Component {
         <Header
           leftComponent={{ icon: 'chevron-left', color: '#fff' }}
           centerComponent={{ text: 'Map View', style: { color: '#fff' } }}
-          centerContainerStyle= {{flex: 1}}
+          centerContainerStyle={{ flex: 1 }}
           rightComponent={{ text: 'Event Detail', style: { color: '#fff', flexWrap: 'wrap' } }}
         />
         {/* MapView */}
         <MapView
-          ref = {(ref)=> this.mapView=ref}
+          ref={(ref) => this.mapView = ref}
           style={styles.mapStyle}
           showsUserLocation={true}
           // region : which section of the map to render/zoom
@@ -87,23 +87,23 @@ export default class JayTestScreen extends React.Component {
         >
           {/* Meeting Location Circle */}
           <MapView.Circle
-            center = {{
+            center={{
               latitude: meetingLocation.latitude,
               longitude: meetingLocation.longitude,
             }}
-            radius = {500} // in meters
-            strokeWidth = {2}
-            strokeColor = 'rgba(89, 89, 89, 0.42)'
-            fillColor = 'rgba(89, 89, 89, 0.42)'
+            radius={500} // in meters
+            strokeWidth={2}
+            strokeColor='rgba(89, 89, 89, 0.42)'
+            fillColor='rgba(89, 89, 89, 0.42)'
           />
           {/* Member Markers */}
           {
             members.map((u, i) => {
-              return(
+              return (
                 <MapView.Marker
-                  key = {i}
-                  pinColor = {u.color}
-                  coordinate = {
+                  key={i}
+                  pinColor={u.color}
+                  coordinate={
                     {
                       latitude: u.location.latitude,
                       longitude: u.location.longitude,
@@ -121,7 +121,7 @@ export default class JayTestScreen extends React.Component {
             reverse
             name='location-arrow'
             type='font-awesome'
-            onPress = {() => this._goToMyLocation()}
+            onPress={() => this._goToMyLocation()}
           />
         </View>
 
@@ -135,14 +135,14 @@ export default class JayTestScreen extends React.Component {
         </View>
 
         <View style={styles.avatarContianer}>
-          <ScrollView horizontal={true} contentContainerStyle={{flexGrow: 1, justifyContent : 'center'}}>
+          <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
             {/* fitAll */}
             <View style={styles.avatar}>
               <Avatar
                 rounded
                 size='medium'
-                icon={{name: 'users', type: 'font-awesome'}}
-                onPress = {() => this._fitAll()}
+                icon={{ name: 'users', type: 'font-awesome' }}
+                onPress={() => this._fitAll()}
               />
             </View>
             {/* Meeting Location */}
@@ -150,8 +150,8 @@ export default class JayTestScreen extends React.Component {
               <Avatar
                 rounded
                 size='medium'
-                icon={{name: 'map-marker', type: 'font-awesome'}}
-                onPress = {() => this.mapView.animateToRegion({latitude: meetingLocation.latitude, longitude: meetingLocation.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA })}
+                icon={{ name: 'map-marker', type: 'font-awesome' }}
+                onPress={() => this.mapView.animateToRegion({ latitude: meetingLocation.latitude, longitude: meetingLocation.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA })}
               />
             </View>
             {/* Members */}
@@ -159,13 +159,13 @@ export default class JayTestScreen extends React.Component {
               members.map((u, i) => {
                 let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
                 console.log(memberRegion)
-                return(
-                  <View style={styles.avatar} key = {i}>
+                return (
+                  <View style={styles.avatar} key={i}>
                     <Avatar
                       rounded
                       size='medium'
-                      title = {u.initial}
-                      onPress = {() => this.mapView.animateToRegion(memberRegion)}
+                      title={u.initial}
+                      onPress={() => this.mapView.animateToRegion(memberRegion)}
                     />
                   </View>
                 )
@@ -196,12 +196,12 @@ const styles = StyleSheet.create({
   },
   myLocationStyle: {
     position: 'absolute',
-    top:150,
-    right:0,
+    top: 150,
+    right: 0,
   },
   goalStyle: {
     alignSelf: 'center',
     position: 'absolute',
-    bottom:100,
+    bottom: 100,
   },
 });
