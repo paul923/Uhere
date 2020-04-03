@@ -335,11 +335,12 @@ const styles = StyleSheet.create({
       height: 30
     },
     stepText: {
+      flex: 1,
       color: 'white',
       textAlign: 'center',
-      textAlignVertical: 'center',
-      height: '100%',
-      fontWeight: 'bold'
+      height: 30,
+      lineHeight: 30,
+      fontWeight: 'bold',
     },
     formContainer: {
       margin: 0,
