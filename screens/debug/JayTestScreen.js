@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, StatusBar, Platform, View, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import Constants from 'expo-constants';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 
 // Constants
+const GEO_FENCING_TASK_NAME = 'geofencing'
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.0922;
@@ -37,13 +39,16 @@ export default class JayTestScreen extends React.Component {
 
   state = {
     mapRegion: { latitude: 0, longitude: 0, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA },
+    startButton: false,
+    stopButton: true,
+    goalButton: true,
   };
 
   componentDidMount() {
     this._getLocationAsync();
   }
 
-  _getLocationAsync = async () => {
+  async _getLocationAsync() {
     let location = await Location.getCurrentPositionAsync({});
     let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
     this.setState({ mapRegion: region });
@@ -55,7 +60,7 @@ export default class JayTestScreen extends React.Component {
     this.mapView.animateToRegion(region);
   };
 
-  _fitAll = async () => {
+  async _fitAll() {
     let location = await Location.getCurrentPositionAsync({});
     let coordinates = []
     // user's location
@@ -66,6 +71,27 @@ export default class JayTestScreen extends React.Component {
     members.map((u) => coordinates.push(u.location))
     this.mapView.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
   };
+
+  async startGeoFencing() {
+    let location = await Location.getCurrentPositionAsync({});
+    let regions = [
+      {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        radius: 50,
+        notifyOnEnter: true,
+        notifyOnExit: true,
+      }
+    ]
+    await Location.startGeofencingAsync(GEO_FENCING_TASK_NAME, regions)
+    this.setState({ startButton: !this.state.startButton, stopButton: !this.state.stopButton });
+  }
+
+  async stopGeoFencing() {
+    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+    console.log('stopped geofencing');
+    this.setState({ startButton: !this.state.startButton, stopButton: !this.state.stopButton });
+  }
 
   render() {
     return (
@@ -131,6 +157,29 @@ export default class JayTestScreen extends React.Component {
             reverse
             name='check'
             type='font-awesome'
+            disabled={this.state.goalButton}
+          />
+        </View>
+
+        {/* Geo Start Button */}
+        <View style={styles.startStyle}>
+          <Icon
+            reverse
+            name='play-circle'
+            type='font-awesome'
+            disabled={this.state.startButton}
+            onPress={() => this.startGeoFencing()}
+          />
+        </View>
+
+        {/* Geo End Button */}
+        <View style={styles.stopStyle}>
+          <Icon
+            reverse
+            name='stop-circle'
+            type='font-awesome'
+            disabled={this.state.stopButton}
+            onPress={() => this.stopGeoFencing()}
           />
         </View>
 
@@ -158,7 +207,6 @@ export default class JayTestScreen extends React.Component {
             {
               members.map((u, i) => {
                 let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
-                console.log(memberRegion)
                 return (
                   <View style={styles.avatar} key={i}>
                     <Avatar
@@ -204,4 +252,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 100,
   },
+  startStyle: {
+    left: 0,
+    position: 'absolute',
+    bottom: 100,
+  },
+  stopStyle: {
+    right: 0,
+    position: 'absolute',
+    bottom: 100,
+  },
+});
+
+// Task Manager 
+TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, error }) => {
+  if (error) {
+    // check `error.message` for more details.
+    return;
+  }
+  if (eventType === Location.GeofencingEventType.Enter) {
+    console.log("You've entered region:", region);
+    Alert.alert("You've entered region");
+  } else if (eventType === Location.GeofencingEventType.Exit) {
+    console.log("You've left region:", region);
+    Alert.alert("You've left region");
+  }
 });
