@@ -45,6 +45,9 @@ export default function CreateEventScreen({navigation}) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    // Sorts friends list on initial load
+    friendsData.sort((a,b) => a.displayName.localeCompare(b.displayName));
+    setFriends(friendsData);
   }, []);
 
   function publish() {
@@ -72,8 +75,14 @@ export default function CreateEventScreen({navigation}) {
       avatarTitle= {item.userInitial}
       displayName = {item.displayName}
       userId = {item.userId}
-      onPress= {()=> {
-        setSelectedFriends([...selectedFriends, item])
+      checkBox={{
+        size: 35,
+        checkedIcon: 'dot-circle-o',
+        uncheckedIcon: 'circle-o',
+        checkedColor:'#ff8a8a',
+        uncheckedColor: '#ff8a8a',
+        checked: selectedFriends.includes(item),
+        onPress: () => selectFriend(item)
       }}
     />
     )
@@ -86,96 +95,107 @@ export default function CreateEventScreen({navigation}) {
       avatarTitle= {item.userInitial}
       displayName = {item.displayName}
       userId = {item.userId}
+      pressMinus = {() => selectFriend(item)}
     />
   )}
+
+  function selectFriend (item) {
+    if(!selectedFriends.includes(item)){
+      setSelectedFriends([...selectedFriends, item])
+    } else {
+      setSelectedFriends(selectedFriends.filter(a => a !== item));
+    }
+  }
 
 
   function EventDetail() {
     return (
       <View style={styles.formContainer}>
-        <View style={styles.row}>
-          <View>
-            <View style={styles.row}>
-              <Text h4>Event Name</Text>
-            </View>
-            <View style={styles.row}>
-              <Input
-                  onChangeText={text => setEventName(text)}
-                  value={eventName}
-                  inputContainerStyle={{
-                    borderWidth: 1,
-                  }}
-                />
-            </View>
-          </View>
-        </View>
-        <View style={styles.row}>
-          <View>
-            <View style={styles.row}>
-              <Text h4>Event Date</Text>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(true); setShowTimePicker(false)}}>
-                <Text style={styles.textCenter}>{formatDate(eventDate)}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(false); setShowTimePicker(true)}}>
-                <Text style={styles.textCenter}>{formatTime(eventTime)}</Text>
-              </TouchableOpacity>
-            </View>
-            {showDatePicker && <DateTimePicker
-              value={eventDate}
-              mode="date"
-              display="default"
-              onChange={(event, date) => {setShowDatePicker(false); setEventDate(date)}}
-            />}
-            {showTimePicker && <DateTimePicker
-              value={eventTime}
-              mode="time"
-              display="default"
-              onChange={(event, date) => {setShowTimePicker(false); setEventTime(date)}}
-            />}
-          </View>
-        </View>
-        <View style={styles.row}>
-          <View>
-            <View style={styles.row}>
-              <Text h4>How many friends are coming</Text>
+        <ScrollView>
+          <View style={styles.row}>
+            <View>
+              <View style={styles.row}>
+                <Text h4>Event Name</Text>
               </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.columnButton} onPress={() => setMaximumNumberOfMembers(maximumNumberOfMembers+1)}>
-                <Icon name="plus" type="antdesign" color="black"/>
-              </TouchableOpacity>
-              <View style={styles.column}>
-                <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
+              <View style={styles.row}>
+                <Input
+                    onChangeText={text => setEventName(text)}
+                    value={eventName}
+                    inputContainerStyle={{
+                      borderWidth: 1,
+                    }}
+                  />
               </View>
-              <TouchableOpacity style={styles.columnButton} onPress={() => maximumNumberOfMembers > 0 && setMaximumNumberOfMembers(maximumNumberOfMembers-1)}>
-                <Icon name="minus" type="antdesign" color="black"/>
-              </TouchableOpacity>
             </View>
           </View>
-        </View>
+          <View style={styles.row}>
+            <View>
+              <View style={styles.row}>
+                <Text h4>Event Date</Text>
+              </View>
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(true); setShowTimePicker(false)}}>
+                  <Text style={styles.textCenter}>{formatDate(eventDate)}</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(false); setShowTimePicker(true)}}>
+                  <Text style={styles.textCenter}>{formatTime(eventTime)}</Text>
+                </TouchableOpacity>
+              </View>
+              {showDatePicker && <DateTimePicker
+                value={eventDate}
+                mode="date"
+                display="default"
+                onChange={(event, date) => {setShowDatePicker(false); setEventDate(date)}}
+              />}
+              {showTimePicker && <DateTimePicker
+                value={eventTime}
+                mode="time"
+                display="default"
+                onChange={(event, date) => {setShowTimePicker(false); setEventTime(date)}}
+              />}
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View>
+              <View style={styles.row}>
+                <Text h4>How many friends are coming</Text>
+                </View>
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.columnButton} onPress={() => setMaximumNumberOfMembers(maximumNumberOfMembers+1)}>
+                  <Icon name="plus" type="antdesign" color="black"/>
+                </TouchableOpacity>
+                <View style={styles.column}>
+                  <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
+                </View>
+                <TouchableOpacity style={styles.columnButton} onPress={() => maximumNumberOfMembers > 0 && setMaximumNumberOfMembers(maximumNumberOfMembers-1)}>
+                  <Icon name="minus" type="antdesign" color="black"/>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
 
-        <View style={styles.row}>
-          <View>
-            <View style={styles.row}>
-            <Text h4>Reminder</Text>
-            </View>
-            <View style={styles.row}>
-              <Picker
-                style={styles.onePicker}
-                selectedValue={reminder}
-                onValueChange={(itemValue) => setReminder(itemValue)}
-              >
-                <Picker.Item label="Before 15 min" value="15" />
-                <Picker.Item label="Before 30 min" value="30" />
-                <Picker.Item label="Before 45 min" value="45" />
-                <Picker.Item label="Before 60 min" value="60" />
-              </Picker>
+          <View style={styles.row}>
+            <View>
+              <View style={styles.row}>
+              <Text h4>Reminder</Text>
+              </View>
+              <View style={styles.row}>
+                <Picker
+                  style={styles.onePicker}
+                  selectedValue={reminder}
+                  onValueChange={(itemValue) => setReminder(itemValue)}
+                >
+                  <Picker.Item label="Before 15 min" value="15" />
+                  <Picker.Item label="Before 30 min" value="30" />
+                  <Picker.Item label="Before 45 min" value="45" />
+                  <Picker.Item label="Before 60 min" value="60" />
+                </Picker>
+              </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
     )
   }
@@ -360,7 +380,8 @@ export default function CreateEventScreen({navigation}) {
         <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
       )
     } else if (step === 'Location') {
-      condition = location ? true : false;
+      //Needs to be changed back to true: false
+      condition = location ? true : true;
       onPress = () => setStep('Members');
       return (
         <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>

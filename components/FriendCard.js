@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, CheckBox } from 'react-native';
 import {Icon, Header, Avatar, ListItem} from 'react-native-elements'
 
 
 
-export default class FriendCard extends Component {
 
+export default class FriendCard extends Component {
   render(){
     return (
         <ListItem

@@ -13,7 +13,7 @@ export default class AddFriendsScreen extends Component {
     searchText: "",
     data: friendsData,
     filteredData: [],
-    selectedFriends: []
+    selectedFriends: [],
   };
 
   componentDidMount(){
@@ -35,6 +35,14 @@ export default class AddFriendsScreen extends Component {
     this.setState({filteredData: filteredData})
   }
 
+  selectFriend = item => {
+    if(!this.state.selectedFriends.includes(item)){
+      this.setState({selectedFriends: [...this.state.selectedFriends, item]})
+    } else {
+      this.setState({selectedFriends: this.state.selectedFriends.filter(a => a !== item)});
+    }
+  }
+
 
 
 
@@ -44,8 +52,14 @@ export default class AddFriendsScreen extends Component {
       avatarTitle= {item.userInitial}
       displayName = {item.displayName}
       userId = {item.userId}
-      onPress= {()=> {
-        this.setState({selectedFriends: [...this.state.selectedFriends, item]})
+      checkBox={{
+        size: 35,
+        checkedIcon: 'dot-circle-o',
+        uncheckedIcon: 'circle-o',
+        checkedColor:'#ff8a8a',
+        uncheckedColor: '#ff8a8a',
+        checked: this.state.selectedFriends.includes(item),
+        onPress: () => this.selectFriend(item)
       }}
     />
   )
@@ -56,6 +70,7 @@ export default class AddFriendsScreen extends Component {
       avatarTitle= {item.userInitial}
       displayName = {item.displayName}
       userId = {item.userId}
+      pressMinus = {() => this.selectFriend(item)}
     />
   )
 
@@ -76,14 +91,14 @@ export default class AddFriendsScreen extends Component {
         />
         <View style={{
           width: "100%",
-          minHeight: 90,
+          minHeight: 100,
           backgroundColor: "#E1E1E1"
         }}>
           <FlatList
             data={this.state.selectedFriends}
             renderItem={this.renderFriendsTile}
             contentContainerStyle={{
-              padding: 10,
+              padding: 5,
             }}
             keyExtractor={(item) => item.userId}
             horizontal
