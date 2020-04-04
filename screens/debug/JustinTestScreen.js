@@ -2,12 +2,14 @@ import * as React from 'react';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
 import { Image, Button, Text, ListItem, Icon } from 'react-native-elements';
 import AuthContext from '../../contexts/AuthContext';
+import LoadingContext from '../../contexts/LoadingContext';
 import firebase from 'firebase';
 import firebaseObject from '../../config/firebase';
 import Collpase from '../../components/Collapse';
 
 export default function JustinTestScreen() {
   const { signIn, signOut } = React.useContext(AuthContext);
+  const { showLoadingScreen } = React.useContext(LoadingContext);
 
   firebaseSignOut = async () => {
     firebase.auth().signOut().then(function() {
@@ -38,6 +40,10 @@ export default function JustinTestScreen() {
       <Button
         title="CLEAR SKIP PROFILE"
         onPress={() => clearSkipProfile()}
+        />
+      <Button
+        title="SHOW LOADING SCREEN"
+        onPress={() => showLoadingScreen()}
         />
       <Collpase
         title="Location"
