@@ -10,7 +10,6 @@ import EventScreen from '../screens/EventScreen';
 import EventNavigator from './EventNavigator';
 import FriendScreen from '../screens/FriendScreen';
 import JayTestScreen from '../screens/debug/JayTestScreen';
-import ScaledroneTestScreen from '../screens/debug/ScaledroneTestScreen'
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
 import PaulTestScreen from '../screens/debug/PaulTestScreen';
 
@@ -104,15 +103,6 @@ export default function MainAppNavigator({ navigation, route }) {
         component={JayTestScreen}
         options={{
           title: 'Jay',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
-          headerMode: 'none'
-        }}
-      />
-      <BottomTab.Screen
-        name="Scaledrone"
-        component={ScaledroneTestScreen}
-        options={{
-          title: 'Scaledrone',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
           headerMode: 'none'
         }}
