@@ -10,10 +10,12 @@ import EventScreen from '../screens/EventScreen';
 import EventNavigator from './EventNavigator';
 import FriendScreen from '../screens/FriendScreen';
 import JayTestScreen from '../screens/debug/JayTestScreen';
+import ScaledroneTestScreen from '../screens/debug/ScaledroneTestScreen'
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
 import PaulTestScreen from '../screens/debug/PaulTestScreen';
 
 import PaulsTabNavigator from './PaulsTabNavigator'
+import * as Permissions from 'expo-permissions';
 
 
 const BottomTab = createBottomTabNavigator();
@@ -57,8 +59,15 @@ export default function MainAppNavigator({ navigation, route }) {
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     }, [])
   );
+
+  async function askNotificationPermission() {
+    const { status, permissions } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    console.log(status);
+  }
+  
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    askNotificationPermission();
   }, []);
 
   return (
@@ -95,6 +104,15 @@ export default function MainAppNavigator({ navigation, route }) {
         component={JayTestScreen}
         options={{
           title: 'Jay',
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
+          headerMode: 'none'
+        }}
+      />
+      <BottomTab.Screen
+        name="Scaledrone"
+        component={ScaledroneTestScreen}
+        options={{
+          title: 'Scaledrone',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
           headerMode: 'none'
         }}
