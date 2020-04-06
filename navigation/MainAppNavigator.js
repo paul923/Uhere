@@ -14,6 +14,7 @@ import JustinTestScreen from '../screens/debug/JustinTestScreen';
 import PaulTestScreen from '../screens/debug/PaulTestScreen';
 
 import PaulsTabNavigator from './PaulsTabNavigator'
+import JustinTabNavigator from './JustinTabNavigator'
 import * as Permissions from 'expo-permissions';
 
 
@@ -63,7 +64,7 @@ export default function MainAppNavigator({ navigation, route }) {
     const { status, permissions } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
     console.log(status);
   }
-  
+
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     askNotificationPermission();
@@ -92,7 +93,7 @@ export default function MainAppNavigator({ navigation, route }) {
       />
       <BottomTab.Screen
         name="Justin"
-        component={JustinTestScreen}
+        component={JustinTabNavigator}
         options={{
           title: 'Justin',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
@@ -116,7 +117,7 @@ export default function MainAppNavigator({ navigation, route }) {
           headerMode: 'none',
           tabBarVisible: showTab(route)
         })}
-        
+
       />
 
     </BottomTab.Navigator>
