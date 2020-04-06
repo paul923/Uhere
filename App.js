@@ -6,6 +6,7 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
@@ -21,6 +22,7 @@ import LocationPermissionScreen from './screens/LocationPermissionScreen'
 const Stack = createStackNavigator();
 
 import AuthContext from './contexts/AuthContext';
+import LoadingContext from './contexts/LoadingContext';
 
 
 export default function App(props) {
@@ -80,7 +82,7 @@ export default function App(props) {
         case 'RESTORE_TOKEN':
           return {
             ...prevState,
-            userToken: action.token
+            userToken: action.token,
           };
         case 'SIGN_IN':
           return {
@@ -99,9 +101,20 @@ export default function App(props) {
             ...prevState,
             skipProfile: true
           }
+        case 'SHOW_LOADING_SCREEN':
+          return {
+            ...prevState,
+            showLoadingScreen: true
+          }
+        case 'HIDE_LOADING_SCREEN':
+          return {
+            ...prevState,
+            showLoadingScreen: false
+          }
       }
     },
     {
+      showLoadingScreen: true,
       isLoggedIn: false,
       userToken: null,
       skipProfile: false
@@ -110,6 +123,13 @@ export default function App(props) {
 
   const authContext = React.useMemo(
     () => ({
+      restoreToken: async data => {
+        // In a production app, we need to send some data (usually username, password) to server and get a token
+        // We will also need to handle errors if sign in failed
+        // After getting token, we need to persist the token using `AsyncStorage`
+        // In the example, we'll use a dummy token
+        dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+      },
       signIn: async data => {
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
@@ -133,6 +153,13 @@ export default function App(props) {
     []
   );
 
+  const loadingContext = React.useMemo(
+    () => ({
+      showLoadingScreen: () => dispatch({ type: 'SHOW_LOADING_SCREEN'}),
+      hideLoadingScreen: () => dispatch({ type: 'HIDE_LOADING_SCREEN'}),
+    })
+  );
+
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
 
@@ -141,7 +168,9 @@ export default function App(props) {
       let userToken;
 
       try {
-        userToken = await AsyncStorage.getItem('userToken');
+        AsyncStorage.getItem('userToken').then(userToken => {
+          dispatch({ type: 'RESTORE_TOKEN', token: userToken })
+        });
       } catch (e) {
         // Restoring token failed
       }
@@ -150,7 +179,7 @@ export default function App(props) {
 
       // This will switch to the App screen or Auth screen and this loading
       // screen will be unmounted and thrown away.
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+
     };
 
     async function checkIfFirstLaunchedAsync() {
@@ -179,16 +208,30 @@ export default function App(props) {
       } finally {
       }
     }
-    checkIfFirstLaunchedAsync();
-    restoreUserTokenAsync();
+    async function checkIfSkip() {
+      try {
+        //TODO: Check Database instead of AsyncStorage
+        let skipProfileFlag = await AsyncStorage.getItem('skipProfile') === 'true' ? true : false;
+        if (skipProfileFlag){
+          console.log("skipProfile");
+          dispatch({ type: 'SKIP_PROFILE'})
+        }
+      } catch (e) {
+      }
+    }
+    function loadAsyncData() {
+      checkIfSkip();
+      checkIfFirstLaunchedAsync();
+      restoreUserTokenAsync();
+      dispatch({ type: 'HIDE_LOADING_SCREEN'})
+    }
+    loadAsyncData();
     loadFontAsync();
-    console.log(state.skipProfile);
   }, []);
 
   storeIsFirstLaunch = async (flag) => {
      await AsyncStorage.setItem('isFirstLaunch', JSON.stringify(flag));
   }
-
   if (isFirstLaunch && !showRealApp) {
    return <AppIntroSlider
      slides={slides}
@@ -205,8 +248,14 @@ export default function App(props) {
    );
  } else {
     return (
+      <LoadingContext.Provider value={loadingContext}>
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        <Spinner
+          visible={state.showLoadingScreen}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
         <AuthContext.Provider value={authContext}>
           <Stack.Navigator
@@ -225,6 +274,7 @@ export default function App(props) {
         </NavigationContainer>
         <KeyboardSpacer/>
       </View>
+      </LoadingContext.Provider>
     );
   }
 }
@@ -233,6 +283,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
   },
 });
 

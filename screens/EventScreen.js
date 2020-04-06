@@ -44,7 +44,8 @@ function PendingEvent(){
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
         ListHeaderComponent={EventFilter}
-        ItemSeparatorComponent={() => (<Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />)}
+        ItemSeparatorComponent={() => (<Divider style={{ height: 1, margin: 5, backgroundColor: 'black' }} />)}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   )
@@ -84,6 +85,7 @@ function OnGoingEvent(){
         )}
         ListHeaderComponent={EventFilter}
         ItemSeparatorComponent={() => (<Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />)}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   )
@@ -128,5 +130,12 @@ const styles = StyleSheet.create({
     listContainer: {
       marginLeft: 15,
       marginRight: 15
+    },
+    sectionHeader: {
+      color: 'white',
+      fontWeight: 'bold',
+      backgroundColor: 'gray',
+      paddingLeft: 5,
+      zIndex: 99
     }
 });

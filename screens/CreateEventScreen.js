@@ -51,7 +51,10 @@ export default function CreateEventScreen({navigation}) {
 
   function EventDetail() {
     return (
-      <View style={styles.formContainer}>
+      <ScrollView
+        contentContainerStyle={{
+          height: 600
+        }}>
         <View style={styles.row}>
           <View>
             <View style={styles.row}>
@@ -87,13 +90,13 @@ export default function CreateEventScreen({navigation}) {
               value={eventDate}
               mode="date"
               display="default"
-              onChange={(event, date) => {setShowDatePicker(false); setEventDate(date)}}
+              onChange={(event, date) => {setShowDatePicker(false); date && setEventDate(date)}}
             />}
             {showTimePicker && <DateTimePicker
               value={eventTime}
               mode="time"
               display="default"
-              onChange={(event, date) => {setShowTimePicker(false); setEventTime(date)}}
+              onChange={(event, date) => {setShowTimePicker(false); date && setEventTime(date)}}
             />}
           </View>
         </View>
@@ -135,7 +138,7 @@ export default function CreateEventScreen({navigation}) {
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     )
   }
   async function searchLocation() {
@@ -172,7 +175,7 @@ export default function CreateEventScreen({navigation}) {
             onPress={searchLocation}
           />
         </View>
-        <View style={{flex: 1}}>
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
           {locationResult.map((item, index) => (
             <ListItem
               key={index}
@@ -183,7 +186,7 @@ export default function CreateEventScreen({navigation}) {
               bottomDivider
             />
           ))}
-        </View>
+        </ScrollView>
       </View>
     )
   }
@@ -291,7 +294,7 @@ export default function CreateEventScreen({navigation}) {
         centerComponent={{ text: 'CREATE EVENT', style: { color: '#fff' } }}
         rightComponent={RightComponent}
         />
-      <ScrollView>
+
         <View style={styles.stepContainer}>
           <View style={styles.stepComplete}>
             <Text style={styles.stepText}>Event Detail</Text>
@@ -310,7 +313,6 @@ export default function CreateEventScreen({navigation}) {
         {step === "Location" && LocationSearch()}
         {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
-        </ScrollView>
     </View>
 
   )
@@ -319,7 +321,7 @@ export default function CreateEventScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'center'
+      alignItems: 'stretch'
     },
     stepContainer: {
       flexDirection: 'row',
@@ -335,11 +337,12 @@ const styles = StyleSheet.create({
       height: 30
     },
     stepText: {
+      flex: 1,
       color: 'white',
       textAlign: 'center',
-      textAlignVertical: 'center',
-      height: '100%',
-      fontWeight: 'bold'
+      height: 30,
+      lineHeight: 30,
+      fontWeight: 'bold',
     },
     formContainer: {
       margin: 0,

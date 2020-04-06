@@ -21,20 +21,6 @@ export default function ProfileScreen({navigation, route}){
 
 
 
-  React.useEffect(() => {
-    async function checkIfSkip() {
-      try {
-        //TODO: Check Database instead of AsyncStorage
-        let skipProfileFlag = await AsyncStorage.getItem('skipProfile') === 'true' ? true : false;
-        if (skipProfileFlag){
-          console.log("skipProfile");
-          skipProfile();
-        }
-      } catch (e) {
-      }
-    }
-    checkIfSkip();
-  }, [showSuccessOverlay]);
 
   function setProfile(){
     setShowSuccessOverlay(true)
@@ -67,6 +53,7 @@ export default function ProfileScreen({navigation, route}){
           alignItems: 'center',
           padding: 20,
         }}
+        showsVerticalScrollIndicator={false}
       >
         <Avatar
           containerStyle={{
