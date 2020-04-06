@@ -272,7 +272,6 @@ export default function App(props) {
           </Stack.Navigator>
           </AuthContext.Provider>
         </NavigationContainer>
-        <KeyboardSpacer/>
       </View>
       </LoadingContext.Provider>
     );
