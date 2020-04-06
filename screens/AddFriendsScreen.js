@@ -1,17 +1,19 @@
-import * as React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
+import { ScrollView } from 'react-native-gesture-handler';
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
+import Collapse from '../components/Collapse';
 
 
 
-
-export default class FriendScreen extends React.Component {
+export default class AddFriendsScreen extends Component {
   state = {
     searchText: "",
     data: friendsData,
     filteredData: [],
+    selectedFriends: [],
   };
 
   componentDidMount(){
@@ -19,7 +21,9 @@ export default class FriendScreen extends React.Component {
     this.setState({data: friendsData});
   }
 
-  
+  componentDidUpdate(){
+    console.log(this.state.selectedFriends)
+  }
 
   search = (searchText) => {
     this.setState({searchText: searchText});
@@ -31,6 +35,14 @@ export default class FriendScreen extends React.Component {
     this.setState({filteredData: filteredData})
   }
 
+  selectFriend = item => {
+    if(!this.state.selectedFriends.includes(item)){
+      this.setState({selectedFriends: [...this.state.selectedFriends, item]})
+    } else {
+      this.setState({selectedFriends: this.state.selectedFriends.filter(a => a !== item)});
+    }
+  }
+
 
 
 
@@ -40,18 +52,59 @@ export default class FriendScreen extends React.Component {
       avatarTitle= {item.userInitial}
       displayName = {item.displayName}
       userId = {item.userId}
-      onPress= {()=> {
-        this.setState({selectedFriends: [...this.state.selectedFriends, item]})
+      checkBox={{
+        size: 35,
+        checkedIcon: 'dot-circle-o',
+        uncheckedIcon: 'circle-o',
+        checkedColor:'#ff8a8a',
+        uncheckedColor: '#ff8a8a',
+        checked: this.state.selectedFriends.includes(item),
+        onPress: () => this.selectFriend(item)
       }}
     />
   )
 
-  render() {
+  renderFriendsTile = ({ item }) => (
+    <FriendTile
+      avatarUrl= {item.pictureUrl}
+      avatarTitle= {item.userInitial}
+      displayName = {item.displayName}
+      userId = {item.userId}
+      pressMinus = {() => this.selectFriend(item)}
+    />
+  )
+
+  render(){
     return (
       <View style={styles.container}>
         <Header
-          centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
+          leftComponent={
+            <Icon
+              name="arrow-left"
+              type="entypo"
+              color= "white"
+              size={30}
+              underlayColor= "transparent"
+              onPress={()=> this.props.navigation.goBack()}
+            />
+          }
         />
+        <View style={{
+          width: "100%",
+          minHeight: 100,
+          backgroundColor: "#E1E1E1"
+        }}>
+          <FlatList
+            data={this.state.selectedFriends}
+            renderItem={this.renderFriendsTile}
+            contentContainerStyle={{
+              padding: 5,
+            }}
+            keyExtractor={(item) => item.userId}
+            horizontal
+            bounces = {false}
+          />
+        </View>
 
 
         <SearchBar
@@ -96,17 +149,10 @@ export default class FriendScreen extends React.Component {
           bounces={false}
         />
       </View>
-    )
+    );
   }
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "white"
-  },
-});
+}
 
 const friendsData = [
   {
@@ -146,3 +192,13 @@ const friendsData = [
     userInitial : "",
   },
 ]
+
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    backgroundColor: "white"
+  },
+});

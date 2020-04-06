@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#003f5c',
     justifyContent: 'center',
+    borderWidth: 5,
   },
   inputView: {
     width: "80%",
