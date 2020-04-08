@@ -7,7 +7,7 @@ import firebase from 'firebase';
 import firebaseObject from '../../config/firebase';
 import Collpase from '../../components/Collapse';
 
-export default function JustinTestScreen() {
+export default function JustinTestScreen({navigation}) {
   const { signIn, signOut } = React.useContext(AuthContext);
   const { showLoadingScreen } = React.useContext(LoadingContext);
 
@@ -44,6 +44,10 @@ export default function JustinTestScreen() {
       <Button
         title="SHOW LOADING SCREEN"
         onPress={() => showLoadingScreen()}
+        />
+      <Button
+        title="DATABASE TEST"
+        onPress={() => navigation.navigate('DatabaseTestScreen')}
         />
       <Collpase
         title="Location"

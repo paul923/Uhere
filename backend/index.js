@@ -15,6 +15,7 @@ const pool = mysql.createPool({
 // Starting our app.
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 // Creating a GET route that returns data from the 'users' table.
 app.get('/retrieve', function (req, res) {
   // Connecting to the database.
@@ -40,6 +41,7 @@ app.post('/insert', function (req,res) {
     var sql = "INSERT INTO ?? SET ?";
     var parameters = ['test_table'];
     sql = mysql.format(sql, parameters);
+    console.log(req.body);
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, req.body, function (error, results, fields) {
       connection.release();
