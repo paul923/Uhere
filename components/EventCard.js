@@ -1,14 +1,19 @@
 import * as React from 'react';
 import { formatDate, formatTime } from "../utils/date";
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button } from 'react-native-elements';
 
 
 export default function EventCard({item, status}) {
+
+  const navigateToEventDetail = (item) => {
+    console.log(item);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
-        <View style={styles.cardContentContainer}>
+        <TouchableOpacity style={styles.cardContentContainer} onPress={() => navigateToEventDetail(item)}>
           <Text h4>{item.name}</Text>
           <View style={styles.row}>
             <Icon name="event"/>
@@ -33,7 +38,7 @@ export default function EventCard({item, status}) {
               <Text h5 style={styles.cardColumnText}>{item.members.length + "/" + item.maximumNumberOfMembers}</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
         {status === 'PENDING' && (
           <View style={styles.cardButtonContainer}>
             <View style={{...styles.cardButton, backgroundColor: '#A0A0A0', borderTopRightRadius: 10}}>

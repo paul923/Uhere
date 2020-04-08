@@ -15,6 +15,7 @@ import PaulTestScreen from '../screens/debug/PaulTestScreen';
 
 import PaulsTabNavigator from './PaulsTabNavigator'
 import * as Permissions from 'expo-permissions';
+import JaysTabNavigator from './JaysTabNavigator';
 
 
 const BottomTab = createBottomTabNavigator();
@@ -100,12 +101,13 @@ export default function MainAppNavigator({ navigation, route }) {
         }}
       /><BottomTab.Screen
         name="Jay"
-        component={JayTestScreen}
-        options={{
+        component={JaysTabNavigator}
+        options={({ route }) => ({
           title: 'Jay',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
-          headerMode: 'none'
-        }}
+          headerMode: 'none',
+          tabBarVisible: showTab(route)
+        })}
       />
       <BottomTab.Screen
         name="Paul"
