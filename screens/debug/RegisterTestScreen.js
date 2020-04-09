@@ -37,7 +37,6 @@ export default class RegisterTestScreen extends Component {
             borderBottomWidth: 0
           }}
         />
-        <KeyboardAwareScrollView>
         <ScrollView 
           centerContent
           contentContainerStyle={{
@@ -112,7 +111,6 @@ export default class RegisterTestScreen extends Component {
 
           </View>
         </ScrollView>
-        </KeyboardAwareScrollView>
       </View>
     );
   }

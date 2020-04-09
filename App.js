@@ -274,6 +274,7 @@ export default function App(props) {
           </Stack.Navigator>
           </AuthContext.Provider>
         </NavigationContainer>
+        {Platform.OS === 'ios' && <KeyboardSpacer/>}
       </View>
       </LoadingContext.Provider>
     );
