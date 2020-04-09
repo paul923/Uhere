@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import JayTestScreen from '../screens/debug/JayTestScreen'
 import EventDetailMapView from '../screens/debug/EventDetailMapView'
-import EventDetail from '../components/EventDetail'
+import EventDetailScreen from '../screens/EventDetailScreen'
 
 
 const Stack = createStackNavigator();
@@ -24,7 +24,7 @@ export default function JaysTabNavigator({navivation}) {
             />
             <Stack.Screen
                 name="EventDetail"
-                component={EventDetail}
+                component={EventDetailScreen}
             />
         </Stack.Navigator>
     )

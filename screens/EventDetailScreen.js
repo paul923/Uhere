@@ -40,7 +40,7 @@ const sampleEvent = {
     prize: "americano",
 }
 
-export default function EventDetail({route}) {
+export default function EventDetailScreen({route}) {
 
     React.useEffect(() => {
         console.log(route);
@@ -73,11 +73,11 @@ export default function EventDetail({route}) {
             <View style={styles.detailContainer}>
                 <View style={styles.row}>
                     <Icon name="location-on" />
-                    <Text h5>{sampleEvent.location}</Text>
+                    <Text h5>{route.params.item.location}</Text>
                 </View>
                 <View style={styles.row}>
                     <Icon name="event" />
-                    <Text>{formatDate(sampleEvent.date)}</Text>
+                    <Text>{formatDate(route.params.item.date)}</Text>
                 </View>
                 <View style={styles.row}>
                     <Icon name="keyboard-voice" />
@@ -85,7 +85,7 @@ export default function EventDetail({route}) {
                 </View>
                 <View style={styles.row}>
                     <Icon name="remove-circle" />
-                    <Text>Losers buy {sampleEvent.prize}</Text>
+                    <Text>Losers buy {route.params.item.prize}</Text>
                 </View>
                 <View style={styles.row}>
                     <Icon name="person" />
@@ -102,7 +102,7 @@ export default function EventDetail({route}) {
                             )
                         })
                     }
-                    <Text>{sampleEvent.members.length + "/" + sampleEvent.maximumNumberOfMembers}</Text>
+                    <Text>{route.params.item.members.length + "/" + route.params.item.maximumNumberOfMembers}</Text>
                 </View>
             </View>
         </View>
