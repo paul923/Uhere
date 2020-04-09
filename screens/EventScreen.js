@@ -112,6 +112,7 @@ export default function EventScreen({ navigation, route }) {
         leftComponent={{icon: 'notifications', color: '#fff'}}
         centerComponent={{ text: 'EVENT', style: { color: '#fff' } }}
         rightComponent={{icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event")}}
+        statusBarProps={{translucent: true}}
         />
       <Tab.Navigator>
         <Tab.Screen name="Pending Event" component={PendingEvent} />
