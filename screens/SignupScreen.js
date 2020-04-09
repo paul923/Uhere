@@ -68,6 +68,7 @@ export default class Login extends Component {
           contentContainerStyle={{
             alignItems: 'center',
             padding: 20,
+            flexGrow: 1,
           }}
         >
 

@@ -205,7 +205,7 @@ export default function CreateEventScreen({navigation}) {
     let url = '';
     let location = await Location.getCurrentPositionAsync({});
     try {
-      url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + locationQuery + '.json?' + qs.stringify({
+      url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURI(locationQuery) + '.json?' + qs.stringify({
         proximity: location.coords.longitude + ',' + location.coords.latitude,
         access_token: 'pk.eyJ1IjoiY3Jlc2NlbnQ5NzIzIiwiYSI6ImNrOGdtbzhjZjAxZngzbHBpb3NubnRwd3gifQ.wesLzeTF2LjrYjgmrfrySQ',
         limit: 10

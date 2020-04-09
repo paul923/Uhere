@@ -6,6 +6,7 @@ import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 
 
@@ -24,13 +25,19 @@ export default function LoginTestScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{
+          justifyContent: 'center',
+          flexGrow: 1
+        }}
+        bounces={false}
+      >
       <ScrollView 
         centerContent
         contentContainerStyle={{
           justifyContent: 'center',
           alignItems: 'center',
-          borderWidth: 5,
-          flex: 1
+          flexGrow: 1,
         }}
       >
         <Text style={styles.logoContainer}>
@@ -108,6 +115,7 @@ export default function LoginTestScreen({navigation}) {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   )
 }

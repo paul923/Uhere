@@ -40,9 +40,6 @@ export default class FriendScreen extends React.Component {
       avatarTitle= {item.userInitial}
       displayName = {item.displayName}
       userId = {item.userId}
-      onPress= {()=> {
-        this.setState({selectedFriends: [...this.state.selectedFriends, item]})
-      }}
     />
   )
 
@@ -51,6 +48,7 @@ export default class FriendScreen extends React.Component {
       <View style={styles.container}>
         <Header
           centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
+          statusBarProps={{translucent: true}}
         />
 
 
