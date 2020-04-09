@@ -51,7 +51,7 @@ function PendingEvent(){
   )
 }
 
-function OnGoingEvent(){
+function OnGoingEvent({navigation}){
   return (
     <View style={styles.container}>
       <SectionList
@@ -78,7 +78,7 @@ function OnGoingEvent(){
             ]
           }
         ]}
-        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" />}
+        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" onPress={() => navigation.navigate('Event Detail', {item:item})} />}
         keyExtractor={(item) => item.key.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>

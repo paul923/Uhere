@@ -16,7 +16,7 @@ const members = [
       color: '#fc0f03',
       location: { latitude: 49.3049901, longitude: -122.8332702 },
     },
-    {
+    { 
       name: 'Paul Kim',
       initial: 'PK',
       color: '#0362fc',
@@ -40,16 +40,17 @@ const sampleEvent = {
     prize: "americano",
 }
 
-export default function EventDetail() {
+export default function EventDetail({route}) {
 
     React.useEffect(() => {
+        console.log(route);
     }, []);
 
     return (
         <View style={styles.container}>
             <Header
                 leftComponent={{ icon: 'chevron-left', color: '#fff' }}
-                centerComponent={{ text: sampleEvent.name, style: { color: '#fff' } }}
+                centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
                 centerContainerStyle={{ flex: 1 }}
                 rightComponent={{ icon: 'menu', color: '#fff' }}
             />

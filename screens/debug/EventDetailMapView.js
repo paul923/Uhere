@@ -108,6 +108,7 @@ export default class EventDetailMapView extends React.Component {
           ref={(ref) => this.mapView = ref}
           style={styles.mapStyle}
           showsUserLocation={true}
+          showsMyLocationButton={false}
           // region : which section of the map to render/zoom
           region={this.state.mapRegion}
         >

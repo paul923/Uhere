@@ -4,16 +4,12 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button } from 'react-native-elements';
 
 
-export default function EventCard({item, status}) {
-
-  const navigateToEventDetail = (item) => {
-    console.log(item);
-  }
+export default function EventCard({onPress, item, status}) {
 
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
-        <TouchableOpacity style={styles.cardContentContainer} onPress={() => navigateToEventDetail(item)}>
+        <TouchableOpacity style={styles.cardContentContainer} onPress = {onPress}>
           <Text h4>{item.name}</Text>
           <View style={styles.row}>
             <Icon name="event"/>

@@ -7,6 +7,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import CreateEventScreen from '../screens/CreateEventScreen';
 import FilterEventScreen from '../screens/FilterEventScreen';
+import EventDetail from '../components/EventDetail'
 const Stack = createStackNavigator();
 
 export default function EventNavigator({ navigation, route }) {
@@ -28,6 +29,10 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Filter Event"
         component={FilterEventScreen}
+      />
+      <Stack.Screen
+        name="Event Detail"
+        component={EventDetail}
       />
     </Stack.Navigator>
   )
