@@ -169,7 +169,9 @@ export default function App(props) {
 
       try {
         AsyncStorage.getItem('userToken').then(userToken => {
-          dispatch({ type: 'RESTORE_TOKEN', token: userToken })
+          if (!userToken) {
+            dispatch({ type: 'RESTORE_TOKEN', token: userToken })
+          }
           setTimeout(() => dispatch({ type: 'HIDE_LOADING_SCREEN'}), 1000);
         });
       } catch (e) {
@@ -260,7 +262,7 @@ export default function App(props) {
         <AuthContext.Provider value={authContext}>
           <Stack.Navigator
             headerMode="none">
-            {state.userToken == null && state.showLoadingScreen ? (
+            {state.userToken == null || state.showLoadingScreen ? (
               <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
             ) : (
                 !state.skipProfile ? (
