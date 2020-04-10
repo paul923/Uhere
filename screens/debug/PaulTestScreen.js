@@ -10,29 +10,29 @@ export default function PaulTestScreen({navigation}) {
   return (
     <View style={styles.container}>
       <Button
-        title='Avatar Screen'
+        title='Drawer Layout'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('AvatarNavigator')}
+        onPress={()=> navigation.navigate('Test Screen 1')}
       />
       <Button
-        title='Keyboard Layout (Test)'
+        title='Splash Screen'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('KeyboardTestScreen')}
+        onPress={()=> navigation.navigate('Test Screen 2')}
       />
       <Button
         title='Log-in : Keyboard Layout (Test)'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('LoginTestScreen')}
+        onPress={()=> navigation.navigate('Test Screen 3')}
       />
       <Button
         title='Register : Keyboard Layout (Test)'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('RegisterTestScreen')}
+        onPress={()=> navigation.navigate('Test Screen 4')}
       />
       <Button
         title='Friends : Friends Card, Filter'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('FriendsTestScreen')}
+        onPress={()=> navigation.navigate('Test Screen 5')}
       />
     </View>
   )

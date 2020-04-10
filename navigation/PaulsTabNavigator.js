@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import PaulTestScreen from '../screens/debug/PaulTestScreen'
 import AvatarNavigator from './AvatarNavigator'
-import KeyboardTestScreen from '../screens/debug/KeyboardTestScreen';
+import TestScreen2 from '../screens/debug/TestScreen2';
+import DrawerLayoutScreen from '../screens/debug/DrawerLayoutScreen';
 import LoginTestScreen from '../screens/debug/LoginTestScreen'
 import RegisterTestScreen from '../screens/debug/RegisterTestScreen'
 import AddFriendsScreen from '../screens/AddFriendsScreen'
@@ -23,23 +24,23 @@ export default function PaulsTabNavigator({ navigation, route }) {
         component={PaulTestScreen}
       />
       <Stack.Screen
-        name="AvatarNavigator"
-        component={AvatarNavigator}
+        name="Test Screen 1"
+        component={DrawerLayoutScreen}
       />
       <Stack.Screen
-        name="KeyboardTestScreen"
-        component={KeyboardTestScreen}
+        name="Test Screen 2"
+        component={TestScreen2}
       />
       <Stack.Screen
-        name="LoginTestScreen"
+        name="Test Screen 3"
         component={LoginTestScreen}
       />
       <Stack.Screen
-        name="RegisterTestScreen"
+        name="Test Screen 4"
         component={RegisterTestScreen}
       />
       <Stack.Screen
-        name="FriendsTestScreen"
+        name="Test Screen 5"
         component={AddFriendsScreen}
       />
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput, KeyboardAvoidingView  } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput  } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
