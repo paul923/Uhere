@@ -104,7 +104,7 @@ function OnGoingEvent({ navigation }) {
             item={item}
             status="ON-GOING"
             onPress={() => {
-              if ((item.date - new Date()) < (item.timer * 60000)) {
+              if (0 < (item.date - new Date()) && (item.date - new Date()) < (item.timer * 60000)) {
                 navigation.navigate('Event Detail Map', { item: item })
               }
               else {

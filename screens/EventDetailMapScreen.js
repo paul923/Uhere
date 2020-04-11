@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+import { millisToMinutesAndSeconds } from "../utils/date";
 
 // Constants
 const GEO_FENCING_TASK_NAME = 'geofencing'
@@ -20,12 +21,18 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
   const [startButton, setStartButon] = React.useState(false);
   const [stopButton, setStopButton] = React.useState(true);
   const [goalButton, setGoalButton] = React.useState(true);
+  const [timer, setTimer] = React.useState(route.params.item.date - new Date());
   const mapRef = React.useRef();
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     _setInitialRegion()
     _startGeoFencing()
+    setInterval(() => {
+      if(timer > 0){
+        setTimer(timer => timer - 1000);
+      }
+    }, 1000);
   }, []);
 
   async function _setInitialRegion() {
@@ -94,9 +101,7 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
       />
       {/* Timer */}
       <View style={styles.timer}>
-        <Text h5>
-          30:00
-      </Text>
+      <Text>{millisToMinutesAndSeconds(timer)}</Text>
       </View>
       {/* MapView */}
       <MapView
@@ -228,7 +233,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   timer: {
-    alignSelf: 'center'
+    alignSelf: 'center',
+    backgroundColor: 'transparent',
   },
   mapStyle: {
     flex: 1,
