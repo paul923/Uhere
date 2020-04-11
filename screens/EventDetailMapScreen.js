@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, ScrollView, Dimensions, Alert } from 'react-native';
+import { StyleSheet, StatusBar, Platform, View, ScrollView, Dimensions, Alert, Text } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import Constants from 'expo-constants';
 import MapView from 'react-native-maps';
@@ -24,7 +24,8 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    _setInitialRegion();
+    _setInitialRegion()
+    _startGeoFencing()
   }, []);
 
   async function _setInitialRegion() {
@@ -75,13 +76,28 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
   }
   return (
     <View style={styles.container}>
-
+      {/* Header */}
       <Header
-        leftComponent={{ icon: 'chevron-left', color: '#fff', onPress: () => navigation.navigate("Event")}}
+        leftComponent={
+          {
+            icon: 'chevron-left',
+            color: '#fff',
+            onPress: () => {
+              navigation.navigate("Event")
+              _stopGeoFencing()
+            }
+          }
+        }
         centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
         centerContainerStyle={{ flex: 1 }}
         rightComponent={{ text: 'Event Detail', style: { color: '#fff', flexWrap: 'wrap' } }}
       />
+      {/* Timer */}
+      <View style={styles.timer}>
+        <Text h5>
+          30:00
+      </Text>
+      </View>
       {/* MapView */}
       <MapView
         ref={mapRef}
@@ -210,6 +226,9 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  timer: {
+    alignSelf: 'center'
   },
   mapStyle: {
     flex: 1,

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
+import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import AuthContext from '../contexts/AuthContext';
 import firebaseObject from '../config/firebase';
@@ -31,7 +31,7 @@ const testMembers = [
   },
 ]
 
-function PendingEvent({navigation}){
+function PendingEvent({ navigation }) {
 
   return (
     <View style={styles.container}>
@@ -59,7 +59,7 @@ function PendingEvent({navigation}){
             ]
           }
         ]}
-        renderItem={({ item }) => <EventCard item={item} status="PENDING" onPress={() => navigation.navigate('Event Detail', {item:item})}/>}
+        renderItem={({ item }) => <EventCard item={item} status="PENDING" onPress={() => navigation.navigate('Event Detail', { item: item })} />}
         keyExtractor={(item) => item.key.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
@@ -72,7 +72,7 @@ function PendingEvent({navigation}){
   )
 }
 
-function OnGoingEvent({navigation}){
+function OnGoingEvent({ navigation }) {
   return (
     <View style={styles.container}>
       <SectionList
@@ -103,15 +103,14 @@ function OnGoingEvent({navigation}){
           <EventCard
             item={item}
             status="ON-GOING"
-            onPress={
-              () => {
-                if ([item.date - new Date()] < [item.timer * 60000]) {
-                  navigation.navigate('Event Detail Map', { item: item })
-                }
-                else {
-                  navigation.navigate('Event Detail', { item: item })
-                }
+            onPress={() => {
+              if ((item.date - new Date()) < (item.timer * 60000)) {
+                navigation.navigate('Event Detail Map', { item: item })
               }
+              else {
+                navigation.navigate('Event Detail', { item: item })
+              }
+            }
             }
           />
         }
@@ -126,7 +125,7 @@ function OnGoingEvent({navigation}){
     </View>
   )
 }
-function EventHistory(){
+function EventHistory() {
   return (
     <View style={styles.container}>
       <Text>Pending Event</Text>
@@ -145,10 +144,10 @@ export default function EventScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Header
-        leftComponent={{icon: 'notifications', color: '#fff'}}
+        leftComponent={{ icon: 'notifications', color: '#fff' }}
         centerComponent={{ text: 'EVENT', style: { color: '#fff' } }}
-        rightComponent={{icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event")}}
-        />
+        rightComponent={{ icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event") }}
+      />
       <Tab.Navigator>
         <Tab.Screen name="Pending Event" component={PendingEvent} />
         <Tab.Screen name="On-Going Event" component={OnGoingEvent} />
@@ -159,19 +158,19 @@ export default function EventScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#F5FCFF'
-    },
-    listContainer: {
-      marginLeft: 15,
-      marginRight: 15
-    },
-    sectionHeader: {
-      color: 'white',
-      fontWeight: 'bold',
-      backgroundColor: 'gray',
-      paddingLeft: 5,
-      zIndex: 99
-    }
+  container: {
+    flex: 1,
+    backgroundColor: '#F5FCFF'
+  },
+  listContainer: {
+    marginLeft: 15,
+    marginRight: 15
+  },
+  sectionHeader: {
+    color: 'white',
+    fontWeight: 'bold',
+    backgroundColor: 'gray',
+    paddingLeft: 5,
+    zIndex: 99
+  }
 });
