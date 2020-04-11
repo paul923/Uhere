@@ -10,11 +10,6 @@ export default function JayTestScreen({ navigation }) {
                 buttonStyle={styles.button}
                 onPress={() => navigation.navigate('EventDetailMapView')}
             />
-            <Button
-                title='EventDetail'
-                buttonStyle={styles.button}
-                onPress={() => navigation.navigate('EventDetail')}
-            />
         </View>
     )
 }

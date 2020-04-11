@@ -35,33 +35,32 @@ const members = [
   },
 ]
 
-export default class EventDetailMapScreen extends React.Component {
+export default function EventDetailMapScreenFunction({ navigation, route }) {
+  const [mapRegion, setMapRegion] = React.useState();
+  const [startButton, setStartButon] = React.useState(false);
+  const [stopButton, setStopButton] = React.useState(true);
+  const [goalButton, setGoalButton] = React.useState(true);
+  const mapRef = React.useRef();
 
-  state = {
-    mapRegion: { latitude: 0, longitude: 0, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA },
-    startButton: false,
-    stopButton: true,
-    goalButton: true,
+  // Load any resources or data that we need prior to rendering the app
+  React.useEffect(() => {
+    _setInitialRegion();
+  }, []);
+
+  async function _setInitialRegion() {
+    let location = await Location.getCurrentPositionAsync();
+    let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
+    setMapRegion(region);
   };
 
-  componentDidMount() {
-    this._getLocationAsync();
+  async function _goToMyLocation() {
+    let location = await Location.getCurrentPositionAsync();
+    let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
+    mapRef.current.animateToRegion(region);
   }
 
-  async _getLocationAsync() {
-    let location = await Location.getCurrentPositionAsync({});
-    let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
-    this.setState({ mapRegion: region });
-  };
-
-  async _goToMyLocation() {
-    let location = await Location.getCurrentPositionAsync({});
-    let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
-    this.mapView.animateToRegion(region);
-  };
-
-  async _fitAll() {
-    let location = await Location.getCurrentPositionAsync({});
+  async function _fitAll() {
+    let location = await Location.getCurrentPositionAsync();
     let coordinates = []
     // user's location
     coordinates.push({ latitude: location.coords.latitude, longitude: location.coords.longitude });
@@ -69,10 +68,10 @@ export default class EventDetailMapScreen extends React.Component {
     coordinates.push(meetingLocation);
     // members' locations
     members.map((u) => coordinates.push(u.location))
-    this.mapView.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
-  };
+    mapRef.current.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
+  }
 
-  async startGeoFencing() {
+  async function _startGeoFencing() {
     let location = await Location.getCurrentPositionAsync({});
     let regions = [
       {
@@ -84,150 +83,149 @@ export default class EventDetailMapScreen extends React.Component {
       }
     ]
     await Location.startGeofencingAsync(GEO_FENCING_TASK_NAME, regions)
-    this.setState({ startButton: !this.state.startButton, stopButton: !this.state.stopButton });
+    setStartButon(!startButton);
+    setStopButton(!stopButton);
   }
 
-  async stopGeoFencing() {
+  async function _stopGeoFencing() {
     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
     console.log('stopped geofencing');
-    this.setState({ startButton: !this.state.startButton, stopButton: !this.state.stopButton });
+    setStartButon(!startButton);
+    setStopButton(!stopButton);
   }
+  return (
+    <View style={styles.container}>
 
-  render() {
-    return (
-      <View style={styles.container}>
-
-        <Header
-          leftComponent={{ icon: 'chevron-left', color: '#fff' }}
-          centerComponent={{ text: 'Map View', style: { color: '#fff' } }}
-          centerContainerStyle={{ flex: 1 }}
-          rightComponent={{ text: 'Event Detail', style: { color: '#fff', flexWrap: 'wrap' } }}
+      <Header
+        leftComponent={{ icon: 'chevron-left', color: '#fff' }}
+        centerComponent={{ text: 'Map View', style: { color: '#fff' } }}
+        centerContainerStyle={{ flex: 1 }}
+        rightComponent={{ text: 'Event Detail', style: { color: '#fff', flexWrap: 'wrap' } }}
+      />
+      {/* MapView */}
+      <MapView
+        ref={mapRef}
+        style={styles.mapStyle}
+        showsUserLocation={true}
+        showsMyLocationButton={false}
+        // region : which section of the map to render/zoom
+        region={mapRegion}
+      >
+        {/* Meeting Location Circle */}
+        <MapView.Circle
+          center={{
+            latitude: meetingLocation.latitude,
+            longitude: meetingLocation.longitude,
+          }}
+          radius={500} // in meters
+          strokeWidth={2}
+          strokeColor='rgba(89, 89, 89, 0.42)'
+          fillColor='rgba(89, 89, 89, 0.42)'
         />
-        {/* MapView */}
-        <MapView
-          ref={(ref) => this.mapView = ref}
-          style={styles.mapStyle}
-          showsUserLocation={true}
-          showsMyLocationButton={false}
-          // region : which section of the map to render/zoom
-          region={this.state.mapRegion}
-        >
-          {/* Meeting Location Circle */}
-          <MapView.Circle
-            center={{
-              latitude: meetingLocation.latitude,
-              longitude: meetingLocation.longitude,
-            }}
-            radius={500} // in meters
-            strokeWidth={2}
-            strokeColor='rgba(89, 89, 89, 0.42)'
-            fillColor='rgba(89, 89, 89, 0.42)'
-          />
-          {/* Member Markers */}
+        {/* Member Markers */}
+        {
+          members.map((u, i) => {
+            return (
+              <MapView.Marker
+                key={i}
+                pinColor={u.color}
+                coordinate={
+                  {
+                    latitude: u.location.latitude,
+                    longitude: u.location.longitude,
+                  }
+                }
+              />
+            )
+          })
+        }
+      </MapView>
+
+      {/* My Location Button */}
+      <View style={styles.myLocationStyle}>
+        <Icon
+          reverse
+          name='location-arrow'
+          type='font-awesome'
+          onPress={_goToMyLocation}
+        />
+      </View>
+
+      {/* Goal In Button */}
+      <View style={styles.goalStyle}>
+        <Icon
+          reverse
+          name='check'
+          type='font-awesome'
+          disabled={goalButton}
+        />
+      </View>
+
+      {/* Geo Start Button */}
+      <View style={styles.startStyle}>
+        <Icon
+          reverse
+          name='play-circle'
+          type='font-awesome'
+          disabled={startButton}
+          onPress={_startGeoFencing}
+        />
+      </View>
+
+      {/* Geo End Button */}
+      <View style={styles.stopStyle}>
+        <Icon
+          reverse
+          name='stop-circle'
+          type='font-awesome'
+          disabled={stopButton}
+          onPress={_stopGeoFencing}
+        />
+      </View>
+
+      <View style={styles.avatarContianer}>
+        <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          {/* fitAll */}
+          <View style={styles.avatar}>
+            <Avatar
+              rounded
+              size='medium'
+              icon={{ name: 'users', type: 'font-awesome' }}
+              onPress={_fitAll}
+            />
+          </View>
+          {/* Meeting Location */}
+          <View style={styles.avatar}>
+            <Avatar
+              rounded
+              size='medium'
+              icon={{ name: 'map-marker', type: 'font-awesome' }}
+              onPress={() => mapRef.current.animateToRegion({ latitude: meetingLocation.latitude, longitude: meetingLocation.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA })}
+            />
+          </View>
+          {/* Members */}
           {
             members.map((u, i) => {
+              let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
               return (
-                <MapView.Marker
-                  key={i}
-                  pinColor={u.color}
-                  coordinate={
-                    {
-                      latitude: u.location.latitude,
-                      longitude: u.location.longitude,
-                    }
-                  }
-                />
+                <View style={styles.avatar} key={i}>
+                  <Avatar
+                    rounded
+                    size='medium'
+                    title={u.initial}
+                    onPress={() => mapRef.current.animateToRegion(memberRegion)}
+                  />
+                </View>
               )
             })
           }
-        </MapView>
-
-        {/* My Location Button */}
-        <View style={styles.myLocationStyle}>
-          <Icon
-            reverse
-            name='location-arrow'
-            type='font-awesome'
-            onPress={() => this._goToMyLocation()}
-          />
-        </View>
-
-        {/* Goal In Button */}
-        <View style={styles.goalStyle}>
-          <Icon
-            reverse
-            name='check'
-            type='font-awesome'
-            disabled={this.state.goalButton}
-          />
-        </View>
-
-        {/* Geo Start Button */}
-        <View style={styles.startStyle}>
-          <Icon
-            reverse
-            name='play-circle'
-            type='font-awesome'
-            disabled={this.state.startButton}
-            onPress={() => this.startGeoFencing()}
-          />
-        </View>
-
-        {/* Geo End Button */}
-        <View style={styles.stopStyle}>
-          <Icon
-            reverse
-            name='stop-circle'
-            type='font-awesome'
-            disabled={this.state.stopButton}
-            onPress={() => this.stopGeoFencing()}
-          />
-        </View>
-
-        <View style={styles.avatarContianer}>
-          <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-            {/* fitAll */}
-            <View style={styles.avatar}>
-              <Avatar
-                rounded
-                size='medium'
-                icon={{ name: 'users', type: 'font-awesome' }}
-                onPress={() => this._fitAll()}
-              />
-            </View>
-            {/* Meeting Location */}
-            <View style={styles.avatar}>
-              <Avatar
-                rounded
-                size='medium'
-                icon={{ name: 'map-marker', type: 'font-awesome' }}
-                onPress={() => this.mapView.animateToRegion({ latitude: meetingLocation.latitude, longitude: meetingLocation.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA })}
-              />
-            </View>
-            {/* Members */}
-            {
-              members.map((u, i) => {
-                let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
-                return (
-                  <View style={styles.avatar} key={i}>
-                    <Avatar
-                      rounded
-                      size='medium'
-                      title={u.initial}
-                      onPress={() => this.mapView.animateToRegion(memberRegion)}
-                    />
-                  </View>
-                )
-              })
-            }
-          </ScrollView>
-        </View>
-
+        </ScrollView>
       </View>
-    );
-  }
 
+    </View>
+  );
 }
+
 
 const styles = StyleSheet.create({
   container: {
