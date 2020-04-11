@@ -35,7 +35,7 @@ const members = [
   },
 ]
 
-export default class EventDetailMapView extends React.Component {
+export default class EventDetailMapScreen extends React.Component {
 
   state = {
     mapRegion: { latitude: 0, longitude: 0, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA },

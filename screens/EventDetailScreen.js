@@ -9,38 +9,62 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-const members = [
-    {
-      name: 'Matthew Kim',
-      initial: 'MK',
-      color: '#fc0f03',
-      location: { latitude: 49.3049901, longitude: -122.8332702 },
+const testLocation = {
+    "id": "poi.274877968974",
+    "type": "Feature",
+    "place_type": [
+        "poi"
+    ],
+    "relevance": 0.954545,
+    "properties": {
+        "landmark": true,
+        "address": "4341 North Rd",
+        "category": "cafe, coffee, tea, tea house",
+        "maki": "cafe"
     },
-    { 
-      name: 'Paul Kim',
-      initial: 'PK',
-      color: '#0362fc',
-      location: { latitude: 49.2620402, longitude: -122.8763948 },
+    "text": "Juillet Cafe",
+    "place_name": "Juillet Cafe, 4341 North Rd, Burnaby, British Columbia V3N 4N4, Canada",
+    "center": [
+        -122.892873,
+        49.245313
+    ],
+    "geometry": {
+        "coordinates": [
+            -122.892873,
+            49.245313
+        ],
+        "type": "Point"
     },
-    {
-      name: 'Justin Choi',
-      initial: 'JC',
-      color: '#fcba03',
-      location: { latitude: 49.2509886, longitude: -122.8920569 },
-    },
-  ]
-
-const sampleEvent = {
-    date: new Date(2020, 3, 20),
-    key: 1,
-    location: "Juilet Cafe",
-    maximumNumberOfMembers: 5,
-    members: members,
-    name: "Startcraft",
-    prize: "americano",
+    "context": [
+        {
+            "id": "neighborhood.4648501112784200",
+            "text": "Cameron"
+        },
+        {
+            "id": "postcode.17850449015175840",
+            "text": "V3N 4N4"
+        },
+        {
+            "id": "place.11396815904751060",
+            "wikidata": "Q244025",
+            "text": "Burnaby"
+        },
+        {
+            "id": "region.10008500984322020",
+            "short_code": "CA-BC",
+            "wikidata": "Q1974",
+            "text": "British Columbia"
+        },
+        {
+            "id": "country.10019870576587150",
+            "short_code": "ca",
+            "wikidata": "Q16",
+            "text": "Canada"
+        }
+    ]
 }
 
-export default function EventDetailScreen({route}) {
+export default function EventDetailScreen({ navigation, route }) {
 
     React.useEffect(() => {
         console.log(route);
@@ -49,7 +73,7 @@ export default function EventDetailScreen({route}) {
     return (
         <View style={styles.container}>
             <Header
-                leftComponent={{ icon: 'chevron-left', color: '#fff' }}
+                leftComponent={{ icon: 'chevron-left', color: '#fff', onPress: () => navigation.navigate("Event") }}
                 centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
                 centerContainerStyle={{ flex: 1 }}
                 rightComponent={{ icon: 'menu', color: '#fff' }}
@@ -57,40 +81,51 @@ export default function EventDetailScreen({route}) {
             {/* Map */}
             <MapView
                 style={styles.mapStyle}
-                region={{ latitude: 49.2451673, longitude: -122.8933748, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
+                region={{ latitude: testLocation.center[1], longitude: testLocation.center[0], latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
             >
                 <MapView.Marker
                     coordinate={
                         {
-                            latitude: 49.2451673,
-                            longitude: -122.8933748,
+                            latitude: testLocation.center[1],
+                            longitude: testLocation.center[0],
                         }
                     }
-                    title = 'Juilet Cafe'
+                    title='Juilet Cafe'
                 />
             </MapView>
 
             <View style={styles.detailContainer}>
                 <View style={styles.row}>
                     <Icon name="location-on" />
-                    <Text h5>{route.params.item.location}</Text>
+                    <View style={styles.column}>
+                        <Text h5>{testLocation.text}</Text>
+                        <Text h5>{testLocation.properties.address + ", " + testLocation.context[2].text}</Text>
+                    </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="event" />
-                    <Text>{formatDate(route.params.item.date)}</Text>
+                    <View style={styles.column}>
+                        <Text h5>{formatDate(route.params.item.date) + ", " + formatTime(route.params.item.date)}</Text>
+                        <Text h5>{ new Date().getHours()+ ":" + new Date().getMinutes()}</Text>
+                    </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="keyboard-voice" />
-                    <Text>빨리안오면 아메리카노 사는거다 빨랑와라</Text>
+                    <View style={styles.column}>
+                        <Text>빨리안오면 아메리카노 사는거다 빨랑와라</Text>
+                    </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="remove-circle" />
-                    <Text>Losers buy {route.params.item.prize}</Text>
+                    <View style={styles.column}>
+                        <Text>Losers buy {route.params.item.prize}</Text>
+                    </View>
+
                 </View>
                 <View style={styles.row}>
                     <Icon name="person" />
                     {
-                        sampleEvent.members.map((u, i) => {
+                        route.params.item.members.map((u, i) => {
                             return (
                                 <View style={styles.avatar} key={i}>
                                     <Avatar
@@ -123,12 +158,13 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-
+        marginLeft: 30,
+        marginTop: 20
+    },
+    column: {
         marginLeft: 15,
-        marginRight: 15,
-        marginTop: 15
-      },
-      avatar: {
+    },
+    avatar: {
         margin: 5,
-      },
+    },
 })

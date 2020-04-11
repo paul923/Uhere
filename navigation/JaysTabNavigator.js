@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import JayTestScreen from '../screens/debug/JayTestScreen'
-import EventDetailMapView from '../screens/debug/EventDetailMapView'
+import EventDetailMapScreen from '../screens/EventDetailMapScreen'
 import EventDetailScreen from '../screens/EventDetailScreen'
 
 
@@ -20,7 +20,7 @@ export default function JaysTabNavigator({navivation}) {
             />
             <Stack.Screen
                 name="EventDetailMapView"
-                component={EventDetailMapView}
+                component={EventDetailMapScreen}
             />
             <Stack.Screen
                 name="EventDetail"
