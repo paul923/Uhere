@@ -13,6 +13,7 @@ import SideMenu from 'react-native-side-menu'
 
 export default function DrawerLayoutScreen() {
   const [ isOpen, setOpen] = React.useState(false);
+  const [ diffView, setDiffView] = React.useState(true);
 
   React.useEffect(() => {
     
@@ -40,11 +41,32 @@ export default function DrawerLayoutScreen() {
             />
           }
         />
-
         
+        {diffView ? viewA() : viewB()}
+        
+        <Button
+          title="Switch View"
+          type="solid"
+          onPress={()=>setDiffView(!diffView)}
+        />
       </View>
     </SideMenu>
   )
+}
+
+function viewA(){
+  return (
+    <View style={{flex:1, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center'}}>
+      <Text style={{fontSize:50}}>This is View A</Text>
+    </View>
+  );
+}
+function viewB(){
+  return (
+    <View style={{flex:1, backgroundColor: 'blue', justifyContent: 'center', alignItems: 'center'}}>
+      <Text style={{fontSize:50}}>This is View B</Text>
+    </View>
+  );
 }
 
 function menuContent(){
