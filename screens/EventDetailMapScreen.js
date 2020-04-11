@@ -29,8 +29,8 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
     _setInitialRegion()
     _startGeoFencing()
     setInterval(() => {
-      if(timer > 0){
-        setTimer(timer => timer - 1000);
+      if (route.params.item.date - new Date() > 0) {
+        setTimer(route.params.item.date - new Date());
       }
     }, 1000);
   }, []);
@@ -101,7 +101,7 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
       />
       {/* Timer */}
       <View style={styles.timer}>
-      <Text>{millisToMinutesAndSeconds(timer)}</Text>
+        <Text>{millisToMinutesAndSeconds(timer)}</Text>
       </View>
       {/* MapView */}
       <MapView
