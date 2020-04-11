@@ -14,26 +14,6 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 // Below should come from Event Detial in the future
 const meetingLocation = { latitude: 49.2451673, longitude: -122.8933748 }
-const members = [
-  {
-    name: 'Matthew Kim',
-    initial: 'MK',
-    color: '#fc0f03',
-    location: { latitude: 49.3049901, longitude: -122.8332702 },
-  },
-  {
-    name: 'Paul Kim',
-    initial: 'PK',
-    color: '#0362fc',
-    location: { latitude: 49.2620402, longitude: -122.8763948 },
-  },
-  {
-    name: 'Justin Choi',
-    initial: 'JC',
-    color: '#fcba03',
-    location: { latitude: 49.2509886, longitude: -122.8920569 },
-  },
-]
 
 export default function EventDetailMapScreenFunction({ navigation, route }) {
   const [mapRegion, setMapRegion] = React.useState();
@@ -67,7 +47,7 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
     // meeting location
     coordinates.push(meetingLocation);
     // members' locations
-    members.map((u) => coordinates.push(u.location))
+    route.params.item.members.map((u) => coordinates.push(u.location))
     mapRef.current.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
   }
 
@@ -97,8 +77,8 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
     <View style={styles.container}>
 
       <Header
-        leftComponent={{ icon: 'chevron-left', color: '#fff' }}
-        centerComponent={{ text: 'Map View', style: { color: '#fff' } }}
+        leftComponent={{ icon: 'chevron-left', color: '#fff', onPress: () => navigation.navigate("Event")}}
+        centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
         centerContainerStyle={{ flex: 1 }}
         rightComponent={{ text: 'Event Detail', style: { color: '#fff', flexWrap: 'wrap' } }}
       />
@@ -124,7 +104,7 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
         />
         {/* Member Markers */}
         {
-          members.map((u, i) => {
+          route.params.item.members.map((u, i) => {
             return (
               <MapView.Marker
                 key={i}
@@ -205,7 +185,7 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
           </View>
           {/* Members */}
           {
-            members.map((u, i) => {
+            route.params.item.members.map((u, i) => {
               let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }
               return (
                 <View style={styles.avatar} key={i}>

@@ -81,8 +81,8 @@ function OnGoingEvent({navigation}){
           {
             title: "Apr 20",
             data: [
-              { key: 1, name: 'GAZUA', date: new Date(2020, 3, 11), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: testMembers, prize: 'americano' },
-              { key: 2, name: 'StartCraft', date: new Date(2020, 3, 20), location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: [], prize: 'americano' }
+              { key: 1, name: 'GAZUA', date: new Date(2020, 3, 11, 13, 30), timer: 30, location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: testMembers, prize: 'americano' },
+              { key: 2, name: 'StartCraft', date: new Date(2020, 3, 11, 14, 0), timer: 30, location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: testMembers, prize: 'americano' }
             ]
           },
           {
@@ -99,7 +99,22 @@ function OnGoingEvent({navigation}){
             ]
           }
         ]}
-        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" onPress={() => navigation.navigate('Event Detail', {item:item})} />}
+        renderItem={({ item }) =>
+          <EventCard
+            item={item}
+            status="ON-GOING"
+            onPress={
+              () => {
+                if ([item.date - new Date()] < [item.timer * 60000]) {
+                  navigation.navigate('Event Detail Map', { item: item })
+                }
+                else {
+                  navigation.navigate('Event Detail', { item: item })
+                }
+              }
+            }
+          />
+        }
         keyExtractor={(item) => item.key.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>

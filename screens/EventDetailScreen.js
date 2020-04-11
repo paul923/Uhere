@@ -67,7 +67,6 @@ const testLocation = {
 export default function EventDetailScreen({ navigation, route }) {
 
     React.useEffect(() => {
-        console.log(route);
     }, []);
 
     return (
@@ -106,7 +105,7 @@ export default function EventDetailScreen({ navigation, route }) {
                     <Icon name="event" />
                     <View style={styles.column}>
                         <Text h5>{formatDate(route.params.item.date) + ", " + formatTime(route.params.item.date)}</Text>
-                        <Text h5>{ new Date().getHours()+ ":" + new Date().getMinutes()}</Text>
+                        <Text h5>in { route.params.item.date - new Date() } milliseconds</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
