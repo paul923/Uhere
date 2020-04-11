@@ -82,7 +82,7 @@ function OnGoingEvent({ navigation }) {
             title: "Apr 20",
             data: [
               { key: 1, name: 'GAZUA', date: new Date(2020, 3, 11, 13, 30), timer: 30, location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: testMembers, prize: 'americano' },
-              { key: 2, name: 'StartCraft', date: new Date(2020, 3, 11, 14, 30), timer: 30, location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: testMembers, prize: 'americano' }
+              { key: 2, name: 'StartCraft', date: new Date(2020, 3, 11, 15, 10), timer: 30, location: 'Juilet Cafe', maximumNumberOfMembers: 5, members: testMembers, prize: 'americano' }
             ]
           },
           {

@@ -28,11 +28,14 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
   React.useEffect(() => {
     _setInitialRegion()
     _startGeoFencing()
-    setInterval(() => {
-      if (route.params.item.date - new Date() > 0) {
-        setTimer(route.params.item.date - new Date());
-      }
-    }, 1000);
+    // var id = setInterval(() => {
+    //   if (route.params.item.date - new Date() > 0) {
+    //     setTimer(route.params.item.date - new Date());
+    //   } else {
+    //     setTimer(0);
+    //     clearInterval(id);
+    //   }
+    // }, 1000);
   }, []);
 
   async function _setInitialRegion() {
@@ -81,6 +84,11 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
     setStartButon(!startButton);
     setStopButton(!stopButton);
   }
+
+  function switchToEventDetail() {
+    navigation.navigate('Event Detail', {item: route.params.item })
+  }
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -97,7 +105,7 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
         }
         centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
         centerContainerStyle={{ flex: 1 }}
-        rightComponent={{ text: 'Event Detail', style: { color: '#fff', flexWrap: 'wrap' } }}
+        rightComponent={{ icon: 'menu', color: '#fff' }}
       />
       {/* Timer */}
       <View style={styles.timer}>
@@ -183,6 +191,15 @@ export default function EventDetailMapScreenFunction({ navigation, route }) {
           onPress={_stopGeoFencing}
         />
       </View>
+      {/* Switch to Event Detail */}
+      <View style={styles.switchStyle}>
+        <Icon
+          reverse
+          name='exchange'
+          type='font-awesome'
+          onPress={switchToEventDetail}
+        />
+      </View>
 
       <View style={styles.avatarContianer}>
         <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
@@ -265,6 +282,11 @@ const styles = StyleSheet.create({
     right: 0,
     position: 'absolute',
     bottom: 100,
+  },
+  switchStyle: {
+    right: 0,
+    position: 'absolute',
+    bottom: 200,
   },
 });
 

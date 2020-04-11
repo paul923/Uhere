@@ -69,6 +69,9 @@ export default function EventDetailScreen({ navigation, route }) {
     React.useEffect(() => {
     }, []);
 
+    function switchToEventDetail() {
+        navigation.navigate('Event Detail Map', { item: route.params.item })
+    }
     return (
         <View style={styles.container}>
             <Header
@@ -105,7 +108,7 @@ export default function EventDetailScreen({ navigation, route }) {
                     <Icon name="event" />
                     <View style={styles.column}>
                         <Text h5>{formatDate(route.params.item.date) + ", " + formatTime(route.params.item.date)}</Text>
-                        <Text h5>in { route.params.item.date - new Date() } milliseconds</Text>
+                        <Text h5>in {route.params.item.date - new Date()} milliseconds</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -139,6 +142,16 @@ export default function EventDetailScreen({ navigation, route }) {
                     <Text>{route.params.item.members.length + "/" + route.params.item.maximumNumberOfMembers}</Text>
                 </View>
             </View>
+            {0 < (route.params.item.date - new Date()) && (route.params.item.date - new Date()) < (route.params.item.timer * 60000) && (
+                <View style={styles.switchStyle}>
+                    <Icon
+                        reverse
+                        name='exchange'
+                        type='font-awesome'
+                        onPress={switchToEventDetail}
+                    />
+                </View>
+            )}
         </View>
     )
 }
@@ -165,5 +178,10 @@ const styles = StyleSheet.create({
     },
     avatar: {
         margin: 5,
+    },
+    switchStyle: {
+        right: 0,
+        position: 'absolute',
+        bottom: 200,
     },
 })
