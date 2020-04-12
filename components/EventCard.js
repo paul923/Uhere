@@ -9,28 +9,28 @@ export default function EventCard({item, status}) {
     <View style={styles.container}>
       <View style={styles.cardContainer}>
         <View style={styles.cardContentContainer}>
-          <Text h4>{item.name}</Text>
+          <Text h4>{item.Name}</Text>
           <View style={styles.row}>
             <Icon name="event"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{formatDate(item.date)}</Text>
-              <Text h5 style={styles.cardColumnText}>{formatTime(item.date)}</Text>
+              <Text h5 style={styles.cardColumnText}>{formatDate(new Date(item.DateTime))}</Text>
+              <Text h5 style={styles.cardColumnText}>{formatTime(new Date(item.DateTime))}</Text>
             </View>
             <Icon name="remove-circle"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.prize}</Text>
+              <Text h5 style={styles.cardColumnText}>{item.Penalty}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Icon name="location-on"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.location}</Text>
+              <Text h5 style={styles.cardColumnText}>{item.LocationName}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Icon name="person"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.members.length + "/" + item.maximumNumberOfMembers}</Text>
+              <Text h5 style={styles.cardColumnText}>{"0/" + item.MaxMember}</Text>
             </View>
           </View>
         </View>

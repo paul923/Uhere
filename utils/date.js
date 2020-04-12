@@ -9,3 +9,14 @@ export function formatTime(date) {
 export function formatMonth(date) {
   return format(date, 'MMM do')
 }
+
+export function combineDateAndTime(date, time) {
+  var timeString = time.getHours() + ':' + time.getMinutes() + ':00';
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1; // Jan is 0, dec is 11
+  var day = date.getDate();
+  var dateString = '' + year + '-' + month + '-' + day;
+  var combined = new Date(dateString + ' ' + timeString);
+
+  return combined;
+};
