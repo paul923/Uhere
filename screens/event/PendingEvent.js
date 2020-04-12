@@ -15,12 +15,16 @@ export default function PendingEvent({ navigation, route }) {
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));
-        console.log(formatEventList(responseJson))
       } catch (error) {
         console.error(error);
       }
     }
-    fetchData();
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      fetchData();
+    });
+
+    return unsubscribeFocus;
+
   }, []);
   return (
     <View style={styles.container}>

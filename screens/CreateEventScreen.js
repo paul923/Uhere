@@ -74,6 +74,7 @@ export default function CreateEventScreen({navigation}) {
     });
     let responseJson = await response.json();
     alert("Added record");
+    navigation.navigate('Event')
   }
 
   function cancel() {

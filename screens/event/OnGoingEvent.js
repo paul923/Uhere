@@ -20,7 +20,11 @@ export default function OnGoingEvent({ navigation, route }) {
         console.error(error);
       }
     }
-    fetchData();
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      fetchData();
+    });
+
+    return unsubscribeFocus;
   }, []);
   return (
     <View style={styles.container}>
