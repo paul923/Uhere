@@ -233,7 +233,6 @@ export default function CreateEventScreen({navigation}) {
         access_token: 'pk.eyJ1IjoiY3Jlc2NlbnQ5NzIzIiwiYSI6ImNrOGdtbzhjZjAxZngzbHBpb3NubnRwd3gifQ.wesLzeTF2LjrYjgmrfrySQ',
         limit: 10
       });
-      console.log(url);
       let response = await fetch(url);
       let responseJson = await response.json();
       setLocationResult(responseJson.features);
