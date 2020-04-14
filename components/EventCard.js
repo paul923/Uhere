@@ -1,39 +1,40 @@
 import * as React from 'react';
 import { formatDate, formatTime } from "../utils/date";
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button } from 'react-native-elements';
 
 
-export default function EventCard({item, status}) {
+export default function EventCard({onPress, item, status}) {
+
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
-        <View style={styles.cardContentContainer}>
+        <TouchableOpacity style={styles.cardContentContainer} onPress = {onPress}>
           <Text h4>{item.name}</Text>
           <View style={styles.row}>
             <Icon name="event"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{formatDate(item.date)}</Text>
-              <Text h5 style={styles.cardColumnText}>{formatTime(item.date)}</Text>
+              <Text h5 style={styles.cardColumnText}>{formatDate(new Date(item.DateTime))}</Text>
+              <Text h5 style={styles.cardColumnText}>{formatTime(new Date(item.DateTime))}</Text>
             </View>
             <Icon name="remove-circle"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.prize}</Text>
+              <Text h5 style={styles.cardColumnText}>{item.Penalty}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Icon name="location-on"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.location}</Text>
+              <Text h5 style={styles.cardColumnText}>{item.LocationName}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Icon name="person"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.members.length + "/" + item.maximumNumberOfMembers}</Text>
+              <Text h5 style={styles.cardColumnText}>{"0/" + item.MaxMember}</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
         {status === 'PENDING' && (
           <View style={styles.cardButtonContainer}>
             <View style={{...styles.cardButton, backgroundColor: '#A0A0A0', borderTopRightRadius: 10}}>

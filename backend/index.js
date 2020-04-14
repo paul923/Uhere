@@ -16,12 +16,35 @@ const pool = mysql.createPool({
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+function formatEventList(list) {
+  console.log(list);
+}
+
 // Creating a GET route that returns data from the 'users' table.
-app.get('/retrieve', function (req, res) {
+app.get('/event/pending', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    var sql = "SELECT * FROM ??";
-    var parameters = ['test_table'];
+    var sql = "SELECT * FROM ?? WHERE STATUS = ?";
+    var parameters = ['Event', 'PENDING'];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      // If some error occurs, we throw an error.
+      if (error) throw error;
+      // Getting the 'response' from the database and sending it to our route. This is were the data is.
+      res.send(results)
+    });
+  });
+});
+
+// Creating a GET route that returns data from the 'users' table.
+app.get('/event/on-going', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    var sql = "SELECT * FROM ?? WHERE STATUS = ?";
+    var parameters = ['Event', 'ONGOING'];
     sql = mysql.format(sql, parameters);
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
@@ -35,15 +58,18 @@ app.get('/retrieve', function (req, res) {
   });
 });
 
-app.post('/insert', function (req,res) {
+app.post('/event/insert', function (req,res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
+    var event = {
+      ...req.body,
+      DateTime: new Date(req.body.DateTime)
+    }
     var sql = "INSERT INTO ?? SET ?";
-    var parameters = ['test_table'];
+    var parameters = ['Event'];
     sql = mysql.format(sql, parameters);
-    console.log(req.body);
     // Executing the MySQL query (select all data from the 'users' table).
-    connection.query(sql, req.body, function (error, results, fields) {
+    connection.query(sql, event, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
       if (error) throw error;
@@ -53,6 +79,7 @@ app.post('/insert', function (req,res) {
     });
   });
 })
+
 
 // Starting our server.
 app.listen(3000, () => {

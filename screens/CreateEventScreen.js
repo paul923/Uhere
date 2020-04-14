@@ -17,7 +17,7 @@ import firebaseObject from '../config/firebase';
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
 
-import {formatDate, formatTime} from '../utils/date';
+import {formatDate, formatTime, combineDateAndTime} from '../utils/date';
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from '../assets/images/robot-dev.png';
@@ -50,8 +50,31 @@ export default function CreateEventScreen({navigation}) {
     setFriends(friendsData);
   }, []);
 
-  function publish() {
-
+  async function publish() {
+    let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
+    let response = await fetch('http://192.168.1.73:3000/event/insert', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Name: eventName,
+        Description: "",
+        LocationName: location.place_name.split(',')[0],
+        LocationAddress: location.place_name.split(',')[1],
+        LocationGeolat: location.geometry.coordinates[1],
+        LocationGeolong: location.geometry.coordinates[0],
+        DateTime: date,
+        MaxMember: maximumNumberOfMembers,
+        Reminder: reminder,
+        Penalty: penalty,
+        Status: "PENDING"
+      }),
+    });
+    let responseJson = await response.json();
+    alert("Added record");
+    navigation.navigate('Event')
   }
 
   function cancel() {
@@ -210,7 +233,6 @@ export default function CreateEventScreen({navigation}) {
         access_token: 'pk.eyJ1IjoiY3Jlc2NlbnQ5NzIzIiwiYSI6ImNrOGdtbzhjZjAxZngzbHBpb3NubnRwd3gifQ.wesLzeTF2LjrYjgmrfrySQ',
         limit: 10
       });
-      console.log(url);
       let response = await fetch(url);
       let responseJson = await response.json();
       setLocationResult(responseJson.features);
@@ -241,7 +263,7 @@ export default function CreateEventScreen({navigation}) {
               key={index}
               title={item.text}
               subtitle={item.properties.address}
-              onPress={() => setLocation(item)}
+              onPress={() => {console.log(item); setLocation(item)}}
               rightIcon={location && item.id === location.id ? { name: 'check' } : null}
               bottomDivider
             />
