@@ -1,10 +1,7 @@
 import * as React from 'react';
-import { useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button, Input, ListItem, Avatar, Header, Icon } from 'react-native-elements'
 
-import AvatarScreen from '../AvatarScreen'
-import { ScrollView, FlatList } from 'react-native-gesture-handler';
 
 import SideMenu from 'react-native-side-menu'
 

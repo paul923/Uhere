@@ -4,6 +4,8 @@ import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import { formatDate, formatTime } from "../utils/date";
 import MapView from 'react-native-maps';
 
+import SideMenu from 'react-native-side-menu'
+
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
@@ -65,96 +67,168 @@ const testLocation = {
 }
 
 export default function EventDetailScreen({ navigation, route }) {
+    const [ isOpen, setOpen] = React.useState(false);
 
     React.useEffect(() => {
+        console.log(route.params.item)
     }, []);
+
+    function toggleSideMenu(){
+        setOpen(!isOpen)
+    }
 
     function switchToEventDetail() {
         navigation.navigate('Event Detail Map', { item: route.params.item })
     }
     return (
-        <View style={styles.container}>
-            <Header
-                leftComponent={{ icon: 'chevron-left', color: '#fff', onPress: () => navigation.navigate("Event") }}
-                centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
-                centerContainerStyle={{ flex: 1 }}
-                rightComponent={{ icon: 'menu', color: '#fff' }}
-            />
-            {/* Map */}
-            <MapView
-                style={styles.mapStyle}
-                region={{ latitude: testLocation.center[1], longitude: testLocation.center[0], latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
-            >
-                <MapView.Marker
-                    coordinate={
-                        {
-                            latitude: testLocation.center[1],
-                            longitude: testLocation.center[0],
-                        }
-                    }
-                    title='Juilet Cafe'
+        <SideMenu 
+            menu={menuContent()} 
+            menuPosition='right'
+            isOpen={isOpen}
+            onChange={toggleSideMenu}
+            bounceBackOnOverdraw={false}
+        >
+            <View style={styles.container}>
+                <Header
+                    leftComponent={{ icon: 'chevron-left', color: '#fff', onPress: () => navigation.navigate("Event") }}
+                    centerComponent={{ text: route.params.item.name, style: { color: '#fff' } }}
+                    centerContainerStyle={{ flex: 1 }}
+                    rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu}}
                 />
-            </MapView>
-
-            <View style={styles.detailContainer}>
-                <View style={styles.row}>
-                    <Icon name="location-on" />
-                    <View style={styles.column}>
-                        <Text h5>{testLocation.text}</Text>
-                        <Text h5>{testLocation.properties.address + ", " + testLocation.context[2].text}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <Icon name="event" />
-                    <View style={styles.column}>
-                        <Text h5>{formatDate(route.params.item.date) + ", " + formatTime(route.params.item.date)}</Text>
-                        <Text h5>in {route.params.item.date - new Date()} milliseconds</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <Icon name="keyboard-voice" />
-                    <View style={styles.column}>
-                        <Text>빨리안오면 아메리카노 사는거다 빨랑와라</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <Icon name="remove-circle" />
-                    <View style={styles.column}>
-                        <Text>Losers buy {route.params.item.prize}</Text>
-                    </View>
-
-                </View>
-                <View style={styles.row}>
-                    <Icon name="person" />
-                    {
-                        route.params.item.members.map((u, i) => {
-                            return (
-                                <View style={styles.avatar} key={i}>
-                                    <Avatar
-                                        rounded
-                                        size='medium'
-                                        title={u.initial}
-                                    />
-                                </View>
-                            )
-                        })
-                    }
-                    <Text>{route.params.item.members.length + "/" + route.params.item.maximumNumberOfMembers}</Text>
-                </View>
-            </View>
-            {0 < (route.params.item.date - new Date()) && (route.params.item.date - new Date()) < (route.params.item.timer * 60000) && (
-                <View style={styles.switchStyle}>
-                    <Icon
-                        reverse
-                        name='exchange'
-                        type='font-awesome'
-                        onPress={switchToEventDetail}
+                {/* Map */}
+                <MapView
+                    style={styles.mapStyle}
+                    region={{ latitude: testLocation.center[1], longitude: testLocation.center[0], latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
+                >
+                    <MapView.Marker
+                        coordinate={
+                            {
+                                latitude: testLocation.center[1],
+                                longitude: testLocation.center[0],
+                            }
+                        }
+                        title='Juilet Cafe'
                     />
+                </MapView>
+
+                <View style={styles.detailContainer}>
+                    <View style={styles.row}>
+                        <Icon name="location-on" />
+                        <View style={styles.column}>
+                            <Text h5>{testLocation.text}</Text>
+                            <Text h5>{testLocation.properties.address + ", " + testLocation.context[2].text}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.row}>
+                        <Icon name="event" />
+                        <View style={styles.column}>
+                            <Text h5>{formatDate(new Date(route.params.item.DateTime)) + ", " + formatTime(new Date(route.params.item.DateTime))}</Text>
+                            <Text h5>in {new Date(route.params.item.DateTime) - new Date()} milliseconds</Text>
+                        </View>
+                    </View>
+                    <View style={styles.row}>
+                        <Icon name="keyboard-voice" />
+                        <View style={styles.column}>
+                            <Text>빨리안오면 아메리카노 사는거다 빨랑와라</Text>
+                        </View>
+                    </View>
+                    <View style={styles.row}>
+                        <Icon name="remove-circle" />
+                        <View style={styles.column}>
+                            <Text>Losers buy {route.params.item.Penalty}</Text>
+                        </View>
+
+                    </View>
+                    {/**
+                    <View style={styles.row}>
+                        <Icon name="person" />
+                        {
+                            route.params.item.members.map((u, i) => {
+                                return (
+                                    <View style={styles.avatar} key={i}>
+                                        <Avatar
+                                            rounded
+                                            size='medium'
+                                            title={u.initial}
+                                        />
+                                    </View>
+                                )
+                            })
+                        }
+                        <Text>{route.params.item.members.length + "/" + route.params.item.MaxMember}</Text>
+                    </View>
+                     */}
                 </View>
-            )}
-        </View>
+                {0 < (route.params.item.date - new Date()) && (route.params.item.date - new Date()) < (route.params.item.timer * 60000) && (
+                    <View style={styles.switchStyle}>
+                        <Icon
+                            reverse
+                            name='exchange'
+                            type='font-awesome'
+                            onPress={switchToEventDetail}
+                        />
+                    </View>
+                )}
+            </View>
+        </SideMenu>
     )
 }
+
+function menuContent(){
+    return(
+      <View style={styles.sideMenu}>
+        <View style={{flex: 10}}>
+          <View style={styles.hostContainer}>
+            <Text>Host</Text>
+            <Avatar
+              size='large'
+              source={{uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg'}}
+              avatarStyle={{borderWidth: 2, borderRadius: 5, borderColor: 'red'}}
+            />
+            <Text>Host Name</Text>
+          </View>
+  
+          <View style={styles.friendsContainer}>
+            <Text>Friends</Text>
+            <View style={styles.friendsButton}>
+              <Button
+                title="Invite"
+                icon={{
+                  name: "pluscircleo",
+                  type: "antdesign"
+                }}
+                type="outline"
+                containerStyle={{flex: 1, marginHorizontal: 3,}}
+              />
+              <Button
+                title="Edit"
+                icon={{
+                  name: "minuscircleo",
+                  type: "antdesign"
+                }}
+                type="outline"
+                containerStyle={{flex: 1, marginHorizontal: 3}}
+              />
+            </View>
+            <Text>Flatlist of Friends</Text>
+          </View>
+  
+        </View>
+  
+        <View style={styles.bottomBar}>
+          <Icon
+            name="md-exit"
+            type="ionicon"
+            iconStyle={styles.bottomIcon}
+          />
+          <Icon
+            name="md-notifications"
+            type="ionicon"
+          />
+        </View>
+      </View>
+    )
+  }
 
 const styles = StyleSheet.create({
     container: {
@@ -184,4 +258,31 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 200,
     },
+    sideMenu: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderWidth: 1,
+      },
+      hostContainer: {
+        flex: 2,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      friendsContainer: {
+        flex:4,
+        borderWidth: 1,
+        padding: 5
+      },
+      bottomBar: {
+        borderWidth: 1,
+        flexDirection: 'row',
+        padding: 5,
+      },
+      friendsButton: {
+        flexDirection: 'row'
+      },
+      bottomIcon:{
+        marginHorizontal: 10
+      }
 })
