@@ -401,20 +401,20 @@ export default function CreateEventScreen({navigation}) {
       condition = (eventName && eventDate && eventTime && reminder && maximumNumberOfMembers) ? true : false
       onPress = () => setStep('Location');
       return (
-        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
+        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>NEXT</Text>
       )
     } else if (step === 'Location') {
       //Needs to be changed back to true: false
       condition = location ? true : true;
       onPress = () => setStep('Members');
       return (
-        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
+        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>NEXT</Text>
       )
     } else if (step === 'Members') {
       condition = true;
       onPress = () => setStep('Penalty');
       return (
-        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
+        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>SKIP</Text>
       )
     } else {
       condition = penalty ? true : false;
