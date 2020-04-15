@@ -402,35 +402,32 @@ export default function CreateEventScreen({navigation}) {
     let condition;
     if (step === 'Event Detail') {
       condition = (eventName && eventDate && eventTime && reminder && maximumNumberOfMembers) ? true : false
-      onPress = () => setStep('Location');
       return (
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}
           disabledStyle={{'backgroundColor': 'transparent'}}
-          onPress={condition && onPress}>
+          onPress={() => { if(condition) setStep('Location') }}>
           NEXT
         </Text>
       )
     } else if (step === 'Location') {
       //Needs to be changed back to true: false
       condition = location ? true : true;
-      onPress = () => setStep('Members');
       return (
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}
           disabledStyle={{'backgroundColor': 'transparent'}}
-          onPress={condition && onPress}>
+          onPress={() => { if(condition) setStep('Members') }}>
           NEXT
         </Text>
       )
     } else if (step === 'Members') {
       condition = true;
-      onPress = () => setStep('Penalty');
       return (
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}
           disabledStyle={{'backgroundColor': 'transparent'}}
-          onPress={condition && onPress}>
+          onPress={() => { if(condition) setStep('Penalty') }}>
           {selectedFriends.length > 0 ? 'NEXT' : 'SKIP'}
         </Text>
       )
@@ -441,7 +438,7 @@ export default function CreateEventScreen({navigation}) {
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}
           disabledStyle={{'backgroundColor': 'transparent'}}
-          onPress={condition && onPress}>
+          onPress={() => { if(condition) publish() }}>
           PUBLISH
         </Text>
       )
