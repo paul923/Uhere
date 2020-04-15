@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, } from 'react-native';
-import { SplashScreen } from 'expo';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
@@ -14,6 +13,7 @@ import LoginNavigator from './navigation/LoginNavigator';
 import ProfileNavigator from './navigation/ProfileNavigator';
 
 import AppIntroSlider from './screens/introSlider';
+import SplashScreen from './screens/SplashScreen';
 
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
@@ -258,22 +258,27 @@ export default function App(props) {
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
-        <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
-        <AuthContext.Provider value={authContext}>
-          <Stack.Navigator
-            headerMode="none">
-            {state.userToken == null || state.showLoadingScreen ? (
-              <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
-            ) : (
-                !state.skipProfile ? (
-                  <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
-                ) : (
-                  <Stack.Screen name="MainApp" component={MainAppNavigator} />
-                )
-            )}
-          </Stack.Navigator>
-          </AuthContext.Provider>
-        </NavigationContainer>
+        {state.showLoadingScreen ? (
+          <SplashScreen/>
+        ) : (
+          <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+          <AuthContext.Provider value={authContext}>
+            <Stack.Navigator
+              headerMode="none">
+              {state.userToken == null ? (
+                <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+              ) : (
+                  !state.skipProfile ? (
+                    <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
+                  ) : (
+                    <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                  )
+              )}
+            </Stack.Navigator>
+            </AuthContext.Provider>
+          </NavigationContainer>
+        )}
+
       </View>
       </LoadingContext.Provider>
     );
