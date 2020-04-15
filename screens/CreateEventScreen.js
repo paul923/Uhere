@@ -401,26 +401,46 @@ export default function CreateEventScreen({navigation}) {
       condition = (eventName && eventDate && eventTime && reminder && maximumNumberOfMembers) ? true : false
       onPress = () => setStep('Location');
       return (
-        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>NEXT</Text>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={condition && onPress}>
+          NEXT
+        </Text>
       )
     } else if (step === 'Location') {
       //Needs to be changed back to true: false
       condition = location ? true : true;
       onPress = () => setStep('Members');
       return (
-        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>NEXT</Text>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={condition && onPress}>
+          NEXT
+        </Text>
       )
     } else if (step === 'Members') {
       condition = true;
       onPress = () => setStep('Penalty');
       return (
-        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>SKIP</Text>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={condition && onPress}>
+          {selectedFriends.length > 0 ? 'NEXT' : 'SKIP'}
+        </Text>
       )
     } else {
       condition = penalty ? true : false;
       onPress = () => publish();
       return (
-        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>PUBLISH</Text>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}} 
+          onPress={condition && onPress}>
+          PUBLISH
+        </Text>
       )
     }
   }
