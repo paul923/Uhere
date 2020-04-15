@@ -4,14 +4,16 @@ import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 
 import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
 import { formatEventList } from '../../utils/event';
+import Constants from "expo-constants";
 
+const { manifest } = Constants;
 
 export default function PendingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = 'http://192.168.1.73:3000/event/pending';
+        let url = `http://${manifest.debuggerHost.split(':').shift()}:3000/event/pending`;
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));

@@ -12,6 +12,9 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
+import Constants from "expo-constants";
+
+const { manifest } = Constants;
 
 
 import FriendCard from '../components/FriendCard';
@@ -52,7 +55,7 @@ export default function CreateEventScreen({navigation}) {
 
   async function publish() {
     let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
-    let response = await fetch('http://192.168.1.73:3000/event/insert', {
+    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/event/insert`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -437,7 +440,7 @@ export default function CreateEventScreen({navigation}) {
       return (
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}
-          disabledStyle={{'backgroundColor': 'transparent'}} 
+          disabledStyle={{'backgroundColor': 'transparent'}}
           onPress={condition && onPress}>
           PUBLISH
         </Text>

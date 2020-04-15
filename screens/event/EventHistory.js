@@ -3,7 +3,9 @@ import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOp
 import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
+import Constants from "expo-constants";
 
+const { manifest } = Constants;
 
 
 export default function EventHistory({ navigation, route }) {

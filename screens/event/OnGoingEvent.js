@@ -4,7 +4,9 @@ import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 
 import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
 import { formatEventList } from '../../utils/event';
+import Constants from "expo-constants";
 
+const { manifest } = Constants;
 
 
 export default function OnGoingEvent({ navigation, route }) {
@@ -12,7 +14,7 @@ export default function OnGoingEvent({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = 'http://192.168.1.73:3000/event/on-going';
+        let url = `http://${manifest.debuggerHost.split(':').shift()}:3000/event/on-going`;
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));
