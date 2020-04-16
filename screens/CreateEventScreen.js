@@ -242,6 +242,9 @@ export default function CreateEventScreen({navigation}) {
   }
 
   async function searchLocation() {
+    if (locationQuery === ''){
+      return;
+    }
     let url = '';
     let location = await Location.getCurrentPositionAsync({});
     try {
