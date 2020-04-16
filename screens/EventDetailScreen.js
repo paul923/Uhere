@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
-import { Avatar, Header, Button, Icon } from 'react-native-elements';
+import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert,FlatList } from 'react-native';
+import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { formatDate, formatTime } from "../utils/date";
 import MapView from 'react-native-maps';
+
 
 import SideMenu from 'react-native-side-menu'
 
@@ -79,6 +80,20 @@ export default function EventDetailScreen({ navigation, route }) {
     function switchToEventDetail() {
         navigation.navigate('Event Detail Map', { item: route.params.item })
     }
+
+
+    function renderFriendsCard ({ item }){ 
+        return(
+            <ListItem
+                leftAvatar = {{ source: { uri: item.pictureUrl } }}
+                rightIcon = {<Icon name="add-user" type="entypo" size={20}/>}
+                title={item.displayName}
+                titleStyle={{fontSize: 15}}
+                containerStyle={{padding: 3}}
+            />
+        );
+    }
+
     return (
         <SideMenu 
             menu={menuContent()} 
@@ -187,29 +202,38 @@ export default function EventDetailScreen({ navigation, route }) {
                 </View>
     
                 <View style={styles.friendsContainer}>
-                <Text>Friends</Text>
-                <View style={styles.friendsButton}>
-                    <Button
-                    title="Invite"
-                    icon={{
-                        name: "pluscircleo",
-                        type: "antdesign"
-                    }}
-                    type="outline"
-                    containerStyle={{flex: 1, marginHorizontal: 3,}}
+                    <Text>Friends</Text>
+                    <View style={styles.friendsButton}>
+                        <Button
+                        title="Invite"
+                        icon={{
+                            name: "pluscircleo",
+                            type: "antdesign"
+                        }}
+                        type="outline"
+                        containerStyle={{flex: 1, marginHorizontal: 3,}}
+                        />
+                        <Button
+                        title="Edit"
+                        icon={{
+                            name: "minuscircleo",
+                            type: "antdesign"
+                        }}
+                        type="outline"
+                        containerStyle={{flex: 1, marginHorizontal: 3}}
+                        onPress={()=> navigation.navigate('Event Edit', { item: route.params.item })}
+                        />
+                    </View>
+                    <FlatList
+                        data={friendsData}
+                        renderItem={renderFriendsCard}
+                        keyExtractor={(item) => item.userId}
+                        contentContainerStyle={{
+                            backgroundColor: "white",
+                            margin: 10
+                        }}
+                        bounces={false}
                     />
-                    <Button
-                    title="Edit"
-                    icon={{
-                        name: "minuscircleo",
-                        type: "antdesign"
-                    }}
-                    type="outline"
-                    containerStyle={{flex: 1, marginHorizontal: 3}}
-                    onPress={()=> navigation.navigate('Event Edit', { item: route.params.item })}
-                    />
-                </View>
-                <Text>Flatlist of Friends</Text>
                 </View>
     
             </View>
@@ -288,3 +312,42 @@ const styles = StyleSheet.create({
         marginHorizontal: 10
       }
 })
+
+const friendsData = [
+    {
+      displayName: "Justin Choi",
+      userId : "Crescent1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "Paul Kim",
+      userId : "pk1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "Jay Suhr",
+      userId : "js1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "Matthew Kim",
+      userId : "mk1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "JYP",
+      userId : "andWondergirls",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "You Hee Yeol",
+      userId : "uhere",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+  ]
