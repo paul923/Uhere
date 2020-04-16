@@ -7,7 +7,7 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import * as Location from 'expo-location';
 import qs from 'qs';
-import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
+import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
@@ -37,6 +37,7 @@ export default function CreateEventScreen({navigation}) {
   const [ reminder, setReminder] = React.useState(15);
   const [ locationQuery, setLocationQuery] = React.useState("");
   const [ location, setLocation] = React.useState(null);
+  const [ isOnline, setIsOnline] = React.useState(false);
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
@@ -55,25 +56,38 @@ export default function CreateEventScreen({navigation}) {
 
   async function publish() {
     let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
+    let body = {
+      Name: eventName,
+      Description: "",
+      DateTime: date,
+      MaxMember: maximumNumberOfMembers,
+      Reminder: reminder,
+      Penalty: penalty,
+      Status: "PENDING"
+    };
+    if (isOnline){
+      body = {
+        IsOnline: true,
+        ...body
+      }
+    } else {
+      body = {
+        IsOnline: false,
+        LocationName: location.place_name.split(',')[0],
+        LocationAddress: location.place_name.split(',')[1],
+        LocationGeolat: location.geometry.coordinates[1],
+        LocationGeolong: location.geometry.coordinates[0],
+        ...body
+      }
+    }
+
     let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/event/insert`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        Name: eventName,
-        Description: "",
-        LocationName: location.place_name.split(',')[0],
-        LocationAddress: location.place_name.split(',')[1],
-        LocationGeolat: location.geometry.coordinates[1],
-        LocationGeolong: location.geometry.coordinates[0],
-        DateTime: date,
-        MaxMember: maximumNumberOfMembers,
-        Reminder: reminder,
-        Penalty: penalty,
-        Status: "PENDING"
-      }),
+      body: JSON.stringify(body),
     });
     let responseJson = await response.json();
     alert("Added record");
@@ -246,6 +260,16 @@ export default function CreateEventScreen({navigation}) {
   function LocationSearch() {
     return (
       <View style={{flex: 1}}>
+        <CheckBox
+          containerStyle={{
+            marginBottom: 30,
+          }}
+          checkedIcon='dot-circle-o'
+          uncheckedIcon='circle-o'
+          title='Online Meeting'
+          checked={isOnline}
+          onPress={() => setIsOnline(!isOnline)}
+        />
         <View style={{flexDirection: 'row'}}>
           <Input
             containerStyle={{flex: 1}}
@@ -412,7 +436,7 @@ export default function CreateEventScreen({navigation}) {
       )
     } else if (step === 'Location') {
       //Needs to be changed back to true: false
-      condition = location ? true : true;
+      condition = location || isOnline ? true : true;
       return (
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}

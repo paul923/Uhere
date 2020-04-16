@@ -25,7 +25,7 @@ export default function EventCard({onPress, item, status}) {
           <View style={styles.row}>
             <Icon name="location-on"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.LocationName}</Text>
+              <Text h5 style={styles.cardColumnText}>{item.IsOnline ? 'Online Meeting' : item.LocationName}</Text>
             </View>
           </View>
           <View style={styles.row}>
