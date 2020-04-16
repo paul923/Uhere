@@ -56,7 +56,7 @@ export default function CreateEventScreen({navigation}) {
 
   async function publish() {
     let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
-    let body = {
+    let event = {
       Name: eventName,
       Description: "",
       DateTime: date,
@@ -66,18 +66,18 @@ export default function CreateEventScreen({navigation}) {
       Status: "PENDING"
     };
     if (isOnline){
-      body = {
+      event = {
         IsOnline: true,
-        ...body
+        ...event
       }
     } else {
-      body = {
+      event = {
         IsOnline: false,
         LocationName: location.place_name.split(',')[0],
         LocationAddress: location.place_name.split(',')[1],
         LocationGeolat: location.geometry.coordinates[1],
         LocationGeolong: location.geometry.coordinates[0],
-        ...body
+        ...event
       }
     }
 
@@ -87,7 +87,10 @@ export default function CreateEventScreen({navigation}) {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        event,
+        users: selectedFriends
+      }),
     });
     let responseJson = await response.json();
     alert("Added record");
