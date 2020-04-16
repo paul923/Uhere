@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#003f5c',
       justifyContent: 'center',
       alignItems: "center",
-      borderWidth: 5,
     },
     logoU: {
       fontSize: 60,

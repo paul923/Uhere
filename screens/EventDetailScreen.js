@@ -70,7 +70,6 @@ export default function EventDetailScreen({ navigation, route }) {
     const [ isOpen, setOpen] = React.useState(false);
 
     React.useEffect(() => {
-        console.log(route.params.item)
     }, []);
 
     function toggleSideMenu(){
@@ -172,63 +171,66 @@ export default function EventDetailScreen({ navigation, route }) {
             </View>
         </SideMenu>
     )
+
+    function menuContent(){
+        return(
+            <View style={styles.sideMenu}>
+            <View style={{flex: 10}}>
+                <View style={styles.hostContainer}>
+                <Text>Host</Text>
+                <Avatar
+                    size='large'
+                    source={{uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg'}}
+                    avatarStyle={{borderWidth: 2, borderRadius: 5, borderColor: 'red'}}
+                />
+                <Text>Host Name</Text>
+                </View>
+    
+                <View style={styles.friendsContainer}>
+                <Text>Friends</Text>
+                <View style={styles.friendsButton}>
+                    <Button
+                    title="Invite"
+                    icon={{
+                        name: "pluscircleo",
+                        type: "antdesign"
+                    }}
+                    type="outline"
+                    containerStyle={{flex: 1, marginHorizontal: 3,}}
+                    />
+                    <Button
+                    title="Edit"
+                    icon={{
+                        name: "minuscircleo",
+                        type: "antdesign"
+                    }}
+                    type="outline"
+                    containerStyle={{flex: 1, marginHorizontal: 3}}
+                    onPress={()=> navigation.navigate('Event Edit', { item: route.params.item })}
+                    />
+                </View>
+                <Text>Flatlist of Friends</Text>
+                </View>
+    
+            </View>
+    
+            <View style={styles.bottomBar}>
+                <Icon
+                name="md-exit"
+                type="ionicon"
+                iconStyle={styles.bottomIcon}
+                />
+                <Icon
+                name="md-notifications"
+                type="ionicon"
+                />
+            </View>
+            </View>
+        )
+    }
 }
 
-function menuContent(){
-    return(
-      <View style={styles.sideMenu}>
-        <View style={{flex: 10}}>
-          <View style={styles.hostContainer}>
-            <Text>Host</Text>
-            <Avatar
-              size='large'
-              source={{uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg'}}
-              avatarStyle={{borderWidth: 2, borderRadius: 5, borderColor: 'red'}}
-            />
-            <Text>Host Name</Text>
-          </View>
-  
-          <View style={styles.friendsContainer}>
-            <Text>Friends</Text>
-            <View style={styles.friendsButton}>
-              <Button
-                title="Invite"
-                icon={{
-                  name: "pluscircleo",
-                  type: "antdesign"
-                }}
-                type="outline"
-                containerStyle={{flex: 1, marginHorizontal: 3,}}
-              />
-              <Button
-                title="Edit"
-                icon={{
-                  name: "minuscircleo",
-                  type: "antdesign"
-                }}
-                type="outline"
-                containerStyle={{flex: 1, marginHorizontal: 3}}
-              />
-            </View>
-            <Text>Flatlist of Friends</Text>
-          </View>
-  
-        </View>
-  
-        <View style={styles.bottomBar}>
-          <Icon
-            name="md-exit"
-            type="ionicon"
-            iconStyle={styles.bottomIcon}
-          />
-          <Icon
-            name="md-notifications"
-            type="ionicon"
-          />
-        </View>
-      </View>
-    )
-  }
+
 
 const styles = StyleSheet.create({
     container: {

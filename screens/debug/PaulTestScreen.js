@@ -25,7 +25,7 @@ export default function PaulTestScreen({navigation}) {
         onPress={()=> navigation.navigate('Test Screen 3')}
       />
       <Button
-        title='Register : Keyboard Layout (Test)'
+        title='Edit Page(Event Detail)'
         buttonStyle={styles.button}
         onPress={()=> navigation.navigate('Test Screen 4')}
       />

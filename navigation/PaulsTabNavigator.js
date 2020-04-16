@@ -7,7 +7,7 @@ import AvatarNavigator from './AvatarNavigator'
 import TestScreen2 from '../screens/debug/TestScreen2';
 import DrawerLayoutScreen from '../screens/debug/DrawerLayoutScreen';
 import LoginTestScreen from '../screens/debug/LoginTestScreen'
-import RegisterTestScreen from '../screens/debug/RegisterTestScreen'
+import DetailEditPage from '../screens/DetailEditPage'
 import AddFriendsScreen from '../screens/AddFriendsScreen'
 
 
@@ -37,7 +37,7 @@ export default function PaulsTabNavigator({ navigation, route }) {
       />
       <Stack.Screen
         name="Test Screen 4"
-        component={RegisterTestScreen}
+        component={DetailEditPage}
       />
       <Stack.Screen
         name="Test Screen 5"

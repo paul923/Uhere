@@ -1,0 +1,217 @@
+import React, { Component } from 'react';
+import { StyleSheet,  View, TextInput, TouchableOpacity } from 'react-native';
+import {Icon, Header, Input, Text, Button} from 'react-native-elements'
+
+import { ScrollView } from 'react-native-gesture-handler';
+import RNPickerSelect from 'react-native-picker-select';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
+
+export default function DetailEditPage({ navigation, route }) {
+  const [eventTitle, setEventTitle] = React.useState('');
+  const [eventDescription, setEventDescription] = React.useState('');
+  const [eventStartTime, setEventStartTime] = React.useState('');
+  const [eventLocation, setEventLocation] = React.useState('');
+  const [eventPenalty, setEventPenalty] = React.useState('');
+  const [eventReminder, setEventReminder] = React.useState('');
+
+  const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
+
+
+
+  React.useEffect(() => {
+    console.log(route.params.item)
+  },[]);
+
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = date => {
+    setEventStartTime(date.toString());
+    console.log("A date has been picked: ", date);
+    hideDatePicker();
+  };
+
+  return(
+    
+    <View style={styles.container}>
+      <Header
+        centerComponent={{text: 'Edit', style: { color: '#fff' }}}
+        leftComponent= {
+          <Icon
+            name="close"
+            type="antdesign"
+            color="white"
+            onPress={()=> navigation.goBack()}
+          />
+        }
+        rightComponent={
+          <TouchableOpacity onPress={()=> console.log('save')}>
+            <View>
+              <Text style={{color: 'white'}}>Save</Text>
+            </View>
+          </TouchableOpacity>
+        }
+      />
+      <ScrollView
+        centerContent
+        contentContainerStyle={{
+          flexGrow:1,
+        }}
+      >
+        <Input
+          containerStyle={styles.titleInput}
+          placeholder='Title'
+          value={eventTitle}
+          onChangeText={(text)=> setEventTitle(text)}
+        />
+        
+        <View style={styles.menuBox}>
+          <View style={styles.leftBox}><Text style={styles.leftText}>Starts</Text></View>
+          <View style={styles.rightBox}>
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="datetime"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+            />
+            <TouchableOpacity onPress={showDatePicker}>
+              <Text style={styles.rightText} >{eventStartTime}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.menuBox}>
+          <View style={styles.leftBox}><Text style={styles.leftText}>Location</Text></View>
+          <View style={styles.rightBox}>
+            <TouchableOpacity onPress={()=> navigation.navigate('Location Search')}>
+              <Text style={styles.rightText}>{eventLocation}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <View style={styles.menuBox}>
+          <View style={styles.leftBox}><Text style={styles.leftText}>Penalty</Text></View>
+          <View style={styles.rightBox}>
+            <RNPickerSelect
+              onValueChange={(value) => setEventPenalty(value)}
+              items={[
+                {
+                  label: 'Penalty1',
+                  value: 'penalty1',
+                },
+                {
+                  label: 'Penalty2',
+                  value: 'penalty2',
+                },
+                {
+                  label: 'Americano',
+                  value: 'americano',
+                },
+              ]}
+              style={pickerSelectStyles}
+              value= {eventPenalty}
+            />
+          </View>
+        </View>
+        
+        <View style={styles.menuBox}>
+          <View style={styles.leftBox}><Text style={styles.leftText}>Reminder</Text></View>
+          <View style={styles.rightBox}>
+            <RNPickerSelect
+              onValueChange={(value) => setEventReminder(value)}
+              items={[
+                {
+                  label: '15 min',
+                  value: '15',
+                },
+                {
+                  label: '30 min',
+                  value: '30',
+                },
+                {
+                  label: '45 min',
+                  value: '45',
+                },
+              ]}
+              style={pickerSelectStyles}
+              value= {eventReminder}
+            />
+          </View>
+        </View>
+        <Input
+          containerStyle={{
+            marginTop: 15,
+            flex: 1
+          }}
+          inputStyle={{
+          }}
+          placeholder='Add Description'
+          value={eventDescription}
+          onChangeText={(text)=> setEventDescription(text)}
+        />
+      </ScrollView>
+    </View>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  titleInput: {
+    marginBottom: 30
+  },
+  menuBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderColor: '#979797',
+    borderBottomWidth: 1,
+    marginHorizontal: 10,
+  },
+  leftBox: {
+    justifyContent: 'center',
+  },
+  rightBox:{
+    justifyContent: 'center',
+    flex: 1,
+  },
+  leftText:{
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 10
+  },
+  rightText:{
+    fontSize: 11,
+    fontWeight: 'bold',
+    textAlign: 'right'
+  },
+
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 11,
+    color: 'black',
+    padding: 10,
+    textAlign: 'right'
+  },
+  inputAndroid: {
+    flex: 1,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderColor: 'purple',
+    borderRadius: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+});
