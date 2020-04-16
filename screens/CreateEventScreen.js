@@ -206,13 +206,13 @@ export default function CreateEventScreen({navigation}) {
               </View>
             <View style={styles.row}>
               <TouchableOpacity style={styles.columnButton} onPress={() => setMaximumNumberOfMembers(maximumNumberOfMembers+1)}>
-                <Icon name="plus" type="antdesign" color="black"/>
+                <Icon name="plus" type="antdesign" underlayColor="transparent" color="black"/>
               </TouchableOpacity>
               <View style={styles.column}>
                 <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
               </View>
               <TouchableOpacity style={styles.columnButton} onPress={() => maximumNumberOfMembers > 0 && setMaximumNumberOfMembers(maximumNumberOfMembers-1)}>
-                <Icon name="minus" type="antdesign" color="black"/>
+                <Icon name="minus" type="antdesign" underlayColor="transparent" color="black"/>
               </TouchableOpacity>
             </View>
           </View>
@@ -279,7 +279,7 @@ export default function CreateEventScreen({navigation}) {
             />
           <Button
             icon={
-              <Icon name="search" size={25} color="white" />
+              <Icon name="search" size={25} color="white" underlayColor="transparent" />
             }
             onPress={searchLocation}
           />
@@ -415,7 +415,7 @@ export default function CreateEventScreen({navigation}) {
       onPress = () => setStep('Members');
     }
     return (
-      <Icon name={name} color='#fff' onPress={onPress}/>
+      <Icon name={name} color='#fff' underlayColor="transparent" onPress={onPress}/>
     )
   }
 
