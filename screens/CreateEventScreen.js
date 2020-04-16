@@ -282,6 +282,7 @@ export default function CreateEventScreen({navigation}) {
             value={locationQuery}
             onChangeText={setLocationQuery}
             placeholder="Type Address..."
+            onSubmitEditing={searchLocation}
             />
           <Button
             icon={
