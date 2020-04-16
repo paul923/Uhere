@@ -81,19 +81,21 @@ export default function DetailEditPage({ navigation, route }) {
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
             />
-            <TouchableOpacity onPress={showDatePicker}>
-              <Text style={styles.rightText} >{eventStartTime}</Text>
+            <TouchableOpacity onPress={showDatePicker} style={{minHeight: 30}}>
+              <Text style={styles.rightText}>{eventStartTime}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.menuBox}>
           <View style={styles.leftBox}><Text style={styles.leftText}>Location</Text></View>
-          <View style={styles.rightBox}>
-            <TouchableOpacity onPress={()=> navigation.navigate('Location Search')}>
-              <Text style={styles.rightText}>{eventLocation}</Text>
-            </TouchableOpacity>
-          </View>
+          
+            <View style={styles.rightBox}>
+              
+          <TouchableOpacity onPress={()=> navigation.navigate('Location Search')}  style={{minHeight: 30}}>
+                <Text style={styles.rightText}>{eventLocation}</Text>
+          </TouchableOpacity>
+            </View>
         </View>
         
         <View style={styles.menuBox}>
@@ -117,6 +119,7 @@ export default function DetailEditPage({ navigation, route }) {
               ]}
               style={pickerSelectStyles}
               value= {eventPenalty}
+              useNativeAndroidPickerStyle={false}
             />
           </View>
         </View>
@@ -142,6 +145,7 @@ export default function DetailEditPage({ navigation, route }) {
               ]}
               style={pickerSelectStyles}
               value= {eventReminder}
+              useNativeAndroidPickerStyle={false}
             />
           </View>
         </View>
@@ -205,13 +209,9 @@ const pickerSelectStyles = StyleSheet.create({
     textAlign: 'right'
   },
   inputAndroid: {
-    flex: 1,
-    fontSize: 16,
+    fontSize: 11,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderColor: 'purple',
-    borderRadius: 8,
-    color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    textAlign: 'right',
   },
 });
