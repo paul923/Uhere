@@ -25,7 +25,7 @@ function formatEventList(list) {
 app.get('/event/pending', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    var sql = `select Event.*, COUNT(EventUser.Username) MemberCount
+    var sql = `select Event.*, COUNT(EventUser.UserId) MemberCount
     from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
     where Event.STATUS = 'PENDING'
     group by Event.EventId`;
@@ -46,7 +46,7 @@ app.get('/event/pending', function (req, res) {
 app.get('/event/on-going', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    var sql = `select Event.*, COUNT(EventUser.Username) MemberCount
+    var sql = `select Event.*, COUNT(EventUser.UserId) MemberCount
     from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
     where Event.STATUS = 'ONGOING'
     group by Event.EventId`;
@@ -93,7 +93,7 @@ app.post('/event/insert', function (req,res) {
           }
           connection.release();
           console.log(results);
-          res.send("Inserted");
+          res.json({"status": 200, "response": "Inserted"});
         })
       }
     });

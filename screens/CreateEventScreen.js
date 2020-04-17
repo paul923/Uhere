@@ -63,7 +63,8 @@ export default function CreateEventScreen({navigation}) {
       MaxMember: maximumNumberOfMembers,
       Reminder: reminder,
       Penalty: penalty,
-      Status: "PENDING"
+      Status: "PENDING",
+      Host: firebase.auth().currentUser.uid
     };
     if (isOnline){
       event = {
@@ -93,7 +94,7 @@ export default function CreateEventScreen({navigation}) {
       }),
     });
     let responseJson = await response.json();
-    alert("Added record");
+    alert(responseJson.response);
     navigation.navigate('Event')
   }
 
