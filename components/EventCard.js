@@ -24,13 +24,13 @@ export default function EventCard({onPress, item, status}) {
           </View>
           <View style={styles.row}>
             <Icon name="location-on"/>
-            <View style={styles.cardColumn}>
+            <View style={styles.cardFullColumn}>
               <Text h5 style={styles.cardColumnText}>{item.IsOnline ? 'Online Meeting' : item.LocationName}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Icon name="person"/>
-            <View style={styles.cardColumn}>
+            <View style={styles.cardFullColumn}>
               <Text h5 style={styles.cardColumnText}>{item.MemberCount + "/" + item.MaxMember}</Text>
             </View>
           </View>
@@ -84,6 +84,11 @@ const styles = StyleSheet.create({
   },
   cardColumn: {
     flexBasis: '40%',
+    paddingTop: 2,
+    paddingBottom: 2,
+  },
+  cardFullColumn: {
+    flexBasis: '90%',
     paddingTop: 2,
     paddingBottom: 2,
   },
