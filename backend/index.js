@@ -25,9 +25,12 @@ function formatEventList(list) {
 app.get('/event/pending', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    var sql = "SELECT * FROM ?? WHERE STATUS = ?";
-    var parameters = ['Event', 'PENDING'];
-    sql = mysql.format(sql, parameters);
+    var sql = `select Event.*, COUNT(EventUser.Username) MemberCount
+    from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
+    where Event.STATUS = 'PENDING'
+    group by Event.EventId`;
+    // var parameters = ['Event.*', 'EventUser.Username', 'Event', 'EventUser', 'Event.EventId', 'EventUser.EventId', 'Event.STATUS', 'PENDING', 'Event.EventId'];
+    // sql = mysql.format(sql, parameters);
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
       connection.release();
@@ -43,9 +46,12 @@ app.get('/event/pending', function (req, res) {
 app.get('/event/on-going', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    var sql = "SELECT * FROM ?? WHERE STATUS = ?";
-    var parameters = ['Event', 'ONGOING'];
-    sql = mysql.format(sql, parameters);
+    var sql = `select Event.*, COUNT(EventUser.Username) MemberCount
+    from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
+    where Event.STATUS = 'ONGOING'
+    group by Event.EventId`;
+    // var parameters = ['Event', 'ONGOING'];
+    // sql = mysql.format(sql, parameters);
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
       connection.release();

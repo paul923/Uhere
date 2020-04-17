@@ -31,7 +31,7 @@ export default function EventCard({onPress, item, status}) {
           <View style={styles.row}>
             <Icon name="person"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{"0/" + item.MaxMember}</Text>
+              <Text h5 style={styles.cardColumnText}>{item.MemberCount + "/" + item.MaxMember}</Text>
             </View>
           </View>
         </TouchableOpacity>
