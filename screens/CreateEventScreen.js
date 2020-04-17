@@ -23,7 +23,7 @@ import FriendTile from '../components/FriendTile';
 import {formatDate, formatTime, combineDateAndTime} from '../utils/date';
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
-import penaltyImage from '../assets/images/robot-dev.png';
+import penaltyImage from '../assets/images/penalty.png';
 
 
 export default function CreateEventScreen({navigation}) {
