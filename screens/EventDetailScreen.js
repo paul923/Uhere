@@ -1,14 +1,23 @@
 import * as React from 'react';
 import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
-import * as Location from 'expo-location';
-import * as TaskManager from 'expo-task-manager';
+import { createStackNavigator } from '@react-navigation/stack';
 import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
 import EventMap from './event/EventMap'
 
+const Stack = createStackNavigator();
+
 export default function EventDetailScreen({ navigation, route }) {
-    const [showMap, setShowMap] = React.useState(true);
-    console.log('EventDetailScreen')
+    const [defaultRoute, setDefaultRoute] = React.useState('EventMap');
+    function _handleNavigation(){
+        if (defaultRoute == 'EventDetail') {
+            setDefaultRoute('EventMap');
+            navigation.navigate('EventMap');
+        } else {
+            setDefaultRoute('EventDetail');
+            navigation.navigate('EventDetail');
+        }
+    }
     return (
         <View style={styles.container}>
             {/* Header */}
@@ -26,14 +35,17 @@ export default function EventDetailScreen({ navigation, route }) {
                 centerContainerStyle={{ flex: 1 }}
                 rightComponent={{ icon: 'menu', color: '#fff' }}
             />
-            {showMap ? EventMap({ route }) : EventDetailWithMiniMap({ route })}
+            <Stack.Navigator initialRouteName={defaultRoute} headerMode="none">
+                <Stack.Screen name="EventDetail" component={EventDetailWithMiniMap} initialParams={{route:route}} />
+                <Stack.Screen name="EventMap" component={EventMap} initialParams={{route:route}}/>
+            </Stack.Navigator>
             {/* Switch */}
             <View style={styles.switchStyle}>
                 <Icon style={styles.switchStyle}
                     reverse
                     name='exchange'
                     type='font-awesome'
-                    onPress={() => setShowMap(!showMap)}
+                    onPress={_handleNavigation}
                 />
             </View>
         </View>

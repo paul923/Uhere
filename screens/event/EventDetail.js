@@ -80,7 +80,7 @@ const testLocation = {
 }
 
 export default function EventDetail({ route }) {
-
+    console.log(route.params.route.params.item.DateTime);
     React.useEffect(() => {
     }, []);
 
@@ -97,8 +97,8 @@ export default function EventDetail({ route }) {
                 <View style={styles.row}>
                     <Icon name="event" />
                     <View style={styles.column}>
-                        <Text h5>{formatDate(new Date(route.params.item.DateTime)) + ", " + formatTime(new Date(route.params.item.DateTime))}</Text>
-                        <Text h5>{moment(new Date(route.params.item.DateTime)).fromNow()}</Text>
+                        <Text h5>{formatDate(new Date(route.params.route.params.item.DateTime)) + ", " + formatTime(new Date(route.params.route.params.item.DateTime))}</Text>
+                        <Text h5>{moment(new Date(route.params.route.params.item.DateTime)).fromNow()}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -110,7 +110,7 @@ export default function EventDetail({ route }) {
                 <View style={styles.row}>
                     <Icon name="remove-circle" />
                     <View style={styles.column}>
-                        <Text>Losers buy {route.params.item.Penalty}</Text>
+                        <Text>Losers buy {route.params.route.params.item.Penalty}</Text>
                     </View>
 
                 </View>
@@ -129,7 +129,7 @@ export default function EventDetail({ route }) {
                             )
                         })
                     }
-                    <Text>{testMembers.length + "/" + route.params.item.MaxMember}</Text>
+                    <Text>{testMembers.length + "/" + route.params.route.params.item.MaxMember}</Text>
                 </View>
             </View>
         </View>
