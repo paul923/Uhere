@@ -80,7 +80,6 @@ const testLocation = {
 }
 
 export default function EventDetail({ route }) {
-    console.log(route.params.route.params.item.DateTime);
     React.useEffect(() => {
     }, []);
 

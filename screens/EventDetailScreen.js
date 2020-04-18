@@ -35,9 +35,9 @@ export default function EventDetailScreen({ navigation, route }) {
                 centerContainerStyle={{ flex: 1 }}
                 rightComponent={{ icon: 'menu', color: '#fff' }}
             />
-            <Stack.Navigator initialRouteName={defaultRoute} headerMode="none">
-                <Stack.Screen name="EventDetail" component={EventDetailWithMiniMap} initialParams={{route:route}} />
-                <Stack.Screen name="EventMap" component={EventMap} initialParams={{route:route}}/>
+            <Stack.Navigator initialRouteName={defaultRoute} headerMode="none" >
+                <Stack.Screen name="EventDetail" component={EventDetailWithMiniMap} initialParams={{route:route}} options={{gestureEnabled: false}}/>
+                <Stack.Screen name="EventMap" component={EventMap} initialParams={{route:route}} options={{gestureEnabled: false}}/>
             </Stack.Navigator>
             {/* Switch */}
             <View style={styles.switchStyle}>
