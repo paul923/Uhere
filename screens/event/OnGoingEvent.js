@@ -12,9 +12,10 @@ export default function OnGoingEvent({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = 'http://192.168.1.73:3000/event/on-going';
+        let url = 'http://10.0.0.79:3000/event/on-going';
         let response = await fetch(url);
         let responseJson = await response.json();
+        console.log(responseJson);
         setEvents(formatEventList(responseJson));
       } catch (error) {
         console.error(error);
@@ -31,7 +32,7 @@ export default function OnGoingEvent({ navigation, route }) {
       <SectionList
         style={styles.listContainer}
         sections={events}
-        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" />}
+        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" onPress={()=>navigation.navigate('Event Detail', { item: item })} />}
         keyExtractor={(item) => item.EventId.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
