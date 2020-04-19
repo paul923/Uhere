@@ -31,7 +31,7 @@ export default function ProfileScreen({navigation, route}){
       AvatarColor: avatarColor
     };
 
-    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/user/register`, {
+    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/user`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

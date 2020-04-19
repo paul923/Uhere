@@ -3,7 +3,28 @@ var router = express.Router();
 var pool = require('../db').pool;
 var mysql = require('../db').mysql;
 
-router.post('/register', function (req,res) {
+
+router.get('/:userId', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "SELECT * FROM ?? WHERE UserId = ?";
+    var parameters = ['User', req.params.userId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results) {
+        res.json({"status": 200, "response": results});
+      } else {
+        res.json({"status": 204, "response": "Not Found"})
+      }
+    });
+  });
+})
+router.post('/', function (req,res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!

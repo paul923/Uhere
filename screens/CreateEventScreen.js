@@ -82,7 +82,7 @@ export default function CreateEventScreen({navigation}) {
       }
     }
 
-    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/event/insert`, {
+    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/event`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

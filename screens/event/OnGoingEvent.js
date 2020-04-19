@@ -14,7 +14,7 @@ export default function OnGoingEvent({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = `http://${manifest.debuggerHost.split(':').shift()}:3000/event/on-going`;
+        let url = `http://${manifest.debuggerHost.split(':').shift()}:3000/event/ongoing`;
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));

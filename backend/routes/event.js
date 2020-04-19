@@ -4,17 +4,14 @@ var pool = require('../db').pool;
 var mysql = require('../db').mysql;
 
 // Creating a GET route that returns data from the 'users' table.
-router.get('/pending', function (req, res) {
+router.get('/:type', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     var sql = `select Event.*, COUNT(EventUser.UserId) MemberCount
     from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
-    where Event.STATUS = 'PENDING'
+    where Event.STATUS = '${req.params.type}'
     group by Event.EventId`;
-    // var parameters = ['Event.*', 'EventUser.Username', 'Event', 'EventUser', 'Event.EventId', 'EventUser.EventId', 'Event.STATUS', 'PENDING', 'Event.EventId'];
-    // sql = mysql.format(sql, parameters);
-    // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
@@ -25,30 +22,8 @@ router.get('/pending', function (req, res) {
   });
 });
 
-// Creating a GET route that returns data from the 'users' table.
-router.get('/on-going', function (req, res) {
-  // Connecting to the database.
-  pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
-    var sql = `select Event.*, COUNT(EventUser.UserId) MemberCount
-    from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
-    where Event.STATUS = 'ONGOING'
-    group by Event.EventId`;
-    // var parameters = ['Event', 'ONGOING'];
-    // sql = mysql.format(sql, parameters);
-    // Executing the MySQL query (select all data from the 'users' table).
-    connection.query(sql, function (error, results, fields) {
-      connection.release();
-      // If some error occurs, we throw an error.
-      if (error) throw error;
 
-      // Getting the 'response' from the database and sending it to our route. This is were the data is.
-      res.send(results)
-    });
-  });
-});
-
-router.post('/insert', function (req,res) {
+router.post('/', function (req,res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
