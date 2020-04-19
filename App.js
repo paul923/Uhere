@@ -6,6 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Constants from "expo-constants";
+
+const { manifest } = Constants;
 
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
@@ -89,6 +92,7 @@ export default function App(props) {
             ...prevState,
             isLoggedIn: true,
             userToken: action.token,
+            skipProfile: action.skipProfile
           };
         case 'SIGN_OUT':
           return {
@@ -135,7 +139,20 @@ export default function App(props) {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        dispatch({ type: 'SIGN_IN', token: data });
+        let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/user/${data}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+        let responseJson = await response.json();
+        console.log(responseJson);
+        if (responseJson.status === 200){
+          dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
+        } else {
+          dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
+        }
       },
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
       signUp: async data => {
@@ -211,19 +228,7 @@ export default function App(props) {
       } finally {
       }
     }
-    async function checkIfSkip() {
-      try {
-        //TODO: Check Database instead of AsyncStorage
-        let skipProfileFlag = await AsyncStorage.getItem('skipProfile') === 'true' ? true : false;
-        if (skipProfileFlag){
-          console.log("skipProfile");
-          dispatch({ type: 'SKIP_PROFILE'})
-        }
-      } catch (e) {
-      }
-    }
     function loadAsyncData() {
-      checkIfSkip();
       checkIfFirstLaunchedAsync();
       restoreUserTokenAsync();
     }

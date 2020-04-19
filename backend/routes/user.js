@@ -16,7 +16,7 @@ router.get('/:userId', function(req, res, next) {
       if (error) {
         throw error;
       }
-      if (results) {
+      if (results.length > 0) {
         res.json({"status": 200, "response": results});
       } else {
         res.json({"status": 204, "response": "Not Found"})

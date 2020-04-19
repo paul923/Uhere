@@ -44,7 +44,7 @@ export default function ProfileScreen({navigation, route}){
     let responseJson = await response.json();
     if (responseJson.status === 200){
       setShowSuccessOverlay(true)
-      setTimeout(() => {skipProfile(); AsyncStorage.setItem('skipProfile', 'true')}, 3000)
+      setTimeout(() => {skipProfile();}, 2000)
     }
   }
 
