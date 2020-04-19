@@ -98,10 +98,6 @@ export default function CreateEventScreen({navigation}) {
     navigation.navigate('Event')
   }
 
-  function cancel() {
-
-  }
-
   function friendSearch(text) {
     setSearchText(text);
 
@@ -145,7 +141,9 @@ export default function CreateEventScreen({navigation}) {
 
   function selectFriend (item) {
     if(!selectedFriends.includes(item)){
-      setSelectedFriends([...selectedFriends, item])
+      if (selectedFriends.length < maximumNumberOfMembers) {
+        setSelectedFriends([...selectedFriends, item])
+      }
     } else {
       setSelectedFriends(selectedFriends.filter(a => a !== item));
     }
