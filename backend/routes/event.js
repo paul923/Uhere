@@ -22,6 +22,23 @@ router.get('/:type', function (req, res) {
   });
 });
 
+router.get('/detail/:eventId', function(req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `select * FROM ?? WHERE EventId = ?`;
+    var parameters = ['Event', req.params.eventId];
+    sql = mysql.format(sql, parameters);
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      // If some error occurs, we throw an error.
+      if (error) throw error;
+      // Getting the 'response' from the database and sending it to our route. This is were the data is.
+      res.send(results)
+    });
+  });
+})
+
 
 router.post('/', function (req,res) {
   // Connecting to the database.
