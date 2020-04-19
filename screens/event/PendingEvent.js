@@ -14,10 +14,14 @@ export default function PendingEvent({ navigation, route }) {
     async function fetchData() {
       try {
 <<<<<<< HEAD
+<<<<<<< HEAD
         let url = `http://${manifest.debuggerHost.split(':').shift()}:3000/event/pending`;
 =======
         let url = 'http://10.0.0.79:3000/event/pending';
 >>>>>>> feat/EventDetail
+=======
+        let url = 'http://10.0.0.49:3000/event/pending';
+>>>>>>> feat/detailDrawer
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));
@@ -37,7 +41,17 @@ export default function PendingEvent({ navigation, route }) {
       <SectionList
         style={styles.listContainer}
         sections={events}
+<<<<<<< HEAD
         renderItem={({ item }) => <EventCard item={item} status="PENDING" onPress={() => navigation.navigate('Event Detail', { item: item })}/>}
+=======
+        renderItem={({ item }) => 
+          <EventCard 
+            item={item} 
+            status="PENDING"
+            onPress={() => {navigation.navigate('Event Detail', { item: item })}}
+            />
+        }
+>>>>>>> feat/detailDrawer
         keyExtractor={(item) => item.EventId.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
