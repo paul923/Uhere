@@ -204,16 +204,16 @@ export default function CreateEventScreen({navigation}) {
         <View style={styles.row}>
           <View>
             <View style={styles.row}>
-              <Text h4>How many friends are coming</Text>
+              <Text h4>Max number of members</Text>
               </View>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.columnButton} onPress={() => setMaximumNumberOfMembers(maximumNumberOfMembers+1)}>
+              <TouchableOpacity style={styles.columnButton} onPress={() => {setMaximumNumberOfMembers(maximumNumberOfMembers+1); setSelectedFriends([])}}>
                 <Icon name="plus" type="antdesign" underlayColor="transparent" color="black"/>
               </TouchableOpacity>
               <View style={styles.column}>
                 <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
               </View>
-              <TouchableOpacity style={styles.columnButton} onPress={() => maximumNumberOfMembers > 0 && setMaximumNumberOfMembers(maximumNumberOfMembers-1)}>
+              <TouchableOpacity style={styles.columnButton} onPress={() => {maximumNumberOfMembers > 1 && setMaximumNumberOfMembers(maximumNumberOfMembers-1); setSelectedFriends([])}}>
                 <Icon name="minus" type="antdesign" underlayColor="transparent" color="black"/>
               </TouchableOpacity>
             </View>
