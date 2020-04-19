@@ -8,6 +8,7 @@ import firebase from 'firebase';
 import Constants from "expo-constants";
 
 const { manifest } = Constants;
+import { backend_staging, backend_localhost } from '../constants/Environment';
 const colorList = ['#9599B3', '#D47FA6', '#8A56AC', '#241332', '#B4C55B', '#52912E', '#417623', '#253E12', '#4EBDEF', '#4666E5', '#132641', '#352641'];
 let initColor = colorList[0];
 
@@ -31,7 +32,7 @@ export default function ProfileScreen({navigation, route}){
       AvatarColor: avatarColor
     };
 
-    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/user`, {
+    let response = await fetch(`http://${manifest.releaseChannel ? backend_staging : backend_localhost}:3000/user`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
