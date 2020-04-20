@@ -43,7 +43,7 @@ export default function CreateEventScreen({navigation}) {
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
   const [ searchText, setSearchText] = React.useState("");
-  const [ friends, setFriends] = React.useState(friendsData);
+  const [ friends, setFriends] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
   const [ selectedFriends, setSelectedFriends] = React.useState([]);
 
@@ -579,42 +579,3 @@ const styles = StyleSheet.create({
       flex: 1
     },
 });
-
-const friendsData = [
-  {
-    displayName: "Justin Choi",
-    userId : "Crescent1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "Paul Kim",
-    userId : "pk1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "Jay Suhr",
-    userId : "js1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "Matthew Kim",
-    userId : "mk1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "JYP",
-    userId : "andWondergirls",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "You Hee Yeol",
-    userId : "uhere",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-]
