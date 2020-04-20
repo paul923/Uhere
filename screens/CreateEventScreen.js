@@ -50,9 +50,22 @@ export default function CreateEventScreen({navigation}) {
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    async function retrieveFriend() {
+      let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      let responseJson = await response.json();
+      responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+      setFriends(responseJson.response);
+    }
+
+    retrieveFriend();
     // Sorts friends list on initial load
-    friendsData.sort((a,b) => a.displayName.localeCompare(b.displayName));
-    setFriends(friendsData);
+
   }, []);
 
   async function publish() {
@@ -103,7 +116,7 @@ export default function CreateEventScreen({navigation}) {
     setSearchText(text);
 
     let filtered = friends.filter(function (item) {
-      return item.displayName.toLowerCase().includes(text.toLowerCase()) || item.userId.toLowerCase().includes(text.toLowerCase())
+      return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
     });
 
     setFilteredData(filtered)
@@ -112,10 +125,10 @@ export default function CreateEventScreen({navigation}) {
   function renderFriendsCard({ item }){
     return (
     <FriendCard
-      avatarUrl= {item.pictureUrl}
-      avatarTitle= {item.userInitial}
-      displayName = {item.displayName}
-      userId = {item.userId}
+      avatarUrl= {item.AvatarURI}
+      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      displayName = {item.Nickname}
+      userId = {item.Username}
       checkBox={{
         size: 35,
         checkedIcon: 'dot-circle-o',

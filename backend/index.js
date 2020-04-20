@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 
 const eventRouter = require('./routes/event');
 const userRouter = require('./routes/user');
+const relationshipRouter = require('./routes/relationship');
 dotenv.config();
 const pool = mysql.createPool({
   connectionLimit : 5,
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/event', eventRouter);
 app.use('/user', userRouter);
+app.use('/relationship', relationshipRouter);
 
 
 
