@@ -83,6 +83,7 @@ export default function DetailEditPage({ navigation, route }) {
               mode="datetime"
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
+              minimumDate={new Date(Date.now())}
               isDarkModeEnabled={colorScheme === 'dark'}
             />
             <TouchableOpacity onPress={showDatePicker} style={{minHeight: 30}}>
