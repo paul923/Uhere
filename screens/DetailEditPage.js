@@ -22,6 +22,7 @@ export default function DetailEditPage({ navigation, route }) {
   let colorScheme = useColorScheme();
 
   React.useEffect(() => {
+    console.log(colorScheme)
   },[]);
   
 
