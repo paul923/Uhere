@@ -7,7 +7,7 @@ import { formatEventList } from '../../utils/event';
 import Constants from "expo-constants";
 
 const { manifest } = Constants;
-import { backend_staging, backend_localhost } from '../../constants/Environment';
+import { backend } from '../../constants/Environment';
 
 
 export default function OnGoingEvent({ navigation, route }) {
@@ -15,7 +15,7 @@ export default function OnGoingEvent({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = `http://${manifest.releaseChannel ? backend_staging : backend_localhost}:3000/event/ongoing`;
+        let url = `http://${backend}:3000/event/ongoing`;
         let response = await fetch(url);
         let responseJson = await response.json();
         console.log(responseJson);

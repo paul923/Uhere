@@ -15,7 +15,7 @@ import firebaseObject from '../config/firebase';
 import Constants from "expo-constants";
 
 const { manifest } = Constants;
-import { backend_staging, backend_localhost } from '../constants/Environment';
+import { backend } from '../constants/Environment';
 
 
 import FriendCard from '../components/FriendCard';
@@ -83,7 +83,7 @@ export default function CreateEventScreen({navigation}) {
       }
     }
 
-    let response = await fetch(`http://${manifest.releaseChannel ? backend_staging : backend_localhost}:3000/event`, {
+    let response = await fetch(`http://${backend}:3000/event`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

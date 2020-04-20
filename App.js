@@ -10,7 +10,7 @@ import Constants from "expo-constants";
 
 const { manifest } = Constants;
 
-import { backend_staging, backend_localhost } from './constants/Environment';
+import { backend } from './constants/Environment';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
@@ -141,7 +141,7 @@ export default function App(props) {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        let response = await fetch(`http://${manifest.releaseChannel ? backend_staging : backend_localhost}:3000/user/${data}`, {
+        let response = await fetch(`http://${backend}:3000/user/${data}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',

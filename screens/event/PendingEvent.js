@@ -7,14 +7,14 @@ import { formatEventList } from '../../utils/event';
 import Constants from "expo-constants";
 
 const { manifest } = Constants;
-import { backend_staging, backend_localhost } from '../../constants/Environment';
+import { backend } from '../../constants/Environment';
 
 export default function PendingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = `http://${manifest.releaseChannel ? backend_staging : backend_localhost}:3000/event/pending`;
+        let url = `http://${backend}:3000/event/pending`;
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));
