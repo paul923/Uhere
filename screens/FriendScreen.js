@@ -3,29 +3,40 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, Flat
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
-
-
+import firebase from 'firebase';
+import { backend } from '../constants/Environment';
 
 
 export default class FriendScreen extends React.Component {
   state = {
     searchText: "",
-    data: friendsData,
+    data: [],
     filteredData: [],
   };
 
+  retrieveFriend = async () => {
+    let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    let responseJson = await response.json();
+    responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+    this.setState({data: responseJson.response});
+  }
   componentDidMount(){
-    friendsData.sort((a,b) => a.displayName.localeCompare(b.displayName));
-    this.setState({data: friendsData});
+    this.retrieveFriend();
   }
 
-  
+
 
   search = (searchText) => {
     this.setState({searchText: searchText});
 
     let filteredData = this.state.data.filter(function (item) {
-      return item.displayName.toLowerCase().includes(searchText.toLowerCase()) || item.userId.toLowerCase().includes(searchText.toLowerCase())
+      return item.Nickname.toLowerCase().includes(searchText.toLowerCase()) || item.Username.toLowerCase().includes(searchText.toLowerCase())
     });
 
     this.setState({filteredData: filteredData})
@@ -36,10 +47,10 @@ export default class FriendScreen extends React.Component {
 
   renderFriendsCard = ({ item }) => (
     <FriendCard
-      avatarUrl= {item.pictureUrl}
-      avatarTitle= {item.userInitial}
-      displayName = {item.displayName}
-      userId = {item.userId}
+      avatarUrl= {item.AvatarURI}
+      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      displayName = {item.Nickname}
+      userId = {item.Username}
     />
   )
 
@@ -81,7 +92,7 @@ export default class FriendScreen extends React.Component {
             backgroundColor:"white"
           }}
         />
-        
+
         <FlatList
           data={this.state.filteredData && this.state.filteredData.length > 0 ? this.state.filteredData : (this.state.searchText.length === 0 && this.state.data)}
           renderItem={this.renderFriendsCard}
