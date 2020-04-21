@@ -9,6 +9,9 @@ import CreateEventScreen from '../screens/CreateEventScreen';
 import FilterEventScreen from '../screens/FilterEventScreen';
 import EventDetailScreen from '../screens/EventDetailScreen';
 import EventDetailMapScreen from '../screens/EventDetailMapScreen'
+import DetailEditPage from '../screens/DetailEditPage'
+import LocationSearchScreen from '../screens/LocationSearchScreen'
+
 const Stack = createStackNavigator();
 
 export default function EventNavigator({ navigation, route }) {
@@ -38,6 +41,14 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Event Detail Map"
         component={EventDetailMapScreen}
+      />
+      <Stack.Screen
+        name="Event Edit"
+        component={DetailEditPage}
+      />
+      <Stack.Screen
+        name="Location Search"
+        component={LocationSearchScreen}
       />
     </Stack.Navigator>
   )

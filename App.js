@@ -1,12 +1,16 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, } from 'react-native';
-import { SplashScreen } from 'expo';
+import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Constants from "expo-constants";
+
+const { manifest } = Constants;
+
+import { backend } from './constants/Environment';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
 import useLinking from './navigation/useLinking';
@@ -14,6 +18,7 @@ import LoginNavigator from './navigation/LoginNavigator';
 import ProfileNavigator from './navigation/ProfileNavigator';
 
 import AppIntroSlider from './screens/introSlider';
+import SplashScreen from './screens/SplashScreen';
 
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
@@ -89,6 +94,7 @@ export default function App(props) {
             ...prevState,
             isLoggedIn: true,
             userToken: action.token,
+            skipProfile: action.skipProfile
           };
         case 'SIGN_OUT':
           return {
@@ -135,7 +141,20 @@ export default function App(props) {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        dispatch({ type: 'SIGN_IN', token: data });
+        let response = await fetch(`http://${backend}:3000/user/${data}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+        let responseJson = await response.json();
+        console.log(responseJson);
+        if (responseJson.status === 200){
+          dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
+        } else {
+          dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
+        }
       },
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
       signUp: async data => {
@@ -211,19 +230,7 @@ export default function App(props) {
       } finally {
       }
     }
-    async function checkIfSkip() {
-      try {
-        //TODO: Check Database instead of AsyncStorage
-        let skipProfileFlag = await AsyncStorage.getItem('skipProfile') === 'true' ? true : false;
-        if (skipProfileFlag){
-          console.log("skipProfile");
-          dispatch({ type: 'SKIP_PROFILE'})
-        }
-      } catch (e) {
-      }
-    }
     function loadAsyncData() {
-      checkIfSkip();
       checkIfFirstLaunchedAsync();
       restoreUserTokenAsync();
     }
@@ -258,22 +265,28 @@ export default function App(props) {
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
-        <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
-        <AuthContext.Provider value={authContext}>
-          <Stack.Navigator
-            headerMode="none">
-            {state.userToken == null || state.showLoadingScreen ? (
-              <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
-            ) : (
-                !state.skipProfile ? (
-                  <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
-                ) : (
-                  <Stack.Screen name="MainApp" component={MainAppNavigator} />
-                )
-            )}
-          </Stack.Navigator>
-          </AuthContext.Provider>
-        </NavigationContainer>
+        {state.showLoadingScreen ? (
+          <SplashScreen/>
+        ) : (
+          <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+          <AuthContext.Provider value={authContext}>
+            <Stack.Navigator
+              headerMode="none">
+              {state.userToken == null ? (
+                <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+              ) : (
+                  !state.skipProfile ? (
+                    <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
+                  ) : (
+                    <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                  )
+              )}
+            </Stack.Navigator>
+            </AuthContext.Provider>
+          </NavigationContainer>
+        )}
+        {Platform.OS === 'ios' && <KeyboardSpacer/>}
+
       </View>
       </LoadingContext.Provider>
     );

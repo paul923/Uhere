@@ -1,14 +1,35 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
-import { Avatar, Header, Button, Icon } from 'react-native-elements';
+import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert, FlatList } from 'react-native';
+import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
+import { formatDate, formatTime } from "../utils/date";
 import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
 import EventMap from './event/EventMap'
+
+import SideMenu from 'react-native-side-menu'
 
 const Stack = createStackNavigator();
 
 export default function EventDetailScreen({ navigation, route }) {
     const [defaultRoute, setDefaultRoute] = React.useState('EventMap');
+    const [ isOpen, setOpen] = React.useState(false);
+
+
+    function toggleSideMenu(){
+        setOpen(!isOpen)
+    }
+
+    function renderFriendsCard ({ item }){
+        return(
+            <ListItem
+                leftAvatar = {{ source: { uri: item.pictureUrl } }}
+                rightIcon = {<Icon name="add-user" type="entypo" size={20}/>}
+                title={item.displayName}
+                titleStyle={{fontSize: 15}}
+                containerStyle={{padding: 3}}
+            />
+        );
+    }
     function _handleNavigation(){
         if (defaultRoute == 'EventDetail') {
             setDefaultRoute('EventMap');
@@ -18,7 +39,81 @@ export default function EventDetailScreen({ navigation, route }) {
             navigation.navigate('EventDetail');
         }
     }
+
+    function menuContent(){
+        return(
+            <View style={styles.sideMenu}>
+            <View style={{flex: 10}}>
+                <View style={styles.hostContainer}>
+                <Text>Host</Text>
+                <Avatar
+                    size='large'
+                    source={{uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg'}}
+                    avatarStyle={{borderWidth: 2, borderRadius: 5, borderColor: 'red'}}
+                />
+                <Text>Host Name</Text>
+                </View>
+
+                <View style={styles.friendsContainer}>
+                    <Text>Friends</Text>
+                    <View style={styles.friendsButton}>
+                        <Button
+                        title="Invite"
+                        icon={{
+                            name: "pluscircleo",
+                            type: "antdesign"
+                        }}
+                        type="outline"
+                        containerStyle={{flex: 1, marginHorizontal: 3,}}
+                        />
+                        <Button
+                        title="Edit"
+                        icon={{
+                            name: "minuscircleo",
+                            type: "antdesign"
+                        }}
+                        type="outline"
+                        containerStyle={{flex: 1, marginHorizontal: 3}}
+                        onPress={()=> navigation.navigate('Event Edit', { item: route.params.item })}
+                        />
+                    </View>
+                    <FlatList
+                        data={friendsData}
+                        renderItem={renderFriendsCard}
+                        keyExtractor={(item) => item.userId}
+                        contentContainerStyle={{
+                            backgroundColor: "white",
+                            margin: 10
+                        }}
+                        bounces={false}
+                    />
+                </View>
+
+            </View>
+
+            <View style={styles.bottomBar}>
+                <Icon
+                name="md-exit"
+                type="ionicon"
+                iconStyle={styles.bottomIcon}
+                />
+                <Icon
+                name="md-notifications"
+                type="ionicon"
+                />
+            </View>
+            </View>
+        )
+    }
+
     return (
+      <SideMenu
+          menu={menuContent()}
+          menuPosition='right'
+          isOpen={isOpen}
+          onChange={toggleSideMenu}
+          bounceBackOnOverdraw={false}
+      >
         <View style={styles.container}>
             {/* Header */}
             <Header
@@ -33,7 +128,7 @@ export default function EventDetailScreen({ navigation, route }) {
                 }
                 centerComponent={{ text: route.params.item.Name, style: { color: '#fff' } }}
                 centerContainerStyle={{ flex: 1 }}
-                rightComponent={{ icon: 'menu', color: '#fff' }}
+                rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu}}
             />
             <Stack.Navigator initialRouteName={defaultRoute} headerMode="none" >
                 <Stack.Screen name="EventDetail" component={EventDetailWithMiniMap} initialParams={{route:route}} options={{gestureEnabled: false}}/>
@@ -49,8 +144,11 @@ export default function EventDetailScreen({ navigation, route }) {
                 />
             </View>
         </View>
+        </SideMenu>
     )
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -77,4 +175,70 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 100,
     },
+    sideMenu: {
+        flex: 1,
+        backgroundColor: 'white',
+        borderWidth: 1,
+      },
+      hostContainer: {
+        flex: 2,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
+      friendsContainer: {
+        flex:4,
+        borderWidth: 1,
+        padding: 5
+      },
+      bottomBar: {
+        borderWidth: 1,
+        flexDirection: 'row',
+        padding: 5,
+      },
+      friendsButton: {
+        flexDirection: 'row'
+      },
+      bottomIcon:{
+        marginHorizontal: 10
+      }
 })
+
+const friendsData = [
+    {
+      displayName: "Justin Choi",
+      userId : "Crescent1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "Paul Kim",
+      userId : "pk1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "Jay Suhr",
+      userId : "js1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "Matthew Kim",
+      userId : "mk1234",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "JYP",
+      userId : "andWondergirls",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+    {
+      displayName: "You Hee Yeol",
+      userId : "uhere",
+      pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
+      userInitial : "",
+    },
+  ]

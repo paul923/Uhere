@@ -7,11 +7,15 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import * as Location from 'expo-location';
 import qs from 'qs';
-import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
+import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
+import Constants from "expo-constants";
+
+const { manifest } = Constants;
+import { backend } from '../constants/Environment';
 
 
 import FriendCard from '../components/FriendCard';
@@ -20,7 +24,7 @@ import FriendTile from '../components/FriendTile';
 import {formatDate, formatTime, combineDateAndTime} from '../utils/date';
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
-import penaltyImage from '../assets/images/robot-dev.png';
+import penaltyImage from '../assets/images/penalty.png';
 
 
 export default function CreateEventScreen({navigation}) {
@@ -34,6 +38,7 @@ export default function CreateEventScreen({navigation}) {
   const [ reminder, setReminder] = React.useState(15);
   const [ locationQuery, setLocationQuery] = React.useState("");
   const [ location, setLocation] = React.useState(null);
+  const [ isOnline, setIsOnline] = React.useState(false);
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
@@ -52,33 +57,46 @@ export default function CreateEventScreen({navigation}) {
 
   async function publish() {
     let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
-    let response = await fetch('http://192.168.1.73:3000/event/insert', {
+    let event = {
+      Name: eventName,
+      Description: "",
+      DateTime: date,
+      MaxMember: maximumNumberOfMembers,
+      Reminder: reminder,
+      Penalty: penalty,
+      Status: "PENDING",
+      Host: firebase.auth().currentUser.uid
+    };
+    if (isOnline){
+      event = {
+        IsOnline: true,
+        ...event
+      }
+    } else {
+      event = {
+        IsOnline: false,
+        LocationName: location.place_name.split(',')[0],
+        LocationAddress: location.place_name.split(',')[1],
+        LocationGeolat: location.geometry.coordinates[1],
+        LocationGeolong: location.geometry.coordinates[0],
+        ...event
+      }
+    }
+
+    let response = await fetch(`http://${backend}:3000/event`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        Name: eventName,
-        Description: "",
-        LocationName: location.place_name.split(',')[0],
-        LocationAddress: location.place_name.split(',')[1],
-        LocationGeolat: location.geometry.coordinates[1],
-        LocationGeolong: location.geometry.coordinates[0],
-        DateTime: date,
-        MaxMember: maximumNumberOfMembers,
-        Reminder: reminder,
-        Penalty: penalty,
-        Status: "PENDING"
+        event,
+        users: selectedFriends
       }),
     });
     let responseJson = await response.json();
-    alert("Added record");
+    alert(responseJson.response);
     navigation.navigate('Event')
-  }
-
-  function cancel() {
-
   }
 
   function friendSearch(text) {
@@ -124,7 +142,9 @@ export default function CreateEventScreen({navigation}) {
 
   function selectFriend (item) {
     if(!selectedFriends.includes(item)){
-      setSelectedFriends([...selectedFriends, item])
+      if (selectedFriends.length < maximumNumberOfMembers) {
+        setSelectedFriends([...selectedFriends, item])
+      }
     } else {
       setSelectedFriends(selectedFriends.filter(a => a !== item));
     }
@@ -185,17 +205,17 @@ export default function CreateEventScreen({navigation}) {
         <View style={styles.row}>
           <View>
             <View style={styles.row}>
-              <Text h4>How many friends are coming</Text>
+              <Text h4>Max number of members</Text>
               </View>
             <View style={styles.row}>
-              <TouchableOpacity style={styles.columnButton} onPress={() => setMaximumNumberOfMembers(maximumNumberOfMembers+1)}>
-                <Icon name="plus" type="antdesign" color="black"/>
+              <TouchableOpacity style={styles.columnButton} onPress={() => {setMaximumNumberOfMembers(maximumNumberOfMembers+1); setSelectedFriends([])}}>
+                <Icon name="plus" type="antdesign" underlayColor="transparent" color="black"/>
               </TouchableOpacity>
               <View style={styles.column}>
                 <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
               </View>
-              <TouchableOpacity style={styles.columnButton} onPress={() => maximumNumberOfMembers > 0 && setMaximumNumberOfMembers(maximumNumberOfMembers-1)}>
-                <Icon name="minus" type="antdesign" color="black"/>
+              <TouchableOpacity style={styles.columnButton} onPress={() => {maximumNumberOfMembers > 1 && setMaximumNumberOfMembers(maximumNumberOfMembers-1); setSelectedFriends([])}}>
+                <Icon name="minus" type="antdesign" underlayColor="transparent" color="black"/>
               </TouchableOpacity>
             </View>
           </View>
@@ -225,6 +245,9 @@ export default function CreateEventScreen({navigation}) {
   }
 
   async function searchLocation() {
+    if (locationQuery === ''){
+      return;
+    }
     let url = '';
     let location = await Location.getCurrentPositionAsync({});
     try {
@@ -243,16 +266,27 @@ export default function CreateEventScreen({navigation}) {
   function LocationSearch() {
     return (
       <View style={{flex: 1}}>
+        <CheckBox
+          containerStyle={{
+            marginBottom: 30,
+          }}
+          checkedIcon='dot-circle-o'
+          uncheckedIcon='circle-o'
+          title='Online Meeting'
+          checked={isOnline}
+          onPress={() => setIsOnline(!isOnline)}
+        />
         <View style={{flexDirection: 'row'}}>
           <Input
             containerStyle={{flex: 1}}
             value={locationQuery}
             onChangeText={setLocationQuery}
             placeholder="Type Address..."
+            onSubmitEditing={searchLocation}
             />
           <Button
             icon={
-              <Icon name="search" size={25} color="white" />
+              <Icon name="search" size={25} color="white" underlayColor="transparent" />
             }
             onPress={searchLocation}
           />
@@ -388,7 +422,7 @@ export default function CreateEventScreen({navigation}) {
       onPress = () => setStep('Members');
     }
     return (
-      <Icon name={name} color='#fff' onPress={onPress}/>
+      <Icon name={name} color='#fff' underlayColor="transparent" onPress={onPress}/>
     )
   }
 
@@ -399,28 +433,45 @@ export default function CreateEventScreen({navigation}) {
     let condition;
     if (step === 'Event Detail') {
       condition = (eventName && eventDate && eventTime && reminder && maximumNumberOfMembers) ? true : false
-      onPress = () => setStep('Location');
       return (
-        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={() => { if(condition) setStep('Location') }}>
+          NEXT
+        </Text>
       )
     } else if (step === 'Location') {
       //Needs to be changed back to true: false
-      condition = location ? true : true;
-      onPress = () => setStep('Members');
+      condition = location || isOnline ? true : true;
       return (
-        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={() => { if(condition) setStep('Members') }}>
+          NEXT
+        </Text>
       )
     } else if (step === 'Members') {
       condition = true;
-      onPress = () => setStep('Penalty');
       return (
-        <Icon name="chevron-right" color={!condition ? 'black' : '#fff'} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}/>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={() => { if(condition) setStep('Penalty') }}>
+          {selectedFriends.length > 0 ? 'NEXT' : 'SKIP'}
+        </Text>
       )
     } else {
       condition = penalty ? true : false;
       onPress = () => publish();
       return (
-        <Text style={{color: !condition ? 'black' : '#fff' }} disabled={!condition} disabledStyle={{'backgroundColor': 'transparent'}} onPress={condition && onPress}>PUBLISH</Text>
+        <Text style={{color: !condition ? 'black' : '#fff' }}
+          disabled={!condition}
+          disabledStyle={{'backgroundColor': 'transparent'}}
+          onPress={() => { if(condition) publish() }}>
+          PUBLISH
+        </Text>
       )
     }
   }

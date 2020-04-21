@@ -102,7 +102,8 @@ export default function MainAppNavigator({ navigation, route }) {
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
           headerMode: 'none'
         }}
-      /><BottomTab.Screen
+      />
+      <BottomTab.Screen
         name="Jay"
         component={JaysTabNavigator}
         options={({ route }) => ({

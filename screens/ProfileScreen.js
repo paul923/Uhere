@@ -5,8 +5,10 @@ import ColorPalette from '../components/react-native-color-palette/src';
 import { ScrollView } from 'react-native-gesture-handler';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
+import Constants from "expo-constants";
 
-
+const { manifest } = Constants;
+import { backend } from '../constants/Environment';
 const colorList = ['#9599B3', '#D47FA6', '#8A56AC', '#241332', '#B4C55B', '#52912E', '#417623', '#253E12', '#4EBDEF', '#4666E5', '#132641', '#352641'];
 let initColor = colorList[0];
 
@@ -21,17 +23,37 @@ export default function ProfileScreen({navigation, route}){
 
 
 
+  async function register(){
+    let user = {
+      UserId: firebase.auth().currentUser.uid,
+      Username: username,
+      Nickname: nickname,
+      AvatarURI: route.params && route.params.uri ? route.params.uri : undefined,
+      AvatarColor: avatarColor
+    };
 
-  function setProfile(){
-    setShowSuccessOverlay(true)
-    setTimeout(() => {skipProfile(); AsyncStorage.setItem('skipProfile', 'true')}, 3000)
+    let response = await fetch(`http://${backend}:3000/user`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user,
+      }),
+    });
+    let responseJson = await response.json();
+    if (responseJson.status === 200){
+      setShowSuccessOverlay(true)
+      setTimeout(() => {skipProfile();}, 2000)
+    }
   }
 
   return (
     <View style={styles.container}>
       <Header
         centerComponent={{text: 'Set Profile', style: {color: 'white', fontSize: 25, fontWeight: 'bold'}}}
-        rightComponent={<Icon name="chevron-right" color='#fff' onPress={setProfile}/>}
+        rightComponent={<Icon name="chevron-right" color='#fff' onPress={register}/>}
         containerStyle={{
           backgroundColor: 'transparent',
           borderBottomWidth: 0

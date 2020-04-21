@@ -4,14 +4,16 @@ import { Text, Button, Input, ListItem, Avatar } from 'react-native-elements'
 
 import AvatarScreen from '../AvatarScreen'
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
+import Constants from "expo-constants";
 
+const { manifest } = Constants;
 
 
 export default function KeyboardTestScreen({navigation}) {
   const [data, setData] = React.useState([]);
   async function retrieve() {
     try {
-      let url = 'http://192.168.1.73:3000/retrieve';
+      let url = `http://${manifest.debuggerHost.split(':').shift()}:3000/retrieve`;
       let response = await fetch(url);
       let responseJson = await response.json();
       setData(responseJson);
@@ -22,7 +24,7 @@ export default function KeyboardTestScreen({navigation}) {
   }
 
   async function insert(char_column, number_column, date_column) {
-    let response = await fetch('http://192.168.1.73:3000/insert', {
+    let response = await fetch(`http://${manifest.debuggerHost.split(':').shift()}:3000/insert`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

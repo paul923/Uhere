@@ -4,14 +4,17 @@ import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 
 import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
 import { formatEventList } from '../../utils/event';
+import Constants from "expo-constants";
 
+const { manifest } = Constants;
+import { backend } from '../../constants/Environment';
 
 export default function PendingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = 'http://10.0.0.79:3000/event/pending';
+        let url = `http://${backend}:3000/event/pending`;
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));
@@ -31,7 +34,13 @@ export default function PendingEvent({ navigation, route }) {
       <SectionList
         style={styles.listContainer}
         sections={events}
-        renderItem={({ item }) => <EventCard item={item} status="PENDING" onPress={() => navigation.navigate('Event Detail', { item: item })}/>}
+        renderItem={({ item }) =>
+          <EventCard
+            item={item}
+            status="PENDING"
+            onPress={() => {navigation.navigate('Event Detail', { item: item })}}
+            />
+        }
         keyExtractor={(item) => item.EventId.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>

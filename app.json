@@ -10,7 +10,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/penalty.png",
     "scheme": "myapp",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -55,6 +55,7 @@
           "certificateHash": "62:A9:46:59:84:CA:BA:3A:EC:C1:57:1F:2E:75:87:EC:DD:4B:D1:89"
         }
       }
-    }
+    },
+    "description": "U Here"
   }
 }

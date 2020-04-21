@@ -10,7 +10,7 @@ export default function EventCard({onPress, item, status}) {
     <View style={styles.container}>
       <View style={styles.cardContainer}>
         <TouchableOpacity style={styles.cardContentContainer} onPress = {onPress}>
-          <Text h4>{item.name}</Text>
+          <Text h4>{item.Name}</Text>
           <View style={styles.row}>
             <Icon name="event"/>
             <View style={styles.cardColumn}>
@@ -24,14 +24,14 @@ export default function EventCard({onPress, item, status}) {
           </View>
           <View style={styles.row}>
             <Icon name="location-on"/>
-            <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.LocationName}</Text>
+            <View style={styles.cardFullColumn}>
+              <Text h5 style={styles.cardColumnText}>{item.IsOnline ? 'Online Meeting' : item.LocationName}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <Icon name="person"/>
-            <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{"0/" + item.MaxMember}</Text>
+            <View style={styles.cardFullColumn}>
+              <Text h5 style={styles.cardColumnText}>{item.MemberCount + "/" + item.MaxMember}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -84,6 +84,11 @@ const styles = StyleSheet.create({
   },
   cardColumn: {
     flexBasis: '40%',
+    paddingTop: 2,
+    paddingBottom: 2,
+  },
+  cardFullColumn: {
+    flexBasis: '90%',
     paddingTop: 2,
     paddingBottom: 2,
   },
