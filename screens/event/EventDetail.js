@@ -3,84 +3,19 @@ import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Al
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import { formatDate, formatTime } from "../../utils/date";
 import moment from 'moment'
+import { getEventByID, getEventMembers } from '../../API/EventAPI'
 
-const testMembers = [
-    {
-        name: 'Matthew Kim',
-        initial: 'MK',
-        color: '#fc0f03',
-        location: { latitude: 49.3049901, longitude: -122.8332702 },
-    },
-    {
-        name: 'Paul Kim',
-        initial: 'PK',
-        color: '#0362fc',
-        location: { latitude: 49.2620402, longitude: -122.8763948 },
-    },
-    {
-        name: 'Justin Choi',
-        initial: 'JC',
-        color: '#fcba03',
-        location: { latitude: 49.2509886, longitude: -122.8920569 },
-    },
-]
-const testLocation = {
-    "id": "poi.274877968974",
-    "type": "Feature",
-    "place_type": [
-        "poi"
-    ],
-    "relevance": 0.954545,
-    "properties": {
-        "landmark": true,
-        "address": "4341 North Rd",
-        "category": "cafe, coffee, tea, tea house",
-        "maki": "cafe"
-    },
-    "text": "Juillet Cafe",
-    "place_name": "Juillet Cafe, 4341 North Rd, Burnaby, British Columbia V3N 4N4, Canada",
-    "center": [
-        -122.892873,
-        49.245313
-    ],
-    "geometry": {
-        "coordinates": [
-            -122.892873,
-            49.245313
-        ],
-        "type": "Point"
-    },
-    "context": [
-        {
-            "id": "neighborhood.4648501112784200",
-            "text": "Cameron"
-        },
-        {
-            "id": "postcode.17850449015175840",
-            "text": "V3N 4N4"
-        },
-        {
-            "id": "place.11396815904751060",
-            "wikidata": "Q244025",
-            "text": "Burnaby"
-        },
-        {
-            "id": "region.10008500984322020",
-            "short_code": "CA-BC",
-            "wikidata": "Q1974",
-            "text": "British Columbia"
-        },
-        {
-            "id": "country.10019870576587150",
-            "short_code": "ca",
-            "wikidata": "Q16",
-            "text": "Canada"
-        }
-    ]
-}
-
-export default function EventDetail({ route }) {
+export default function EventDetail({ EventId }) {
+    const [event, setEvent] = React.useState(null);
+    const [members, setMembers] = React.useState([]);
     React.useEffect(() => {
+        async function fetchData() {
+            let event = await getEventByID(EventId);
+            setEvent(event);
+            let members = await getEventMembers(EventId);
+            setMembers(members)
+        }
+        fetchData()
     }, []);
 
     return (
@@ -89,46 +24,45 @@ export default function EventDetail({ route }) {
                 <View style={styles.row}>
                     <Icon name="location-on" />
                     <View style={styles.column}>
-                        <Text h5>{testLocation.text}</Text>
-                        <Text h5>{testLocation.properties.address + ", " + testLocation.context[2].text}</Text>
+                        {event !== null && (<Text h5>{event.LocationName}</Text>)}
+                        {event !== null && (<Text h5>{event.LocationAddress}</Text>)}
                     </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="event" />
                     <View style={styles.column}>
-                        <Text h5>{formatDate(new Date(route.params.route.params.item.DateTime)) + ", " + formatTime(new Date(route.params.route.params.item.DateTime))}</Text>
-                        <Text h5>{moment(new Date(route.params.route.params.item.DateTime)).fromNow()}</Text>
+                        {event !== null && (<Text h5>{formatDate(new Date(event.DateTime)) + ", " + formatTime(new Date(event.DateTime))}</Text>)}
+                        {event !== null && (<Text h5>{moment(new Date(event.DateTime)).fromNow()}</Text>)}
                     </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="keyboard-voice" />
                     <View style={styles.column}>
-                        <Text>빨리안오면 아메리카노 사는거다 빨랑와라</Text>
+                        {event !== null && (<Text h5>{event.Description}</Text>)}
                     </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="remove-circle" />
                     <View style={styles.column}>
-                        <Text>Losers buy {route.params.route.params.item.Penalty}</Text>
+                        {event !== null && (<Text>Losers buy {event.Penalty}</Text>)}
                     </View>
-
                 </View>
                 <View style={styles.row}>
                     <Icon name="person" />
-                    {
-                        testMembers.map((u, i) => {
+                    {members !== null && (
+                        members.map((u, i) => {
                             return (
                                 <View style={styles.avatar} key={i}>
                                     <Avatar
                                         rounded
                                         size='medium'
-                                        title={u.initial}
+                                        source={{uri:u.AvatarURI}}
                                     />
                                 </View>
                             )
                         })
-                    }
-                    <Text>{testMembers.length + "/" + route.params.route.params.item.MaxMember}</Text>
+                    )}
+                    {event !== null && members !== null && (<Text>{members.length + "/" + event.MaxMember }</Text>)}
                 </View>
             </View>
         </View>
