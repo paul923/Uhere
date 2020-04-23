@@ -8,43 +8,47 @@ import { getEventByID, getEventMembers } from '../../API/EventAPI'
 export default function EventDetail({ EventId }) {
     const [event, setEvent] = React.useState(null);
     const [members, setMembers] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(true);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(EventId);
             setEvent(event);
             let members = await getEventMembers(EventId);
             setMembers(members)
+            setIsLoading(false);
         }
         fetchData()
     }, []);
 
     return (
         <View style={styles.container}>
+        {
+          !isLoading && (
             <View style={styles.detailContainer}>
                 <View style={styles.row}>
                     <Icon name="location-on" />
                     <View style={styles.column}>
-                        {event !== null && (<Text h5>{event.LocationName}</Text>)}
-                        {event !== null && (<Text h5>{event.LocationAddress}</Text>)}
+                        <Text h5>{event.LocationName}</Text>
+                        <Text h5>{event.LocationAddress}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="event" />
                     <View style={styles.column}>
-                        {event !== null && (<Text h5>{formatDate(new Date(event.DateTime)) + ", " + formatTime(new Date(event.DateTime))}</Text>)}
-                        {event !== null && (<Text h5>{moment(new Date(event.DateTime)).fromNow()}</Text>)}
+                        <Text h5>{formatDate(new Date(event.DateTime)) + ", " + formatTime(new Date(event.DateTime))}</Text>
+                        <Text h5>{moment(new Date(event.DateTime)).fromNow()}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="keyboard-voice" />
                     <View style={styles.column}>
-                        {event !== null && (<Text h5>{event.Description}</Text>)}
+                        <Text h5>{event.Description}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
                     <Icon name="remove-circle" />
                     <View style={styles.column}>
-                        {event !== null && (<Text>Losers buy {event.Penalty}</Text>)}
+                        <Text>Losers buy {event.Penalty}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -62,9 +66,11 @@ export default function EventDetail({ EventId }) {
                             )
                         })
                     )}
-                    {event !== null && members !== null && (<Text>{members.length + "/" + event.MaxMember }</Text>)}
+                    <Text>{members.length + "/" + event.MaxMember }</Text>
                 </View>
             </View>
+          )
+        }
         </View>
     )
 }

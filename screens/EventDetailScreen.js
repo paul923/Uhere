@@ -14,14 +14,16 @@ export default function EventDetailScreen({ navigation, route }) {
     const [event, setEvent] = React.useState(null);
     const [defaultRoute, setDefaultRoute] = React.useState('EventDetail');
     const [isOpen, setOpen] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(true);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
+            setIsLoading(false);
         }
         fetchData()
     }, []);
-    
+
     function toggleSideMenu() {
         setOpen(!isOpen)
     }
@@ -114,49 +116,49 @@ export default function EventDetailScreen({ navigation, route }) {
     }
 
     return (
-        <SideMenu
-            menu={menuContent()}
-            menuPosition='right'
-            isOpen={isOpen}
-            onChange={toggleSideMenu}
-            bounceBackOnOverdraw={false}
-        >
-            <View style={styles.container}>
-                {/* Header */}
-                <Header
-                    leftComponent={
-                        {
-                            icon: 'chevron-left',
-                            color: '#fff',
-                            onPress: () => {
-                                navigation.navigate("Event")
-                            }
-                        }
-                    }
-                    centerComponent={ event !== null && { text: event.Name, style: { color: '#fff' } }}
-                    centerContainerStyle={{ flex: 1 }}
-                    rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
-                />
-                <Stack.Navigator initialRouteName={defaultRoute} headerMode="none" >
-                    <Stack.Screen
-                        name="EventDetail"
-                        component={EventDetailWithMiniMap}
-                        initialParams={{ EventId: route.params.EventId }}
-                        options={{ gestureEnabled: false }}
-                    />
-                    <Stack.Screen name="EventMap" component={EventMap} initialParams={{ EventId: route.params.EventId }} options={{ gestureEnabled: false }} />
-                </Stack.Navigator>
-                {/* Switch */}
-                <View style={styles.switchStyle}>
-                    <Icon style={styles.switchStyle}
-                        reverse
-                        name='exchange'
-                        type='font-awesome'
-                        onPress={_handleNavigation}
-                    />
-                </View>
-            </View>
-        </SideMenu>
+      <SideMenu
+          menu={menuContent()}
+          menuPosition='right'
+          isOpen={isOpen}
+          onChange={toggleSideMenu}
+          bounceBackOnOverdraw={false}
+      >
+          <View style={styles.container}>
+              {/* Header */}
+              <Header
+                  leftComponent={
+                      {
+                          icon: 'chevron-left',
+                          color: '#fff',
+                          onPress: () => {
+                              navigation.navigate("Event")
+                          }
+                      }
+                  }
+                  centerComponent={ event !== null && { text: event.Name, style: { color: '#fff' } }}
+                  centerContainerStyle={{ flex: 1 }}
+                  rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
+              />
+              <Stack.Navigator initialRouteName={defaultRoute} headerMode="none" >
+                  <Stack.Screen
+                      name="EventDetail"
+                      component={EventDetailWithMiniMap}
+                      initialParams={{ EventId: route.params.EventId }}
+                      options={{ gestureEnabled: false }}
+                  />
+                  <Stack.Screen name="EventMap" component={EventMap} initialParams={{ EventId: route.params.EventId }} options={{ gestureEnabled: false }} />
+              </Stack.Navigator>
+              {/* Switch */}
+              <View style={styles.switchStyle}>
+                  <Icon style={styles.switchStyle}
+                      reverse
+                      name='exchange'
+                      type='font-awesome'
+                      onPress={_handleNavigation}
+                  />
+              </View>
+          </View>
+      </SideMenu>
     )
 }
 

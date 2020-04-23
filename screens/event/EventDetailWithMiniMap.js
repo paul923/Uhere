@@ -12,17 +12,19 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function EventDetailWithMiniMap({ route }) {
     const [event, setEvent] = React.useState(null);
+    const [isLoading, setIsLoading] = React.useState(true);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
+            setIsLoading(false);
         }
         fetchData()
     }, []);
     return (
         <View style={styles.container}>
             {/* Map */}
-            {event !== null && 
+            {!isLoading &&
             (<MapView
                 style={styles.mapStyle}
                 region={
