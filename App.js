@@ -24,6 +24,8 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
 
+import { AppearanceProvider } from 'react-native-appearance';
+
 const Stack = createStackNavigator();
 
 import AuthContext from './contexts/AuthContext';
@@ -257,6 +259,7 @@ export default function App(props) {
    );
  } else {
     return (
+      <AppearanceProvider>
       <LoadingContext.Provider value={loadingContext}>
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
@@ -289,6 +292,7 @@ export default function App(props) {
 
       </View>
       </LoadingContext.Provider>
+      </AppearanceProvider>
     );
   }
 }

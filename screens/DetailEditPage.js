@@ -6,6 +6,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
+import { Appearance, useColorScheme } from 'react-native-appearance';
+
 
 export default function DetailEditPage({ navigation, route }) {
   const [eventTitle, setEventTitle] = React.useState('');
@@ -17,11 +19,12 @@ export default function DetailEditPage({ navigation, route }) {
 
   const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
 
-
+  let colorScheme = useColorScheme();
 
   React.useEffect(() => {
-    console.log(route.params.item)
+    console.log(colorScheme)
   },[]);
+  
 
 
   const showDatePicker = () => {
@@ -80,6 +83,8 @@ export default function DetailEditPage({ navigation, route }) {
               mode="datetime"
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
+              minimumDate={new Date(Date.now())}
+              isDarkModeEnabled={colorScheme === 'dark'}
             />
             <TouchableOpacity onPress={showDatePicker} style={{minHeight: 30}}>
               <Text style={styles.rightText}>{eventStartTime}</Text>
