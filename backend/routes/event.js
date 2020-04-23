@@ -39,6 +39,27 @@ router.get('/detail/:eventId', function(req, res) {
   });
 })
 
+router.get('/users/:EventId', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "SELECT * FROM ?? WHERE EventId = ?";
+    var parameters = ['EventUser', req.params.EventId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.length > 0) {
+        res.json({"status": 200, "response": results});
+      } else {
+        res.json({"status": 204, "response": "Not Found"})
+      }
+    });
+  });
+})
+
 
 router.post('/', function (req,res) {
   // Connecting to the database.

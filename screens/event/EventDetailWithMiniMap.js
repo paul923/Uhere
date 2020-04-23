@@ -3,33 +3,50 @@ import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Al
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import MapView from 'react-native-maps';
 import EventDetail from './EventDetail'
+import { getEventByID } from '../../API/EventAPI'
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const meetingLocation = { latitude: 49.2451673, longitude: -122.8933748 }
+
 export default function EventDetailWithMiniMap({ route }) {
+    const [event, setEvent] = React.useState(null);
+    React.useEffect(() => {
+        async function fetchData() {
+            let event = await getEventByID(route.params.EventId);
+            setEvent(event);
+        }
+        fetchData()
+    }, []);
     return (
         <View style={styles.container}>
             {/* Map */}
-            <MapView
+            {event !== null && 
+            (<MapView
                 style={styles.mapStyle}
-                region={{ latitude: meetingLocation.latitude, longitude: meetingLocation.longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
+                region={
+                    {
+                        latitude: event.LocationGeolat,
+                        longitude: event.LocationGeolong,
+                        latitudeDelta: LATITUDE_DELTA,
+                        longitudeDelta: LONGITUDE_DELTA
+                    }
+                }
             >
                 <MapView.Marker
                     coordinate={
                         {
-                            latitude: meetingLocation.latitude,
-                            longitude: meetingLocation.longitude,
+                            latitude: event.LocationGeolat,
+                            longitude: event.LocationGeolong,
                         }
                     }
-                    title='Juilet Cafe'
+                    title={event.LocationName}
                 />
-            </MapView>
+            </MapView>)}
             {/* Event Detail */}
             <View style={styles.detailContainer} >
-                <EventDetail route={route} />
+                <EventDetail EventId={route.params.EventId} />
             </View>
         </View>
     )
