@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 
 import { getUserByUsername, getUserByUid } from '../API/FriendAPI'
@@ -47,27 +47,30 @@ export default function AddFriendByIdScreen({ navigation, route }) {
         centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
         statusBarProps={{translucent: true}}
       />
-      <View style={styles.contentContainer}>
-        <View style={styles.searchContainer}>
-          <Text>User ID</Text>
-          <TextInput
-            style={{borderBottomWidth: 1, height: 30, color: 'black'}}
-            value={searchId}
-            onChangeText={(text)=> setSearchId(text)}
+      <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
+        <View style={styles.contentContainer}>
+          <View style={styles.searchContainer}>
+            <Text>User ID</Text>
+            <TextInput
+              style={{borderBottomWidth: 1, height: 30, color: 'black'}}
+              value={searchId}
+              onChangeText={(text)=> setSearchId(text)}
+              onSubmitEditing={fetchUserByUsername}
+            />
+          </View>
+          <Button
+            title="Search"
+            onPress={fetchUserByUsername}
           />
+          <View style={styles.searchResultContainer}>
+            <Text>Search Result (User Nickname): {resultUserId}</Text>
+          </View>
+          <View style={styles.myIdContainer}>
+            <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 18}}>My ID</Text>
+            <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 15}}>{currentUserId}</Text>
+          </View>
         </View>
-        <Button
-          title="Search"
-          onPress={fetchUserByUsername}
-        />
-        <View style={styles.searchResultContainer}>
-          <Text>Search Result (User Nickname): {resultUserId}</Text>
-        </View>
-        <View style={styles.myIdContainer}>
-          <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 18}}>My ID</Text>
-          <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 15}}>{currentUserId}</Text>
-        </View>
-      </View>
+      </TouchableWithoutFeedback>
 
     </View>
   )
