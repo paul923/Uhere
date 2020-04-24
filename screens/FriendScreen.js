@@ -13,7 +13,7 @@ export default class FriendScreen extends React.Component {
     searchText: "",
     data: [],
     filteredData: [],
-    dropDownToggle: true
+    dropDownToggle: false
   };
 
   retrieveFriend = async () => {
@@ -56,6 +56,7 @@ export default class FriendScreen extends React.Component {
     />
   )
 
+
   render() {
     return (
       <View style={styles.container}>
@@ -68,7 +69,7 @@ export default class FriendScreen extends React.Component {
               name="user-plus"
               type="feather"
               color="white"
-              underlayColor="translucent"
+              underlayColor="transparent"
               onPress = {()=> {this.setState({dropDownToggle: !this.state.dropDownToggle})}}
             />
           }
@@ -95,24 +96,24 @@ export default class FriendScreen extends React.Component {
                 justifyContent: 'space-evenly',
                 alignItems: 'center'
             }}>
-              <TouchableOpacity onPress={()=> {}}>
-                <View style={{width: 100, height: 100, justifyContent: 'center', alignItems:'center'}}>
+              <TouchableOpacity onPress={()=> {this.setState({dropDownToggle: false});}}>
+                <View style={styles.dropDownButton}>
                   <Icon name="edit" type="entypo"/>
-                  <Text style={{marginVertical: 5, fontSize: 10, fontWeight: 'bold'}}>Edit Friend</Text>
+                  <Text style={styles.dropDownButtonText}>Edit Friend</Text>
                 </View>
               </TouchableOpacity>
               <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-              <TouchableOpacity onPress={()=> {}}>
-                <View style={{width: 100, height: 100, justifyContent: 'center', alignItems:'center'  }}>
+              <TouchableOpacity onPress={()=> {this.props.navigation.navigate('Add Friend Selection');this.setState({dropDownToggle: false});}}>
+                <View style={styles.dropDownButton}>
                   <Icon name="user" type="feather"/>
-                  <Text style={{marginVertical: 5, fontSize: 10, fontWeight: 'bold'}}>Add Friend</Text>
+                  <Text style={styles.dropDownButtonText}>Add Friend</Text>
                 </View>
               </TouchableOpacity>
               <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-              <TouchableOpacity onPress={()=> {}}>
-                <View style={{width: 100, height: 100, justifyContent: 'center', alignItems:'center' }}>
+              <TouchableOpacity onPress={()=> {this.props.navigation.navigate('Create Group');this.setState({dropDownToggle: false});}}>
+                <View style={styles.dropDownButton}>
                   <Icon name="users" type="feather"/>
-                  <Text style={{marginVertical: 5, fontSize: 10, fontWeight: 'bold'}}>Create Group</Text>
+                  <Text style={styles.dropDownButtonText}>Create Group</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -121,7 +122,7 @@ export default class FriendScreen extends React.Component {
         }
         {// greyed out background when dropdown is toggled
           this.state.dropDownToggle &&
-          <TouchableWithoutFeedback onPress={()=>{this.setState({dropDownToggle: false})}}>
+          <TouchableWithoutFeedback onPress={()=> this.setState({dropDownToggle: false})}>
           <View style={{
             flex: 1,
             zIndex: 20,
@@ -129,7 +130,7 @@ export default class FriendScreen extends React.Component {
             width: '100%',
             position: 'absolute',
             backgroundColor: this.state.dropDownToggle ? 'black' : null, 
-            opacity: this.state.dropDownToggle ? 0.4 : null,
+            opacity: this.state.dropDownToggle ? 0.7 : null,
           }}>
           </View>
           </TouchableWithoutFeedback>
@@ -172,7 +173,7 @@ export default class FriendScreen extends React.Component {
           <FlatList
             data={this.state.filteredData && this.state.filteredData.length > 0 ? this.state.filteredData : (this.state.searchText.length === 0 && this.state.data)}
             renderItem={this.renderFriendsCard}
-            keyExtractor={(item) => item.userId}
+            keyExtractor={(item) => item.Username}
             contentContainerStyle={{
               paddingLeft: 20,
               paddingRight: 20,
@@ -192,7 +193,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "white",
   },
-  friendsContent: {
-    
+  dropDownButton: {
+    width: 100, 
+    height: 100, 
+    justifyContent: 'center',
+    alignItems:'center' 
+  },
+  dropDownButtonText: {
+    marginVertical: 5, 
+    fontSize: 10, 
+    fontWeight: 'bold'
   }
 });
