@@ -6,7 +6,7 @@ import { formatDate, formatTime } from "../utils/date";
 import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
 import EventMap from './event/EventMap'
 import SideMenu from 'react-native-side-menu'
-import { getEventByID } from '../API/EventAPI'
+import { getEventByID, getEventMembers } from '../API/EventAPI'
 
 const Stack = createStackNavigator();
 
@@ -15,11 +15,15 @@ export default function EventDetailScreen({ navigation, route }) {
     const [defaultRoute, setDefaultRoute] = React.useState('EventDetail');
     const [isOpen, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [eventMembers, setEventMembers] = React.useState(null);
+
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
             setIsLoading(false);
+            let eventMembers = await getEventMembers(route.params.EventId)
+            setEventMembers(eventMembers);
         }
         fetchData()
     }, []);
@@ -31,9 +35,9 @@ export default function EventDetailScreen({ navigation, route }) {
     function renderFriendsCard({ item }) {
         return (
             <ListItem
-                leftAvatar={{ source: { uri: item.pictureUrl } }}
+                leftAvatar={{ source: { uri: item.AvatarURI } }}
                 rightIcon={<Icon name="add-user" type="entypo" size={20} />}
-                title={item.displayName}
+                title={item.Nickname}
                 titleStyle={{ fontSize: 15 }}
                 containerStyle={{ padding: 3 }}
             />
@@ -87,9 +91,9 @@ export default function EventDetailScreen({ navigation, route }) {
                             />
                         </View>
                         <FlatList
-                            data={friendsData}
+                            data={eventMembers}
                             renderItem={renderFriendsCard}
-                            keyExtractor={(item) => item.userId}
+                            keyExtractor={(item) => item.Username}
                             contentContainerStyle={{
                                 backgroundColor: "white",
                                 margin: 10

@@ -20,7 +20,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
   }, []);
 
   
-  async function fetchUserByUsername() {
+  async function searchUserByUsername() {
     let resultUser = await getUserByUsername(searchId);
     setResultUserId(resultUser.Nickname)
   }
@@ -55,12 +55,12 @@ export default function AddFriendByIdScreen({ navigation, route }) {
               style={{borderBottomWidth: 1, height: 30, color: 'black'}}
               value={searchId}
               onChangeText={(text)=> setSearchId(text)}
-              onSubmitEditing={fetchUserByUsername}
+              onSubmitEditing={searchUserByUsername}
             />
           </View>
           <Button
             title="Search"
-            onPress={fetchUserByUsername}
+            onPress={searchUserByUsername}
           />
           <View style={styles.searchResultContainer}>
             <Text>Search Result (User Nickname): {resultUserId}</Text>
