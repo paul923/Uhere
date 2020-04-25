@@ -90,6 +90,7 @@ export default function App(props) {
           return {
             ...prevState,
             userToken: action.token,
+            fetchToken: false
           };
         case 'SIGN_IN':
           return {
@@ -122,7 +123,8 @@ export default function App(props) {
       }
     },
     {
-      showLoadingScreen: true,
+      fetchToken: true,
+      showLoadingScreen: false,
       isLoggedIn: false,
       userToken: null,
       skipProfile: false
@@ -193,7 +195,6 @@ export default function App(props) {
           if (!userToken) {
             dispatch({ type: 'RESTORE_TOKEN', token: userToken })
           }
-          setTimeout(() => dispatch({ type: 'HIDE_LOADING_SCREEN'}), 1000);
         });
       } catch (e) {
         // Restoring token failed
@@ -257,6 +258,8 @@ export default function App(props) {
      updateLocationGranted={setLocationPermissionGranted}
      />
    );
+ } else if (state.fetchToken) {
+   return <SplashScreen/>
  } else {
     return (
       <AppearanceProvider>
@@ -268,26 +271,22 @@ export default function App(props) {
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
-        {state.showLoadingScreen ? (
-          <SplashScreen/>
-        ) : (
-          <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
-          <AuthContext.Provider value={authContext}>
-            <Stack.Navigator
-              headerMode="none">
-              {state.userToken == null ? (
-                <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
-              ) : (
-                  !state.skipProfile ? (
-                    <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
-                  ) : (
-                    <Stack.Screen name="MainApp" component={MainAppNavigator} />
-                  )
-              )}
-            </Stack.Navigator>
-            </AuthContext.Provider>
-          </NavigationContainer>
-        )}
+        <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+        <AuthContext.Provider value={authContext}>
+          <Stack.Navigator
+            headerMode="none">
+            {!state.isLoggedIn && state.userToken == null ? (
+              <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+            ) : (
+                !state.skipProfile ? (
+                  <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
+                ) : (
+                  <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                )
+            )}
+          </Stack.Navigator>
+          </AuthContext.Provider>
+        </NavigationContainer>
         {Platform.OS === 'ios' && <KeyboardSpacer/>}
 
       </View>
