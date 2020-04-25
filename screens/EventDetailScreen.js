@@ -11,17 +11,28 @@ import { getEventByID } from '../API/EventAPI'
 const Stack = createStackNavigator();
 
 export default function EventDetailScreen({ navigation, route }) {
-    const [event, setEvent] = React.useState(null);
-    const [defaultRoute, setDefaultRoute] = React.useState('EventDetail');
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [event, setEvent] = React.useState();
+    const [initialRoute, setInitialRoute] = React.useState();
+    const [showSwitch, setShowSwitch] = React.useState(false);
     const [isOpen, setOpen] = React.useState(false);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
+            let wihtinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (event.Reminder * 60000)
+            if (wihtinReminder) {
+                setInitialRoute('EventMap');
+                setShowSwitch(true);
+            } else {
+                setInitialRoute('EventDetail');
+                setShowSwitch(false);
+            }
+            setIsLoading(false);
         }
         fetchData()
     }, []);
-    
+
     function toggleSideMenu() {
         setOpen(!isOpen)
     }
@@ -38,11 +49,11 @@ export default function EventDetailScreen({ navigation, route }) {
         );
     }
     function _handleNavigation() {
-        if (defaultRoute == 'EventDetail') {
-            setDefaultRoute('EventMap');
+        if (initialRoute == 'EventDetail') {
+            setInitialRoute('EventMap');
             navigation.navigate('EventMap');
         } else {
-            setDefaultRoute('EventDetail');
+            setInitialRoute('EventDetail');
             navigation.navigate('EventDetail');
         }
     }
@@ -50,113 +61,128 @@ export default function EventDetailScreen({ navigation, route }) {
     function menuContent() {
         return (
             <View style={styles.sideMenu}>
-                <View style={{ flex: 10 }}>
-                    <View style={styles.hostContainer}>
-                        <Text>Host</Text>
-                        <Avatar
-                            size='large'
-                            source={{ uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg' }}
-                            avatarStyle={{ borderWidth: 2, borderRadius: 5, borderColor: 'red' }}
-                        />
-                        <Text>Host Name</Text>
-                    </View>
-
-                    <View style={styles.friendsContainer}>
-                        <Text>Friends</Text>
-                        <View style={styles.friendsButton}>
-                            <Button
-                                title="Invite"
-                                icon={{
-                                    name: "pluscircleo",
-                                    type: "antdesign"
-                                }}
-                                type="outline"
-                                containerStyle={{ flex: 1, marginHorizontal: 3, }}
+                {isLoading !== true && (
+                    <View style={{ flex: 10 }}>
+                        <View style={styles.hostContainer}>
+                            <Text>Host</Text>
+                            <Avatar
+                                size='large'
+                                source={{ uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg' }}
+                                avatarStyle={{ borderWidth: 2, borderRadius: 5, borderColor: 'red' }}
                             />
-                            <Button
-                                title="Edit"
-                                icon={{
-                                    name: "minuscircleo",
-                                    type: "antdesign"
+                            <Text>Host Name</Text>
+                        </View>
+
+                        <View style={styles.friendsContainer}>
+                            <Text>Friends</Text>
+                            <View style={styles.friendsButton}>
+                                <Button
+                                    title="Invite"
+                                    icon={{
+                                        name: "pluscircleo",
+                                        type: "antdesign"
+                                    }}
+                                    type="outline"
+                                    containerStyle={{ flex: 1, marginHorizontal: 3, }}
+                                />
+                                <Button
+                                    title="Edit"
+                                    icon={{
+                                        name: "minuscircleo",
+                                        type: "antdesign"
+                                    }}
+                                    type="outline"
+                                    containerStyle={{ flex: 1, marginHorizontal: 3 }}
+                                    onPress={() => navigation.navigate('Event Edit', { item: route.params.item })}
+                                />
+                            </View>
+                            <FlatList
+                                data={friendsData}
+                                renderItem={renderFriendsCard}
+                                keyExtractor={(item) => item.userId}
+                                contentContainerStyle={{
+                                    backgroundColor: "white",
+                                    margin: 10
                                 }}
-                                type="outline"
-                                containerStyle={{ flex: 1, marginHorizontal: 3 }}
-                                onPress={() => navigation.navigate('Event Edit', { item: route.params.item })}
+                                bounces={false}
                             />
                         </View>
-                        <FlatList
-                            data={friendsData}
-                            renderItem={renderFriendsCard}
-                            keyExtractor={(item) => item.userId}
-                            contentContainerStyle={{
-                                backgroundColor: "white",
-                                margin: 10
-                            }}
-                            bounces={false}
+                    </View>
+                )}
+
+                {isLoading !== true && (
+                    <View style={styles.bottomBar}>
+                        <Icon
+                            name="md-exit"
+                            type="ionicon"
+                            iconStyle={styles.bottomIcon}
+                        />
+                        <Icon
+                            name="md-notifications"
+                            type="ionicon"
                         />
                     </View>
+                )}
 
-                </View>
-
-                <View style={styles.bottomBar}>
-                    <Icon
-                        name="md-exit"
-                        type="ionicon"
-                        iconStyle={styles.bottomIcon}
-                    />
-                    <Icon
-                        name="md-notifications"
-                        type="ionicon"
-                    />
-                </View>
             </View>
         )
     }
 
     return (
-        <SideMenu
-            menu={menuContent()}
-            menuPosition='right'
-            isOpen={isOpen}
-            onChange={toggleSideMenu}
-            bounceBackOnOverdraw={false}
-        >
-            <View style={styles.container}>
-                {/* Header */}
-                <Header
-                    leftComponent={
-                        {
-                            icon: 'chevron-left',
-                            color: '#fff',
-                            onPress: () => {
-                                navigation.navigate("Event")
+        <View style={styles.container}>
+            {isLoading !== true && (
+                <SideMenu
+                    menu={menuContent()}
+                    menuPosition='right'
+                    isOpen={isOpen}
+                    onChange={toggleSideMenu}
+                    bounceBackOnOverdraw={false}
+                >
+                    <View style={styles.container}>
+                        {/* Header */}
+                        <Header
+                            leftComponent={
+                                {
+                                    icon: 'chevron-left',
+                                    color: '#fff',
+                                    onPress: () => {
+                                        navigation.navigate("Event")
+                                    }
+                                }
                             }
-                        }
-                    }
-                    centerComponent={ event !== null && { text: event.Name, style: { color: '#fff' } }}
-                    centerContainerStyle={{ flex: 1 }}
-                    rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
-                />
-                <Stack.Navigator initialRouteName={defaultRoute} headerMode="none" >
-                    <Stack.Screen
-                        name="EventDetail"
-                        component={EventDetailWithMiniMap}
-                        initialParams={{ EventId: route.params.EventId }}
-                        options={{ gestureEnabled: false }}
-                    />
-                    <Stack.Screen name="EventMap" component={EventMap} initialParams={{ EventId: route.params.EventId }} options={{ gestureEnabled: false }} />
-                </Stack.Navigator>
-                {/* Switch */}
-                <View style={styles.switchStyle}>
-                    <Icon style={styles.switchStyle}
-                        reverse
-                        name='exchange'
-                        type='font-awesome'
-                        onPress={_handleNavigation}
-                    />
-                </View>
-            </View>
-        </SideMenu>
+                            centerComponent={event !== null && { text: event.Name, style: { color: '#fff' } }}
+                            centerContainerStyle={{ flex: 1 }}
+                            rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
+                        />
+                        <Stack.Navigator initialRouteName={initialRoute} headerMode="none" >
+                            <Stack.Screen
+                                name="EventDetail"
+                                component={EventDetailWithMiniMap}
+                                initialParams={{ EventId: route.params.EventId }}
+                                options={{ gestureEnabled: false }}
+                            />
+                            <Stack.Screen
+                                name="EventMap"
+                                component={EventMap}
+                                initialParams={{ EventId: route.params.EventId }}
+                                options={{ gestureEnabled: false }}
+                            />
+                        </Stack.Navigator>
+                        {/* Switch */}
+                        {showSwitch && (
+                            <View style={styles.switchStyle}>
+                                <Icon style={styles.switchStyle}
+                                    reverse
+                                    name='exchange'
+                                    type='font-awesome'
+                                    onPress={_handleNavigation}
+                                />
+                            </View>
+                        )}
+                    </View>
+                </SideMenu>
+            )}
+        </View>
     )
 }
 

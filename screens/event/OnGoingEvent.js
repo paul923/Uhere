@@ -18,7 +18,6 @@ export default function OnGoingEvent({ navigation, route }) {
         let url = `http://${backend}:3000/event/ongoing`;
         let response = await fetch(url);
         let responseJson = await response.json();
-        console.log(responseJson);
         setEvents(formatEventList(responseJson));
       } catch (error) {
         console.error(error);

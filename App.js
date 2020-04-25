@@ -23,6 +23,8 @@ import SplashScreen from './screens/SplashScreen';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
+import { AppearanceProvider } from 'react-native-appearance';
+
 
 const Stack = createStackNavigator();
 
@@ -150,7 +152,7 @@ export default function App(props) {
         });
         let responseJson = await response.json();
         console.log(responseJson);
-        if (responseJson.status === 200){
+        if (responseJson.status === 200) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
@@ -166,7 +168,7 @@ export default function App(props) {
         dispatch({ type: 'SIGN_IN', token: data });
       },
       skipProfile: () => {
-        dispatch({ type: 'SKIP_PROFILE'})
+        dispatch({ type: 'SKIP_PROFILE' })
       }
     }),
     []
@@ -174,8 +176,8 @@ export default function App(props) {
 
   const loadingContext = React.useMemo(
     () => ({
-      showLoadingScreen: () => dispatch({ type: 'SHOW_LOADING_SCREEN'}),
-      hideLoadingScreen: () => dispatch({ type: 'HIDE_LOADING_SCREEN'}),
+      showLoadingScreen: () => dispatch({ type: 'SHOW_LOADING_SCREEN' }),
+      hideLoadingScreen: () => dispatch({ type: 'HIDE_LOADING_SCREEN' }),
     })
   );
 
@@ -191,7 +193,7 @@ export default function App(props) {
           if (!userToken) {
             dispatch({ type: 'RESTORE_TOKEN', token: userToken })
           }
-          setTimeout(() => dispatch({ type: 'HIDE_LOADING_SCREEN'}), 1000);
+          setTimeout(() => dispatch({ type: 'HIDE_LOADING_SCREEN' }), 1000);
         });
       } catch (e) {
         // Restoring token failed
@@ -239,56 +241,59 @@ export default function App(props) {
   }, []);
 
   storeIsFirstLaunch = async (flag) => {
-     await AsyncStorage.setItem('isFirstLaunch', JSON.stringify(flag));
+    await AsyncStorage.setItem('isFirstLaunch', JSON.stringify(flag));
   }
   if (isFirstLaunch && !showRealApp) {
-   return <AppIntroSlider
-     slides={slides}
-     onDone={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
-     onSkip={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
-     showSkipButton
-     activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
-     />;
- }  else if (!isLocationPermissionGranted) {
-   return (
-     <LocationPermissionScreen
-     updateLocationGranted={setLocationPermissionGranted}
-     />
-   );
- } else {
+    return <AppIntroSlider
+      slides={slides}
+      onDone={() => { setshowRealApp(true); storeIsFirstLaunch(false) }}
+      onSkip={() => { setshowRealApp(true); storeIsFirstLaunch(false) }}
+      showSkipButton
+      activeDotStyle={{ backgroundColor: 'rgba(0, 0, 0, .9)' }}
+    />;
+  } else if (!isLocationPermissionGranted) {
     return (
-      <LoadingContext.Provider value={loadingContext}>
-      <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-        <Spinner
-          visible={state.showLoadingScreen}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
-        {state.showLoadingScreen ? (
-          <SplashScreen/>
-        ) : (
-          <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
-          <AuthContext.Provider value={authContext}>
-            <Stack.Navigator
-              headerMode="none">
-              {state.userToken == null ? (
-                <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
-              ) : (
-                  !state.skipProfile ? (
-                    <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
-                  ) : (
-                    <Stack.Screen name="MainApp" component={MainAppNavigator} />
-                  )
-              )}
-            </Stack.Navigator>
-            </AuthContext.Provider>
-          </NavigationContainer>
-        )}
-        {Platform.OS === 'ios' && <KeyboardSpacer/>}
+      <LocationPermissionScreen
+        updateLocationGranted={setLocationPermissionGranted}
+      />
+    );
+  } else {
+    return (
+      <AppearanceProvider>
 
-      </View>
-      </LoadingContext.Provider>
+        <LoadingContext.Provider value={loadingContext}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <Spinner
+              visible={state.showLoadingScreen}
+              textContent={'Loading...'}
+              textStyle={styles.spinnerTextStyle}
+            />
+            {state.showLoadingScreen ? (
+              <SplashScreen />
+            ) : (
+                <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
+                  <AuthContext.Provider value={authContext}>
+                    <Stack.Navigator
+                      headerMode="none">
+                      {state.userToken == null ? (
+                        <Stack.Screen name="LoginNavigator" component={LoginNavigator} />
+                      ) : (
+                          !state.skipProfile ? (
+                            <Stack.Screen name="ProfileNavigator" component={ProfileNavigator} />
+                          ) : (
+                              <Stack.Screen name="MainApp" component={MainAppNavigator} />
+                            )
+                        )}
+                    </Stack.Navigator>
+                  </AuthContext.Provider>
+                </NavigationContainer>
+              )}
+            {Platform.OS === 'ios' && <KeyboardSpacer />}
+
+          </View>
+        </LoadingContext.Provider>
+      </AppearanceProvider>
     );
   }
 }
@@ -315,7 +320,7 @@ const slides = [
     titleStyle: {
       color: '#000000'
     },
-    textStyle : {
+    textStyle: {
       color: '#0f0f0f',
     }
   },
@@ -328,7 +333,7 @@ const slides = [
     titleStyle: {
       color: '#000000'
     },
-    textStyle : {
+    textStyle: {
       color: '#0f0f0f',
     }
   },
@@ -341,8 +346,8 @@ const slides = [
     titleStyle: {
       color: '#000000'
     },
-    textStyle : {
+    textStyle: {
       color: '#0f0f0f'
     }
   }
- ];
+];

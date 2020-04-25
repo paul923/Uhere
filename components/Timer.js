@@ -1,15 +1,18 @@
 import * as React from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { millisToMinutesAndSeconds } from "../utils/date";
+import { Appearance, useColorScheme } from 'react-native-appearance';
 
 
 export default function Timer({ eventDateTime }) {
-    const [timer, setTimer] = React.useState(eventDateTime - new Date())
+    const [timer, setTimer] = React.useState(new Date(eventDateTime) - new Date());
+    let colorScheme = useColorScheme();
     React.useEffect(() => {
+        console.log(colorScheme)
         let interval = null;
         interval = setInterval(() => {
-            if (eventDateTime - new Date() > 0) {
-                setTimer(eventDateTime - new Date());
+            if (new Date(eventDateTime) - new Date() > 0) {
+                setTimer(new Date(eventDateTime) - new Date());
             } else {
                 setTimer(0);
                 clearInterval(interval);
@@ -19,12 +22,17 @@ export default function Timer({ eventDateTime }) {
     }, []);
 
     return (
-        <Text style={styles.timer}>{millisToMinutesAndSeconds(timer)}</Text>
+        <Text style={colorScheme === 'dark' ? styles.dark : styles.normal}>{millisToMinutesAndSeconds(timer)}</Text>
     )
 }
 
 const styles = StyleSheet.create({
-    timer: {
+    normal: {
         fontSize: 30,
-    }
+        color: 'black',
+    },
+    dark: {
+        fontSize: 30,
+        color: 'white',
+    },
 });

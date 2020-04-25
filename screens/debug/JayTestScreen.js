@@ -2,18 +2,36 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button } from 'react-native-elements'
 import Timer from '../../components/Timer'
+import { backend } from '../../constants/Environment';
+import io from 'socket.io-client';
 
 export default function JayTestScreen({ navigation }) {
+    socket = io.connect(`http://${backend}:3000`);
+    socket.on('otherPositions', positionsData => {
+        console.log(positionsData);
+    })
+    
+    
+    React.useEffect(() => {
+    }, []);
+    
     let eventDateTime = new Date(2020,3,18,13,30);
     console.log('render');
+    
+    function emitPosition() {
+        socket.emit('position', {
+            data: 123,
+            id: socket.id,
+        })
+    }
+    
     return (
         <View style={styles.container}>
             <Button
-                title='EventDetailMapView'
+                title='Emit Something'
                 buttonStyle={styles.button}
-                onPress={() => navigation.navigate('EventDetailMapView')}
+                onPress={emitPosition}
             />
-            <Timer eventDateTime={eventDateTime}></Timer>
         </View>
     )
 }

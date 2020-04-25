@@ -15,8 +15,32 @@ const pool = mysql.createPool({
   database: process.env.DATABASE_SCHEMA,
   ssl: "Amazon RDS"
 });
+
+
+
 // Starting our app.
 const app = express();
+const server = require('http').Server(app);
+
+const io = require('socket.io')(server);
+io.on('connection', (socket) => {
+  io.clients((error, clients) => {
+    if (error) throw error;
+    console.log(clients); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
+  });
+
+  socket.on('position', (position) => {
+    console.log('position with id -----------------\n', position)
+    socket.broadcast.emit('otherPositions', position);
+  })
+
+  socket.on('disconnect', () => {
+    console.log(`Connection ${socket.id} has left the building`)
+  })
+
+});
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/event', eventRouter);
@@ -25,6 +49,6 @@ app.use('/user', userRouter);
 
 
 // Starting our server.
-app.listen(3000, () => {
+server.listen(3000, () => {
  console.log('Listening on Port 3000');
 });

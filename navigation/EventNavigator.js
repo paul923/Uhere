@@ -8,7 +8,6 @@ import EventScreen from '../screens/EventScreen';
 import CreateEventScreen from '../screens/CreateEventScreen';
 import FilterEventScreen from '../screens/FilterEventScreen';
 import EventDetailScreen from '../screens/EventDetailScreen';
-import EventDetailMapScreen from '../screens/EventDetailMapScreen'
 import DetailEditPage from '../screens/DetailEditPage'
 import LocationSearchScreen from '../screens/LocationSearchScreen'
 
@@ -37,10 +36,6 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Event Detail"
         component={EventDetailScreen}
-      />
-      <Stack.Screen
-        name="Event Detail Map"
-        component={EventDetailMapScreen}
       />
       <Stack.Screen
         name="Event Edit"
