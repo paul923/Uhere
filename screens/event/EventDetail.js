@@ -27,10 +27,18 @@ export default function EventDetail({ EventId }) {
             <View style={styles.detailContainer}>
                 <View style={styles.row}>
                     <Icon name="location-on" />
-                    <View style={styles.column}>
-                        <Text h5>{event.LocationName}</Text>
-                        <Text h5>{event.LocationAddress}</Text>
-                    </View>
+                    {
+                      event.IsOnline ? (
+                        <View style={styles.column}>
+                            <Text h5>Online Meeting</Text>
+                        </View>
+                      ) : (
+                        <View style={styles.column}>
+                            <Text h5>{event.LocationName}</Text>
+                            <Text h5>{event.LocationAddress}</Text>
+                        </View>
+                      )
+                    }
                 </View>
                 <View style={styles.row}>
                     <Icon name="event" />
