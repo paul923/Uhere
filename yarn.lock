@@ -6412,7 +6412,7 @@ snapdragon@^0.8.1:
     source-map-resolve "^0.5.0"
     use "^3.1.0"
 
-socket.io-client@^2.3.0:
+socket.io-client@^2.2.0, socket.io-client@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/socket.io-client/-/socket.io-client-2.3.0.tgz#14d5ba2e00b9bcd145ae443ab96b3f86cbcc1bb4"
   integrity sha512-cEQQf24gET3rfhxZ2jJ5xzAOo/xhZwK+mOqtGRg5IowZsMgwvHwnf/mCRapAAkadhM26y+iydgwsXGObBB5ZdA==
@@ -6943,6 +6943,13 @@ url-parse@^1.4.4:
   dependencies:
     querystringify "^2.1.1"
     requires-port "^1.0.0"
+
+use-socket.io-client@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/use-socket.io-client/-/use-socket.io-client-1.1.0.tgz#3cb9b009dd1884fad209cd9e6d099bb99b5bec2c"
+  integrity sha512-osUeJkLbV6EDprbsjybB3MU5wHKGD3sMuHaSqIbr4Lo2SMGCpX5EhzW97/j8ToYvVNM+Bjkyi+WbKoTkXUXdGQ==
+  dependencies:
+    socket.io-client "^2.2.0"
 
 use-subscription@^1.0.0:
   version "1.4.1"

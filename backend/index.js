@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
 
   socket.on('position', (position) => {
     console.log('position with id -----------------\n', position)
-    socket.broadcast.emit('otherPositions', position);
+    socket.emit('otherPositions', position);
   })
 
   socket.on('disconnect', () => {
