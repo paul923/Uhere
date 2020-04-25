@@ -80,7 +80,8 @@ router.post('/', function (req,res) {
         connection.release();
       }
       if (results.insertId) {
-        const users = req.body.users.map(x => [results.insertId, x.userId, 'PENDING']);
+        const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING']);
+        console.log(users);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);

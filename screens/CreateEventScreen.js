@@ -30,6 +30,7 @@ import penaltyImage from '../assets/images/penalty.png';
 export default function CreateEventScreen({navigation}) {
   const [ step, setStep] = React.useState("Event Detail");
   const [ eventName, setEventName] = React.useState("");
+  const [ eventDescription, setEventDescription] = React.useState("");
   const [ eventDate, setEventDate] = React.useState(new Date());
   const [ eventTime, setEventTime] = React.useState(new Date());
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
@@ -72,7 +73,7 @@ export default function CreateEventScreen({navigation}) {
     let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
     let event = {
       Name: eventName,
-      Description: "",
+      Description: eventDescription,
       DateTime: date,
       MaxMember: maximumNumberOfMembers,
       Reminder: reminder,
@@ -145,15 +146,16 @@ export default function CreateEventScreen({navigation}) {
   function renderFriendsTile({ item }){
     return (
     <FriendTile
-      avatarUrl= {item.pictureUrl}
-      avatarTitle= {item.userInitial}
-      displayName = {item.displayName}
-      userId = {item.userId}
+      avatarUrl= {item.AvatarURI}
+      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      displayName = {item.Nickname}
+      userId = {item.Username}
       pressMinus = {() => selectFriend(item)}
     />
   )}
 
   function selectFriend (item) {
+    console.log(item);
     if(!selectedFriends.includes(item)){
       if (selectedFriends.length < maximumNumberOfMembers) {
         setSelectedFriends([...selectedFriends, item])
@@ -161,6 +163,7 @@ export default function CreateEventScreen({navigation}) {
     } else {
       setSelectedFriends(selectedFriends.filter(a => a !== item));
     }
+    console.log(selectedFriends)
   }
 
 
@@ -185,6 +188,25 @@ export default function CreateEventScreen({navigation}) {
                 />
             </View>
           </View>
+        </View>
+        <View style={styles.row}>
+          <Text h4>Event Description</Text>
+        </View>
+        <View style={{
+          height: 150
+        }}>
+          <Input
+            multiline
+            onChangeText={text => setEventDescription(text)}
+            value={eventDescription}
+            inputContainerStyle={{
+              borderWidth: 1,
+              height: 150
+            }}
+            containerStyle={{
+              height: 150,
+            }}
+          />
         </View>
         <View style={styles.row}>
           <View>
