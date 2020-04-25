@@ -227,6 +227,7 @@ export default function CreateEventScreen({navigation}) {
               value={eventDate}
               mode="date"
               display="default"
+              minimumDate={new Date()}
               onChange={(event, date) => {setShowDatePicker(false); date && setEventDate(date)}}
             />}
             {showTimePicker && <DateTimePicker
