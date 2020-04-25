@@ -149,14 +149,18 @@ export default function EventDetailScreen({ navigation, route }) {
                   <Stack.Screen name="EventMap" component={EventMap} initialParams={{ EventId: route.params.EventId }} options={{ gestureEnabled: false }} />
               </Stack.Navigator>
               {/* Switch */}
-              <View style={styles.switchStyle}>
-                  <Icon style={styles.switchStyle}
-                      reverse
-                      name='exchange'
-                      type='font-awesome'
-                      onPress={_handleNavigation}
-                  />
-              </View>
+              {
+                route.params.EventType === "ON-GOING" && (
+                  <View style={styles.switchStyle}>
+                      <Icon style={styles.switchStyle}
+                          reverse
+                          name='exchange'
+                          type='font-awesome'
+                          onPress={_handleNavigation}
+                      />
+                  </View>
+                )
+              }
           </View>
       </SideMenu>
     )

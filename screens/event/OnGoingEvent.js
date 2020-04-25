@@ -35,7 +35,16 @@ export default function OnGoingEvent({ navigation, route }) {
       <SectionList
         style={styles.listContainer}
         sections={events}
-        renderItem={({ item }) => <EventCard item={item} status="ON-GOING" onPress={()=>navigation.navigate('Event Detail', { EventId: item.EventId })} />}
+        renderItem={({ item }) => (
+          <EventCard
+            item={item}
+            status="ON-GOING"
+            onPress={()=>navigation.navigate('Event Detail', {
+              EventId: item.EventId,
+              EventType: "ON-GOING"
+            })}
+            />
+        )}
         keyExtractor={(item) => item.EventId.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>

@@ -34,13 +34,16 @@ export default function PendingEvent({ navigation, route }) {
       <SectionList
         style={styles.listContainer}
         sections={events}
-        renderItem={({ item }) =>
+        renderItem={({ item }) => (
           <EventCard
             item={item}
             status="PENDING"
-            onPress={() => {navigation.navigate('Event Detail', { item: item })}}
+            onPress={()=>navigation.navigate('Event Detail', {
+              EventId: item.EventId,
+              EventType: "PENDING"
+            })}
             />
-        }
+        )}
         keyExtractor={(item) => item.EventId.toString()}
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
