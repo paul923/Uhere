@@ -79,7 +79,6 @@ export default function CreateEventScreen({navigation}) {
       Reminder: reminder,
       Penalty: penalty,
       Status: "PENDING",
-      Host: firebase.auth().currentUser.uid
     };
     if (isOnline){
       event = {
@@ -105,7 +104,8 @@ export default function CreateEventScreen({navigation}) {
       },
       body: JSON.stringify({
         event,
-        users: selectedFriends
+        users: selectedFriends,
+        host: firebase.auth().currentUser.uid
       }),
     });
     let responseJson = await response.json();

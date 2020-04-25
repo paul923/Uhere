@@ -5,6 +5,7 @@ import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
 import { formatEventList } from '../../utils/event';
 import Constants from "expo-constants";
+import firebase from "firebase";
 
 const { manifest } = Constants;
 import { backend } from '../../constants/Environment';
@@ -14,9 +15,10 @@ export default function PendingEvent({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = `http://${backend}:3000/event/pending`;
+        let url = `http://${backend}:3000/event/pending/${firebase.auth().currentUser.uid}`;
         let response = await fetch(url);
         let responseJson = await response.json();
+        console.log(responseJson);
         setEvents(formatEventList(responseJson));
       } catch (error) {
         console.error(error);

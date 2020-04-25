@@ -4,14 +4,35 @@ var pool = require('../db').pool;
 var mysql = require('../db').mysql;
 
 // Creating a GET route that returns data from the 'users' table.
-router.get('/:type', function (req, res) {
+router.get('/pending/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `select Event.*, COUNT(EventUser.UserId) MemberCount
-    from uhere.Event LEFT JOIN uhere.EventUser on Event.EventId = EventUser.EventId
-    where Event.STATUS = '${req.params.type}'
-    group by Event.EventId`;
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount FROM Event, EventUser
+    where Event.EventID = EventUser.EventID
+    and EventUser.Status = 'PENDING'
+    and EventUser.UserId = '${req.params.userId}'
+    GROUP BY Event.EventID`
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      // If some error occurs, we throw an error.
+      if (error) throw error;
+      // Getting the 'response' from the database and sending it to our route. This is were the data is.
+      res.send(results)
+    });
+  });
+});
+
+// Creating a GET route that returns data from the 'users' table.
+router.get('/ongoing/:userId', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount FROM Event, EventUser
+    where Event.EventID = EventUser.EventID
+    and EventUser.Status != 'PENDING'
+    and EventUser.UserId = '${req.params.userId}'
+    GROUP BY Event.EventID;`
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
@@ -80,8 +101,8 @@ router.post('/', function (req,res) {
         connection.release();
       }
       if (results.insertId) {
-        const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING']);
-        console.log(users);
+        const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false]);
+        users.push([results.insertId, req.body.host, 'ACCEPTED', true]);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);
