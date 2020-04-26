@@ -6,7 +6,7 @@ import { formatDate, formatTime } from "../utils/date";
 import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
 import EventMap from './event/EventMap'
 import SideMenu from 'react-native-side-menu'
-import { getEventByID } from '../API/EventAPI'
+import { getEventByID, getEventMembers } from '../API/EventAPI'
 
 const Stack = createStackNavigator();
 
@@ -29,6 +29,8 @@ export default function EventDetailScreen({ navigation, route }) {
                 setShowSwitch(false);
             }
             setIsLoading(false);
+            let eventMembers = await getEventMembers(route.params.EventId)
+            setEventMembers(eventMembers);
         }
         fetchData()
     }, []);
@@ -40,9 +42,9 @@ export default function EventDetailScreen({ navigation, route }) {
     function renderFriendsCard({ item }) {
         return (
             <ListItem
-                leftAvatar={{ source: { uri: item.pictureUrl } }}
+                leftAvatar={{ source: { uri: item.AvatarURI } }}
                 rightIcon={<Icon name="add-user" type="entypo" size={20} />}
-                title={item.displayName}
+                title={item.Nickname}
                 titleStyle={{ fontSize: 15 }}
                 containerStyle={{ padding: 3 }}
             />
@@ -96,17 +98,17 @@ export default function EventDetailScreen({ navigation, route }) {
                                     onPress={() => navigation.navigate('Event Edit', { item: route.params.item })}
                                 />
                             </View>
-                            <FlatList
-                                data={friendsData}
-                                renderItem={renderFriendsCard}
-                                keyExtractor={(item) => item.userId}
-                                contentContainerStyle={{
-                                    backgroundColor: "white",
-                                    margin: 10
-                                }}
-                                bounces={false}
-                            />
                         </View>
+                        <FlatList
+                            data={eventMembers}
+                            renderItem={renderFriendsCard}
+                            keyExtractor={(item) => item.Username}
+                            contentContainerStyle={{
+                                backgroundColor: "white",
+                                margin: 10
+                            }}
+                            bounces={false}
+                        />
                     </View>
                 )}
 

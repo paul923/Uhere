@@ -29,7 +29,7 @@ export default function EventScreen({ navigation, route }) {
         rightComponent={{icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event")}}
         statusBarProps={{translucent: true}}
         />
-      <Tab.Navigator>
+      <Tab.Navigator initialRouteName="On-Going Event">
         <Tab.Screen name="Pending Event" component={PendingEvent} />
         <Tab.Screen name="On-Going Event" component={OnGoingEvent} />
         <Tab.Screen name="Event History" component={EventHistory} />

@@ -8,7 +8,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/EventScreen';
 import EventNavigator from './EventNavigator';
-import FriendScreen from '../screens/FriendScreen';
+import FriendsTabNavigator from './FriendsTabNavigator';
 import JayTestScreen from '../screens/debug/JayTestScreen';
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
 import PaulTestScreen from '../screens/debug/PaulTestScreen';
@@ -77,7 +77,7 @@ export default function MainAppNavigator({ navigation, route }) {
     <BottomTab.Navigator initialRouteName="Event" tabBarOptions={{keyboardHidesTabBar: true}}>
       <BottomTab.Screen
         name="Friend"
-        component={FriendScreen}
+        component={FriendsTabNavigator}
         options={{
           title: 'Friend',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-person" />,
