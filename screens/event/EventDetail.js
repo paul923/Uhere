@@ -6,9 +6,9 @@ import moment from 'moment'
 import { getEventByID, getEventMembers } from '../../API/EventAPI'
 
 export default function EventDetail({ EventId }) {
-    const [event, setEvent] = React.useState(null);
-    const [members, setMembers] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [event, setEvent] = React.useState();
+    const [members, setMembers] = React.useState([]);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(EventId);

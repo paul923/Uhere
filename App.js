@@ -23,8 +23,9 @@ import SplashScreen from './screens/SplashScreen';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
-
 import { AppearanceProvider } from 'react-native-appearance';
+
+
 
 const Stack = createStackNavigator();
 
@@ -154,7 +155,7 @@ export default function App(props) {
         });
         let responseJson = await response.json();
         console.log(responseJson);
-        if (responseJson.status === 200){
+        if (responseJson.status === 200) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
@@ -170,7 +171,7 @@ export default function App(props) {
         dispatch({ type: 'SIGN_IN', token: data });
       },
       skipProfile: () => {
-        dispatch({ type: 'SKIP_PROFILE'})
+        dispatch({ type: 'SKIP_PROFILE' })
       }
     }),
     []
@@ -178,8 +179,8 @@ export default function App(props) {
 
   const loadingContext = React.useMemo(
     () => ({
-      showLoadingScreen: () => dispatch({ type: 'SHOW_LOADING_SCREEN'}),
-      hideLoadingScreen: () => dispatch({ type: 'HIDE_LOADING_SCREEN'}),
+      showLoadingScreen: () => dispatch({ type: 'SHOW_LOADING_SCREEN' }),
+      hideLoadingScreen: () => dispatch({ type: 'HIDE_LOADING_SCREEN' }),
     })
   );
 
@@ -242,7 +243,7 @@ export default function App(props) {
   }, []);
 
   storeIsFirstLaunch = async (flag) => {
-     await AsyncStorage.setItem('isFirstLaunch', JSON.stringify(flag));
+    await AsyncStorage.setItem('isFirstLaunch', JSON.stringify(flag));
   }
   if (isFirstLaunch && !showRealApp) {
    return <AppIntroSlider
@@ -318,7 +319,7 @@ const slides = [
     titleStyle: {
       color: '#000000'
     },
-    textStyle : {
+    textStyle: {
       color: '#0f0f0f',
     }
   },
@@ -331,7 +332,7 @@ const slides = [
     titleStyle: {
       color: '#000000'
     },
-    textStyle : {
+    textStyle: {
       color: '#0f0f0f',
     }
   },
@@ -344,8 +345,8 @@ const slides = [
     titleStyle: {
       color: '#000000'
     },
-    textStyle : {
+    textStyle: {
       color: '#0f0f0f'
     }
   }
- ];
+];

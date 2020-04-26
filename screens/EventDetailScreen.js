@@ -11,14 +11,23 @@ import { getEventByID } from '../API/EventAPI'
 const Stack = createStackNavigator();
 
 export default function EventDetailScreen({ navigation, route }) {
-    const [event, setEvent] = React.useState(null);
-    const [defaultRoute, setDefaultRoute] = React.useState('EventDetail');
-    const [isOpen, setOpen] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [event, setEvent] = React.useState(null);
+    const [initialRoute, setInitialRoute] = React.useState();
+    const [showSwitch, setShowSwitch] = React.useState(false);
+    const [isOpen, setOpen] = React.useState(false);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
+            let wihtinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (event.Reminder * 60000)
+            if (wihtinReminder) {
+                setInitialRoute('EventMap');
+                setShowSwitch(true);
+            } else {
+                setInitialRoute('EventDetail');
+                setShowSwitch(false);
+            }
             setIsLoading(false);
         }
         fetchData()
@@ -40,11 +49,11 @@ export default function EventDetailScreen({ navigation, route }) {
         );
     }
     function _handleNavigation() {
-        if (defaultRoute == 'EventDetail') {
-            setDefaultRoute('EventMap');
+        if (initialRoute == 'EventDetail') {
+            setInitialRoute('EventMap');
             navigation.navigate('EventMap');
         } else {
-            setDefaultRoute('EventDetail');
+            setInitialRoute('EventDetail');
             navigation.navigate('EventDetail');
         }
     }
@@ -52,65 +61,69 @@ export default function EventDetailScreen({ navigation, route }) {
     function menuContent() {
         return (
             <View style={styles.sideMenu}>
-                <View style={{ flex: 10 }}>
-                    <View style={styles.hostContainer}>
-                        <Text>Host</Text>
-                        <Avatar
-                            size='large'
-                            source={{ uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg' }}
-                            avatarStyle={{ borderWidth: 2, borderRadius: 5, borderColor: 'red' }}
-                        />
-                        <Text>Host Name</Text>
-                    </View>
-
-                    <View style={styles.friendsContainer}>
-                        <Text>Friends</Text>
-                        <View style={styles.friendsButton}>
-                            <Button
-                                title="Invite"
-                                icon={{
-                                    name: "pluscircleo",
-                                    type: "antdesign"
-                                }}
-                                type="outline"
-                                containerStyle={{ flex: 1, marginHorizontal: 3, }}
+                {isLoading !== true && (
+                    <View style={{ flex: 10 }}>
+                        <View style={styles.hostContainer}>
+                            <Text>Host</Text>
+                            <Avatar
+                                size='large'
+                                source={{ uri: 'https://www.collinsdictionary.com/images/full/rose_277351964.jpg' }}
+                                avatarStyle={{ borderWidth: 2, borderRadius: 5, borderColor: 'red' }}
                             />
-                            <Button
-                                title="Edit"
-                                icon={{
-                                    name: "minuscircleo",
-                                    type: "antdesign"
+                            <Text>Host Name</Text>
+                        </View>
+
+                        <View style={styles.friendsContainer}>
+                            <Text>Friends</Text>
+                            <View style={styles.friendsButton}>
+                                <Button
+                                    title="Invite"
+                                    icon={{
+                                        name: "pluscircleo",
+                                        type: "antdesign"
+                                    }}
+                                    type="outline"
+                                    containerStyle={{ flex: 1, marginHorizontal: 3, }}
+                                />
+                                <Button
+                                    title="Edit"
+                                    icon={{
+                                        name: "minuscircleo",
+                                        type: "antdesign"
+                                    }}
+                                    type="outline"
+                                    containerStyle={{ flex: 1, marginHorizontal: 3 }}
+                                    onPress={() => navigation.navigate('Event Edit', { item: route.params.item })}
+                                />
+                            </View>
+                            <FlatList
+                                data={friendsData}
+                                renderItem={renderFriendsCard}
+                                keyExtractor={(item) => item.userId}
+                                contentContainerStyle={{
+                                    backgroundColor: "white",
+                                    margin: 10
                                 }}
-                                type="outline"
-                                containerStyle={{ flex: 1, marginHorizontal: 3 }}
-                                onPress={() => navigation.navigate('Event Edit', { item: route.params.item })}
+                                bounces={false}
                             />
                         </View>
-                        <FlatList
-                            data={friendsData}
-                            renderItem={renderFriendsCard}
-                            keyExtractor={(item) => item.userId}
-                            contentContainerStyle={{
-                                backgroundColor: "white",
-                                margin: 10
-                            }}
-                            bounces={false}
+                    </View>
+                )}
+
+                {isLoading !== true && (
+                    <View style={styles.bottomBar}>
+                        <Icon
+                            name="md-exit"
+                            type="ionicon"
+                            iconStyle={styles.bottomIcon}
+                        />
+                        <Icon
+                            name="md-notifications"
+                            type="ionicon"
                         />
                     </View>
+                )}
 
-                </View>
-
-                <View style={styles.bottomBar}>
-                    <Icon
-                        name="md-exit"
-                        type="ionicon"
-                        iconStyle={styles.bottomIcon}
-                    />
-                    <Icon
-                        name="md-notifications"
-                        type="ionicon"
-                    />
-                </View>
             </View>
         )
     }
@@ -139,7 +152,7 @@ export default function EventDetailScreen({ navigation, route }) {
                   centerContainerStyle={{ flex: 1 }}
                   rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
               />
-              <Stack.Navigator initialRouteName={defaultRoute} headerMode="none" >
+              <Stack.Navigator initialRouteName={initialRoute} headerMode="none" >
                   <Stack.Screen
                       name="EventDetail"
                       component={EventDetailWithMiniMap}
@@ -150,7 +163,7 @@ export default function EventDetailScreen({ navigation, route }) {
               </Stack.Navigator>
               {/* Switch */}
               {
-                route.params.EventType === "ON-GOING" && (
+                route.params.EventType === "ON-GOING" && showSwitch && (
                   <View style={styles.switchStyle}>
                       <Icon style={styles.switchStyle}
                           reverse
