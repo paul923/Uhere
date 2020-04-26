@@ -52,7 +52,7 @@ export default function JayTestScreen({ navigation }) {
             ) : (
                     <MapView
                         style={{
-                            flex: 5,
+                            flex: 4,
                         }}
                         region={mapRegion}
                     >

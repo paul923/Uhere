@@ -52,7 +52,9 @@ export default function EventDetail({ EventId }) {
                     </View>
                     <View style={styles.row}>
                         <Icon name="person" />
-                        {event !== null && members !== null && (<Text>{members.length + "/" + event.MaxMember}</Text>)}
+                        <View style={styles.column}>
+                            {event !== null && members !== null && (<Text>{members.length + "/" + event.MaxMember}</Text>)}
+                        </View>
                     </View>
                 </View>
             )}
