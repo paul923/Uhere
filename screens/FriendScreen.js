@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
 import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
+import { TouchableOpacity} from 'react-native-gesture-handler'
 
 
 export default class FriendScreen extends React.Component {
