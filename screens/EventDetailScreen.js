@@ -16,6 +16,7 @@ export default function EventDetailScreen({ navigation, route }) {
     const [initialRoute, setInitialRoute] = React.useState();
     const [showSwitch, setShowSwitch] = React.useState(false);
     const [isOpen, setOpen] = React.useState(false);
+    const [eventMembers, setEventMembers] = React.useState(null);
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
@@ -98,17 +99,17 @@ export default function EventDetailScreen({ navigation, route }) {
                                     onPress={() => navigation.navigate('Event Edit', { item: route.params.item })}
                                 />
                             </View>
+                            <FlatList
+                                data={eventMembers}
+                                renderItem={renderFriendsCard}
+                                keyExtractor={(item) => item.Username}
+                                contentContainerStyle={{
+                                    backgroundColor: "white",
+                                    margin: 10
+                                }}
+                                bounces={false}
+                            />
                         </View>
-                        <FlatList
-                            data={eventMembers}
-                            renderItem={renderFriendsCard}
-                            keyExtractor={(item) => item.Username}
-                            contentContainerStyle={{
-                                backgroundColor: "white",
-                                margin: 10
-                            }}
-                            bounces={false}
-                        />
                     </View>
                 )}
 
