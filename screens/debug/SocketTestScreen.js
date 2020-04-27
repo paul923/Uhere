@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View, Text , Dimensions, TextInput} from 'react-native';
 import { Button } from 'react-native-elements'
-import { backend } from '../../constants/Environment';
+import { backend } from 'constants/Environment';
 import * as Location from 'expo-location';
 import useSocket from 'use-socket.io-client';
 import firebase from 'firebase';
@@ -12,6 +12,7 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA_MAP = 0.0922;
 const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
+
 export default function SocketTestScreen({ navigation }) {
     const [isLoading, setIsLoading] = React.useState(true);
     const [event, setEvent] = React.useState("");
@@ -21,13 +22,18 @@ export default function SocketTestScreen({ navigation }) {
 
     React.useEffect(() => {
         loadInitial()
+
         return function cleanup() {
             socket.disconnect();
         };
     }, []);
+
+
     async function loadInitial() {
         console.log("test");
         socket.connect();
+        socket.on('connect', (data) => {
+        })
         socket.on('updatePosition', ({user, position}) => {
           console.log('Location Data');
           console.log(locationData);
