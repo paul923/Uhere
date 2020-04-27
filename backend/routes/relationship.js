@@ -25,4 +25,21 @@ router.get('/:userId', function(req, res, next) {
   });
 })
 
+router.post('/', function(req, res) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "insert into UserRelationship set ?";
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, req.body.AddFriend, function (error, results, fields) {
+      if (error) {
+        throw error;
+        connection.release();
+      }
+      connection.release();
+      console.log(results);
+      res.json({"status": 200, "response": 'inserted'});
+    });
+  });
+})
+
 module.exports = router;

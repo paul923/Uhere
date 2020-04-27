@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 
-import { getUserByUsername, getUserByUid } from '../API/FriendAPI'
+import { getUserByUsername, getUserByUid, addFriend, getUserRelationship } from '../API/FriendAPI'
 
 import firebase from 'firebase';
 
@@ -11,24 +11,47 @@ import firebase from 'firebase';
 export default function AddFriendByIdScreen({ navigation, route }) {
 
   const [searchId, setSearchId] = React.useState("");
-  const [currentUserId, setCurrentUserId] = React.useState("");
-  const [resultUserId, setResultUserId] = React.useState("");
+  const [currentUser, setCurrentUser] = React.useState(null);
+  const [resultUser, setResultUser] = React.useState(null);
+  const [relationship, setRelationship] = React.useState(null);
+  const [usersFriends, setUsersFriends] = React.useState(null);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     fetchCurrentUser();
+    fetchFriendList();
   }, []);
 
 
   async function searchUserByUsername() {
     let resultUser = await getUserByUsername(searchId);
-    setResultUserId(resultUser.Nickname)
+    setResultUser(resultUser);
+    //checks if user is friend with searched friend
+    if(resultUser !== null){
+      setRelationship(usersFriends.find(user => user.Username === resultUser.Username));
+    }
   }
 
   async function fetchCurrentUser() {
-    let resultUser = await getUserByUid(firebase.auth().currentUser.uid);
-    setCurrentUserId(resultUser.Username)
+    let user = await getUserByUid(firebase.auth().currentUser.uid);
+    setCurrentUser(user)
   }
+
+  async function fetchFriendList() {
+    let usersFriends = await getUserRelationship(currentUser.UserId);
+    setUsersFriends(usersFriends)
+  }
+
+
+  async function addSearchedFriend() {
+    let userRelationship= {
+      UserId1 : currentUser.UserId,
+      UserId2 : resultUser.UserId,
+      Type : "Friend"
+    }
+    await addFriend(userRelationship);
+  }
+
 
   return (
     <View style={styles.container}>
@@ -44,7 +67,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
           />
         }
         containerStyle={{zIndex:200}}
-        centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
+        centerComponent={{ text: 'Add Friend', style: { color: '#fff', fontSize: 20 } }}
         statusBarProps={{translucent: true}}
       />
       <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
@@ -63,11 +86,19 @@ export default function AddFriendByIdScreen({ navigation, route }) {
             onPress={searchUserByUsername}
           />
           <View style={styles.searchResultContainer}>
-            <Text>Search Result (User Nickname): {resultUserId}</Text>
+            <Text>Search Result: </Text>
+            <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
+            {resultUser &&
+              <Button
+                title={relationship ? 'Already a Friend' : 'Add'}
+                onPress={addSearchedFriend}
+                disabled={relationship && true}
+              />
+            }
           </View>
           <View style={styles.myIdContainer}>
             <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 18}}>My ID</Text>
-            <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 15}}>{currentUserId}</Text>
+            <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 15}}>{currentUser && currentUser.Username}</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>

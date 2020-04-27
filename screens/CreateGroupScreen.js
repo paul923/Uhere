@@ -31,8 +31,8 @@ export default function CreateGroupScreen({ navigation, route }) {
             <Text style={{color: 'white'}}>Done</Text>
           </TouchableOpacity>
         }
+        centerComponent={{ text: 'Create Group', style: { color: '#fff', fontSize: 20 } }}
         containerStyle={{zIndex:200}}
-        centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
         statusBarProps={{translucent: true}}
       />
       <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
