@@ -25,14 +25,30 @@ const server = require('http').Server(app);
 
 const io = require('socket.io')(server);
 io.on('connection', (socket) => {
-  io.clients((error, clients) => {
-    if (error) throw error;
-    console.log(clients); // => [6em3d4TJP8Et9EMNAAAA, G5p55dHhGgUnLUctAAAB]
-  });
+  // Join Handler
+  socket.on('join', ({event}) => {
+    socket.join(event);
+    console.log("Someone Joined Event - Requesting location updates");
+    io.in(event).emit('requestPosition');
+  })
+  socket.on('leave', ({event}) => {
+    socket.leave(event);
+  })
 
-  socket.on('position', (position) => {
-    console.log('position with id -----------------\n', position)
-    socket.emit('otherPositions', position);
+  // Update Position
+  socket.on('position', ({user, position, event}) => {
+    console.log('Update position of user in event with values: ');
+    console.log(`Event: ${event}`);
+    console.log(`User: ${user}`);
+    console.log(`Position: ${position}`);
+    if (!socket.currentPosition){
+      socket.currentPosition = {};
+    }
+    socket.currentPosition.user = position;
+    socket.broadcast.to(event).emit('updatePosition', {
+      user,
+      position
+    });
   })
 
   socket.on('disconnect', () => {

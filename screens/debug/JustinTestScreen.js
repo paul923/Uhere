@@ -49,6 +49,10 @@ export default function JustinTestScreen({navigation}) {
         title="DATABASE TEST"
         onPress={() => navigation.navigate('DatabaseTestScreen')}
         />
+      <Button
+        title="SOCKET TEST"
+        onPress={() => navigation.navigate('SocketTestScreen')}
+        />
       <Collpase
         title="Location"
         content={
