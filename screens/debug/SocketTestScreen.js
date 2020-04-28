@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import useSocket from 'use-socket.io-client';
 import firebase from 'firebase';
 import MapView from 'react-native-maps';
-
+import socket from 'config/socket';
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA_MAP = 0.0922;
@@ -16,7 +16,6 @@ const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 export default function SocketTestScreen({ navigation }) {
     const [isLoading, setIsLoading] = React.useState(true);
     const [event, setEvent] = React.useState("");
-    const [socket] = useSocket(`http://${backend}:3000`, { autoConnect: false, reconnectionDelay: 1000, reconnection: true, forceNode: true });
     const [locationData, setLocationData] = React.useState({});
     const [mapRegion, setMapRegion] = React.useState();
 
