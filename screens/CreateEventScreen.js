@@ -75,7 +75,7 @@ export default function CreateEventScreen({navigation}) {
       Name: eventName,
       Description: eventDescription,
       DateTime: date,
-      MaxMember: maximumNumberOfMembers,
+      MaxMember: maximumNumberOfMembers + 1,
       Reminder: reminder,
       Penalty: penalty,
       Status: "PENDING",
