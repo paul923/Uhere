@@ -20,7 +20,7 @@ export default function EventDetailScreen({ navigation, route }) {
     const [showSwitch, setShowSwitch] = React.useState(false);
     const [isOpen, setOpen] = React.useState(false);
     const [eventMembers, setEventMembers] = React.useState(null);
-    const [locationData, setLocationData] = React.useState({});
+    const [locations, setLocations] = React.useState({});
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
@@ -28,23 +28,24 @@ export default function EventDetailScreen({ navigation, route }) {
             let wihtinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (event.Reminder * 60000)
             if (wihtinReminder) {
                 setInitialRoute('EventMap');
+                loadInitial()
+                joinEvent()
                 setShowSwitch(true);
             } else {
                 setInitialRoute('EventDetail');
                 setShowSwitch(false);
             }
-            setIsLoading(false);
             let eventMembers = await getEventMembers(route.params.EventId)
             setEventMembers(eventMembers);
+            setIsLoading(false);
         }
         fetchData()
-        loadInitial()
-        joinEvent()
+
     }, []);
 
     React.useEffect(() => {
-      console.log(locationData);
-    }, [locationData])
+      console.log(locations);
+    }, [locations])
 
     async function loadInitial() {
       console.log("test");
@@ -52,9 +53,9 @@ export default function EventDetailScreen({ navigation, route }) {
         socket.on('connect', (data) => {
         })
         socket.on('updatePosition', ({user, position}) => {
-          setLocationData((prevLocationData) => {
+          setLocations((prevLocations) => {
             return {
-              ...prevLocationData,
+              ...prevLocations,
               [user]: position
             }
           })
@@ -65,7 +66,7 @@ export default function EventDetailScreen({ navigation, route }) {
         let location = await Location.getCurrentPositionAsync();
         let user = firebase.auth().currentUser.uid;
         let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-        setLocationData({...locationData, [user]: position});
+        setLocations({...locations, [user]: position});
         socket.emit('position', {
             user,
             position,
@@ -184,6 +185,7 @@ export default function EventDetailScreen({ navigation, route }) {
           onChange={toggleSideMenu}
           bounceBackOnOverdraw={false}
       >
+      {isLoading !== true && (
           <View style={styles.container}>
               {/* Header */}
               <Header
@@ -204,10 +206,10 @@ export default function EventDetailScreen({ navigation, route }) {
                   <Stack.Screen
                       name="EventDetail"
                       component={EventDetailWithMiniMap}
-                      initialParams={{ EventId: route.params.EventId }}
+                      initialParams={{ event, eventMembers }}
                       options={{ gestureEnabled: false }}
                   />
-                  <Stack.Screen name="EventMap" component={EventMap} initialParams={{ EventId: route.params.EventId }} options={{ gestureEnabled: false }} />
+                  <Stack.Screen name="EventMap" component={EventMap} initialParams={{ event, eventMembers, locations }} options={{ gestureEnabled: false }} />
               </Stack.Navigator>
               {/* Switch */}
               {
@@ -223,6 +225,7 @@ export default function EventDetailScreen({ navigation, route }) {
                 )
               }
           </View>
+        )}
       </SideMenu>
     )
 }

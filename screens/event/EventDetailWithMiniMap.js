@@ -11,26 +11,22 @@ const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function EventDetailWithMiniMap({ route }) {
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [event, setEvent] = React.useState();
     React.useEffect(() => {
+        console.log(route);
         async function fetchData() {
-            let event = await getEventByID(route.params.EventId);
-            setEvent(event);
-            setIsLoading(false);
         }
         fetchData()
     }, []);
     return (
         <View style={styles.container}>
             {/* Map */}
-            {!isLoading &&
+            {route.params && route.params.event &&
             (<MapView
                 style={styles.mapStyle}
                 region={
                     {
-                        latitude: event.LocationGeolat,
-                        longitude: event.LocationGeolong,
+                        latitude: route.params.event.LocationGeolat,
+                        longitude: route.params.event.LocationGeolong,
                         latitudeDelta: LATITUDE_DELTA,
                         longitudeDelta: LONGITUDE_DELTA
                     }
@@ -39,18 +35,20 @@ export default function EventDetailWithMiniMap({ route }) {
                 <MapView.Marker
                     coordinate={
                         {
-                            latitude: event.LocationGeolat,
-                            longitude: event.LocationGeolong,
+                            latitude: route.params.event.LocationGeolat,
+                            longitude: route.params.event.LocationGeolong,
                         }
                     }
-                    title={event.LocationName}
+                    title={route.params.event.LocationName}
                 />
             </MapView>
             )}
             {/* Event Detail */}
-            <View style={styles.detailContainer} >
-                <EventDetail EventId={route.params.EventId} />
-            </View>
+            {route.params && route.params.event && (
+              <View style={styles.detailContainer} >
+                  <EventDetail event={route.params.event} eventMembers={route.params.eventMembers} />
+              </View>
+            )}
         </View>
     )
 }
