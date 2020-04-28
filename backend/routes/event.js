@@ -8,11 +8,19 @@ router.get('/pending/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount FROM Event, EventUser
-    where Event.EventID = EventUser.EventID
-    and EventUser.Status = 'PENDING'
-    and EventUser.UserId = '${req.params.userId}'
-    GROUP BY Event.EventID`
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
+    FROM Event, EventUser
+    where 1=1
+    AND Event.EventID = EventUser.EventID
+    AND EXISTS (
+    	SELECT 1
+        FROM EventUser
+        WHERE 1=1
+        AND Event.EventID = EventUser.EventID
+        and EventUser.Status = 'PENDING'
+        and EventUser.UserId = '${req.params.userId}'
+    )
+    GROUP BY Event.EventId`
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
@@ -28,11 +36,19 @@ router.get('/ongoing/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount FROM Event, EventUser
-    where Event.EventID = EventUser.EventID
-    and EventUser.Status != 'PENDING'
-    and EventUser.UserId = '${req.params.userId}'
-    GROUP BY Event.EventID;`
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
+    FROM Event, EventUser
+    where 1=1
+    AND Event.EventID = EventUser.EventID
+    AND EXISTS (
+    	SELECT 1
+        FROM EventUser
+        WHERE 1=1
+        AND Event.EventID = EventUser.EventID
+        and EventUser.Status != 'PENDING'
+        and EventUser.UserId = '${req.params.userId}'
+    )
+    GROUP BY Event.EventId`
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
