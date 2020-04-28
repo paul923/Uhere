@@ -6,7 +6,10 @@ import { formatDate, formatTime } from "../utils/date";
 import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
 import EventMap from './event/EventMap'
 import SideMenu from 'react-native-side-menu'
+import * as Location from 'expo-location';
+import firebase from 'firebase';
 import { getEventByID, getEventMembers } from '../API/EventAPI'
+import socket from 'config/socket';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +20,7 @@ export default function EventDetailScreen({ navigation, route }) {
     const [showSwitch, setShowSwitch] = React.useState(false);
     const [isOpen, setOpen] = React.useState(false);
     const [eventMembers, setEventMembers] = React.useState(null);
+    const [locationData, setLocationData] = React.useState({});
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
@@ -34,7 +38,48 @@ export default function EventDetailScreen({ navigation, route }) {
             setEventMembers(eventMembers);
         }
         fetchData()
+        loadInitial()
+        joinEvent()
     }, []);
+
+    React.useEffect(() => {
+      console.log(locationData);
+    }, [locationData])
+
+    async function loadInitial() {
+      console.log("test");
+        socket.connect();
+        socket.on('connect', (data) => {
+        })
+        socket.on('updatePosition', ({user, position}) => {
+          setLocationData((prevLocationData) => {
+            return {
+              ...prevLocationData,
+              [user]: position
+            }
+          })
+        })
+    }
+
+    async function emitPosition() {
+        let location = await Location.getCurrentPositionAsync();
+        let user = firebase.auth().currentUser.uid;
+        let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+        setLocationData({...locationData, [user]: position});
+        socket.emit('position', {
+            user,
+            position,
+            event: route.params.EventId
+        })
+    }
+    async function joinEvent() {
+      socket.emit('join', {
+        event: route.params.EventId
+      })
+      socket.on('requestPosition', () => {
+        emitPosition();
+      })
+    }
 
     function toggleSideMenu() {
         setOpen(!isOpen)
