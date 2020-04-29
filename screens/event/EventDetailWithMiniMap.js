@@ -10,9 +10,8 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-export default function EventDetailWithMiniMap({ route }) {
+export default function EventDetailWithMiniMap({ event, eventMembers }) {
     React.useEffect(() => {
-        console.log(route);
         async function fetchData() {
         }
         fetchData()
@@ -20,13 +19,13 @@ export default function EventDetailWithMiniMap({ route }) {
     return (
         <View style={styles.container}>
             {/* Map */}
-            {route.params && route.params.event &&
+            {event &&
             (<MapView
                 style={styles.mapStyle}
                 region={
                     {
-                        latitude: route.params.event.LocationGeolat,
-                        longitude: route.params.event.LocationGeolong,
+                        latitude: event.LocationGeolat,
+                        longitude: event.LocationGeolong,
                         latitudeDelta: LATITUDE_DELTA,
                         longitudeDelta: LONGITUDE_DELTA
                     }
@@ -35,18 +34,18 @@ export default function EventDetailWithMiniMap({ route }) {
                 <MapView.Marker
                     coordinate={
                         {
-                            latitude: route.params.event.LocationGeolat,
-                            longitude: route.params.event.LocationGeolong,
+                            latitude: event.LocationGeolat,
+                            longitude: event.LocationGeolong,
                         }
                     }
-                    title={route.params.event.LocationName}
+                    title={event.LocationName}
                 />
             </MapView>
             )}
             {/* Event Detail */}
-            {route.params && route.params.event && (
+            {event && (
               <View style={styles.detailContainer} >
-                  <EventDetail event={route.params.event} eventMembers={route.params.eventMembers} />
+                  <EventDetail event={event} eventMembers={eventMembers} />
               </View>
             )}
         </View>

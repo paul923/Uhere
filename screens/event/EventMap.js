@@ -31,14 +31,14 @@ const testEventMembers = [
     },
 ]
 
-export default function EventMap({ route }) {
+export default function EventMap({ event, eventMembers, locations }) {
     const [isLoading, setIsLoading ] = React.useState(true);
     const [mapRegion, setMapRegion] = React.useState();
     const mapRef = React.useRef();
 
     React.useEffect(() => {
       console.log("EventMap")
-      console.log(route.params);
+      console.log(locations);
         async function fetchData() {
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
@@ -68,11 +68,11 @@ export default function EventMap({ route }) {
 
     return (
         <View style={styles.container}>
-          {!isLoading && route.params && route.params.event && (
+          {!isLoading && event && (
             <React.Fragment>
               {/* Timer */}
               <View style={styles.timer}>
-                  <Timer eventDateTime={route.params.event.DateTime} />
+                  <Timer eventDateTime={event.DateTime} />
               </View>
               {/* MapView */}
               <MapView
@@ -86,8 +86,8 @@ export default function EventMap({ route }) {
                   {/* Meeting Location Circle */}
                   <MapView.Circle
                       center={{
-                          latitude: route.params.event.LocationGeolat,
-                          longitude: route.params.event.LocationGeolong,
+                          latitude: event.LocationGeolat,
+                          longitude: event.LocationGeolong,
                       }}
                       radius={500} // in meters
                       strokeWidth={2}
@@ -96,15 +96,15 @@ export default function EventMap({ route }) {
                   />
                   {/* Member Markers */}
                   {
-                      Object.keys(route.params.locations).map((key) => {
+                      Object.keys(locations).map((key) => {
                           return (
                               <MapView.Marker
                                   key={key}
                                   pinColor={"black"}
                                   coordinate={
                                       {
-                                          latitude: route.params.locations[key].latitude,
-                                          longitude: route.params.locations[key].longitude,
+                                          latitude: locations[key].latitude,
+                                          longitude: locations[key].longitude,
                                       }
                                   }
                               />
@@ -141,7 +141,7 @@ export default function EventMap({ route }) {
                               rounded
                               size='medium'
                               icon={{ name: 'map-marker', type: 'font-awesome' }}
-                              onPress={() => mapRef.current.animateToRegion({ latitude: route.params.event.LocationGeolat, longitude: route.params.event.LocationGeolong, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP })}
+                              onPress={() => mapRef.current.animateToRegion({ latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP })}
                           />
                       </View>
                       {/* eventMembers */}

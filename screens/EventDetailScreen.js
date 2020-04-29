@@ -21,18 +21,21 @@ export default function EventDetailScreen({ navigation, route }) {
     const [isOpen, setOpen] = React.useState(false);
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
+    const [screen, setScreen] = React.useState("EventDetail");
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
-            let wihtinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (event.Reminder * 60000)
-            if (wihtinReminder) {
-                setInitialRoute('EventMap');
+            let withinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (30 * 60000)
+            if (withinReminder) {
+                // setInitialRoute('EventMap');
+                setScreen("EventMap")
                 loadInitial()
                 joinEvent()
                 setShowSwitch(true);
             } else {
-                setInitialRoute('EventDetail');
+                // setInitialRoute('EventDetail');
+                setScreen("EventDetail")
                 setShowSwitch(false);
             }
             let eventMembers = await getEventMembers(route.params.EventId)
@@ -44,11 +47,9 @@ export default function EventDetailScreen({ navigation, route }) {
     }, []);
 
     React.useEffect(() => {
-      console.log(locations);
     }, [locations])
 
     async function loadInitial() {
-      console.log("test");
         socket.connect();
         socket.on('connect', (data) => {
         })
@@ -98,13 +99,11 @@ export default function EventDetailScreen({ navigation, route }) {
         );
     }
     function _handleNavigation() {
-        if (initialRoute == 'EventDetail') {
-            setInitialRoute('EventMap');
-            navigation.navigate('EventMap');
-        } else {
-            setInitialRoute('EventDetail');
-            navigation.navigate('EventDetail');
-        }
+      if (screen == "EventDetail"){
+        setScreen("EventMap")
+      } else {
+        setScreen("EventDetail")
+      }
     }
 
     function menuContent() {
@@ -178,6 +177,8 @@ export default function EventDetailScreen({ navigation, route }) {
     }
 
     return (
+      <React.Fragment>
+      {isLoading !== true && (
       <SideMenu
           menu={menuContent()}
           menuPosition='right'
@@ -185,7 +186,6 @@ export default function EventDetailScreen({ navigation, route }) {
           onChange={toggleSideMenu}
           bounceBackOnOverdraw={false}
       >
-      {isLoading !== true && (
           <View style={styles.container}>
               {/* Header */}
               <Header
@@ -202,15 +202,23 @@ export default function EventDetailScreen({ navigation, route }) {
                   centerContainerStyle={{ flex: 1 }}
                   rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
               />
-              <Stack.Navigator initialRouteName={initialRoute} headerMode="none" >
-                  <Stack.Screen
-                      name="EventDetail"
-                      component={EventDetailWithMiniMap}
-                      initialParams={{ event, eventMembers }}
-                      options={{ gestureEnabled: false }}
-                  />
-                  <Stack.Screen name="EventMap" component={EventMap} initialParams={{ event, eventMembers, locations }} options={{ gestureEnabled: false }} />
-              </Stack.Navigator>
+              {
+                screen === "EventDetail" && (
+                  <EventDetailWithMiniMap
+                    event={event}
+                    eventMembers={eventMembers}
+                    />
+                )
+              }
+              {
+                screen === "EventMap" && (
+                  <EventMap
+                  event={event}
+                  eventMembers={eventMembers}
+                  locations={locations}
+                    />
+                )
+              }
               {/* Switch */}
               {
                 route.params.EventType === "ON-GOING" && showSwitch && (
@@ -225,8 +233,9 @@ export default function EventDetailScreen({ navigation, route }) {
                 )
               }
           </View>
-        )}
       </SideMenu>
+      )}
+      </React.Fragment>
     )
 }
 
