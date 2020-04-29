@@ -32,14 +32,18 @@ const testEventMembers = [
 ]
 
 export default function EventMap({ route }) {
+    const [isLoading, setIsLoading ] = React.useState(true);
     const [mapRegion, setMapRegion] = React.useState();
     const mapRef = React.useRef();
 
     React.useEffect(() => {
+      console.log("EventMap")
+      console.log(route.params);
         async function fetchData() {
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
             setMapRegion(region);
+            setIsLoading(false);
         }
         fetchData()
     }, []);
@@ -63,105 +67,104 @@ export default function EventMap({ route }) {
     }
 
     return (
-      <View>
-      {route.params && route.params.event && (
         <View style={styles.container}>
-            {/* Timer */}
-            <View style={styles.timer}>
-                <Timer eventDateTime={route.params.event.DateTime} />
-            </View>
-            {/* MapView */}
-                <MapView
-                    ref={mapRef}
-                    style={styles.mapStyle}
-                    showsUserLocation={true}
-                    showsMyLocationButton={false}
-                    // region : which section of the map to render/zoom
-                    region={mapRegion}
-                >
-                    {/* Meeting Location Circle */}
-                    <MapView.Circle
-                        center={{
-                            latitude: route.params.event.LocationGeolat,
-                            longitude: route.params.event.LocationGeolong,
-                        }}
-                        radius={500} // in meters
-                        strokeWidth={2}
-                        strokeColor='rgba(89, 89, 89, 0.42)'
-                        fillColor='rgba(89, 89, 89, 0.42)'
-                    />
-                    {/* Member Markers */}
-                    {
-                        testEventMembers.map((u, i) => {
-                            return (
-                                <MapView.Marker
-                                    key={i}
-                                    pinColor={u.color}
-                                    coordinate={
-                                        {
-                                            latitude: u.location.latitude,
-                                            longitude: u.location.longitude,
-                                        }
-                                    }
-                                />
-                            )
-                        })
-                    }
-                </MapView>
+          {!isLoading && route.params && route.params.event && (
+            <React.Fragment>
+              {/* Timer */}
+              <View style={styles.timer}>
+                  <Timer eventDateTime={route.params.event.DateTime} />
+              </View>
+              {/* MapView */}
+              <MapView
+                  ref={mapRef}
+                  style={styles.mapStyle}
+                  showsUserLocation={true}
+                  showsMyLocationButton={false}
+                  // region : which section of the map to render/zoom
+                  region={mapRegion}
+              >
+                  {/* Meeting Location Circle */}
+                  <MapView.Circle
+                      center={{
+                          latitude: route.params.event.LocationGeolat,
+                          longitude: route.params.event.LocationGeolong,
+                      }}
+                      radius={500} // in meters
+                      strokeWidth={2}
+                      strokeColor='rgba(89, 89, 89, 0.42)'
+                      fillColor='rgba(89, 89, 89, 0.42)'
+                  />
+                  {/* Member Markers */}
+                  {
+                      Object.keys(route.params.locations).map((key) => {
+                          return (
+                              <MapView.Marker
+                                  key={key}
+                                  pinColor={"black"}
+                                  coordinate={
+                                      {
+                                          latitude: route.params.locations[key].latitude,
+                                          longitude: route.params.locations[key].longitude,
+                                      }
+                                  }
+                              />
+                          )
+                      })
+                  }
+              </MapView>
+              {/* My Location Button */}
+              <View style={styles.myLocationStyle}>
+                  <Icon
+                      reverse
+                      name='location-arrow'
+                      type='font-awesome'
+                      size={20}
+                      onPress={_goToMyLocation}
+                  />
+              </View>
+              {/* fitAll */}
+              <View style={styles.fitAllStyle}>
+                  <Icon
+                      reverse
+                      name='users'
+                      type='font-awesome'
+                      size={20}
+                      onPress={_fitAll}
+                  />
+              </View>
+              {/* Avatars */}
+              <View style={styles.avatarContianer}>
+                  <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                      {/* Meeting Location */}
+                      <View style={styles.avatar}>
+                          <Avatar
+                              rounded
+                              size='medium'
+                              icon={{ name: 'map-marker', type: 'font-awesome' }}
+                              onPress={() => mapRef.current.animateToRegion({ latitude: route.params.event.LocationGeolat, longitude: route.params.event.LocationGeolong, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP })}
+                          />
+                      </View>
+                      {/* eventMembers */}
+                      {
+                          testEventMembers.map((u, i) => {
+                              let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+                              return (
+                                  <View style={styles.avatar} key={i}>
+                                      <Avatar
+                                          rounded
+                                          size='medium'
+                                          title={u.initial}
+                                          onPress={() => mapRef.current.animateToRegion(memberRegion)}
+                                      />
+                                  </View>
+                              )
+                          })
+                      }
+                  </ScrollView>
+              </View>
+            </React.Fragment>
             )}
-            {/* My Location Button */}
-            <View style={styles.myLocationStyle}>
-                <Icon
-                    reverse
-                    name='location-arrow'
-                    type='font-awesome'
-                    size={20}
-                    onPress={_goToMyLocation}
-                />
-            </View>
-            {/* fitAll */}
-            <View style={styles.fitAllStyle}>
-                <Icon
-                    reverse
-                    name='users'
-                    type='font-awesome'
-                    size={20}
-                    onPress={_fitAll}
-                />
-            </View>
-            {/* Avatars */}
-            <View style={styles.avatarContianer}>
-                <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-                    {/* Meeting Location */}
-                    <View style={styles.avatar}>
-                        <Avatar
-                            rounded
-                            size='medium'
-                            icon={{ name: 'map-marker', type: 'font-awesome' }}
-                            onPress={() => mapRef.current.animateToRegion({ latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP })}
-                        />
-                    </View>
-                    {/* eventMembers */}
-                    {
-                        testEventMembers.map((u, i) => {
-                            let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-                            return (
-                                <View style={styles.avatar} key={i}>
-                                    <Avatar
-                                        rounded
-                                        size='medium'
-                                        title={u.initial}
-                                        onPress={() => mapRef.current.animateToRegion(memberRegion)}
-                                    />
-                                </View>
-                            )
-                        })
-                    }
-                </ScrollView>
-            </View>
         </View>
-      )}
-      </View>
     );
 }
 
