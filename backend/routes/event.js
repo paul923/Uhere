@@ -32,7 +32,7 @@ router.get('/pending/:userId', function (req, res) {
 });
 
 // Creating a GET route that returns data from the 'users' table.
-router.get('/ongoing/:userId', function (req, res) {
+router.get('/accepted/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
