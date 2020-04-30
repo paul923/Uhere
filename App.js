@@ -8,7 +8,6 @@ import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constants from "expo-constants";
 const { manifest } = Constants;
-import socket from 'config/socket';
 import firebase from 'firebase';
 import { backend } from './constants/Environment';
 
@@ -32,26 +31,8 @@ const Stack = createStackNavigator();
 import AuthContext from 'contexts/AuthContext';
 import LoadingContext from 'contexts/LoadingContext';
 
-const LOCATION_TASK_NAME = 'background-location-task';
 
-TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
-  if (error) {
-    // Error occurred - check `error.message` for more details.
-    return;
-  }
-  if (data) {
-    const { locations } = data;
-    const location = locations[0]
-    let user = firebase.auth().currentUser.uid;
-    let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-    // socket.emit('position', {
-    //     user,
-    //     position,
-    //     event: route.params.EventId
-    // })
-    console.log("New location: " + JSON.stringify(location.coords));
-  }
-});
+
 
 export default function App(props) {
   const [showRealApp, setshowRealApp] = React.useState(false);
@@ -63,15 +44,6 @@ export default function App(props) {
   const [isLocationPermissionGranted, _setLocationPermissionGranted] = React.useState(false);
   const isLocationPermissionGrantedRef = React.useRef(isLocationPermissionGranted);
   React.useEffect(() => {
-    console.log("Rooms: ");
-
-    async function runBackgroundLocationTask() {
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
-        distanceInterval: 0,
-      });
-    }
-    runBackgroundLocationTask();
     checkLocationPermissionAsync();
   }, []);
 

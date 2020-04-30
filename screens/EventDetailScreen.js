@@ -26,12 +26,11 @@ export default function EventDetailScreen({ navigation, route }) {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
-            let withinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (30 * 60000)
+            let withinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (5000 * 60000)
+            withinReminder = true;
             if (withinReminder) {
                 // setInitialRoute('EventMap');
                 setScreen("EventMap")
-                loadInitial()
-                joinEvent()
                 setShowSwitch(true);
             } else {
                 // setInitialRoute('EventDetail');
@@ -43,43 +42,23 @@ export default function EventDetailScreen({ navigation, route }) {
             setIsLoading(false);
         }
         fetchData()
-
+        loadInitial();
     }, []);
 
     React.useEffect(() => {
+      console.log("Locations");
+      console.log(locations);
     }, [locations])
 
     async function loadInitial() {
-        socket.connect();
-        socket.on('connect', (data) => {
+      socket.on('updatePosition', ({user, position}) => {
+        console.log("updatePosition");
+        setLocations((prevLocations) => {
+          return {
+            ...prevLocations,
+            [user]: position
+          }
         })
-        socket.on('updatePosition', ({user, position}) => {
-          setLocations((prevLocations) => {
-            return {
-              ...prevLocations,
-              [user]: position
-            }
-          })
-        })
-    }
-
-    async function emitPosition() {
-        let location = await Location.getCurrentPositionAsync();
-        let user = firebase.auth().currentUser.uid;
-        let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-        setLocations({...locations, [user]: position});
-        socket.emit('position', {
-            user,
-            position,
-            event: route.params.EventId
-        })
-    }
-    async function joinEvent() {
-      socket.emit('join', {
-        event: route.params.EventId
-      })
-      socket.on('requestPosition', () => {
-        emitPosition();
       })
     }
 

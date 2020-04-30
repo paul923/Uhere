@@ -59,6 +59,29 @@ router.get('/accepted/:userId', function (req, res) {
   });
 });
 
+// Creating a GET route that returns data from the 'users' table.
+router.get('/ongoing/:userId', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `SELECT *
+    FROM Event
+    WHERE 1=1
+    AND NOW() Between DATE_SUB(Event.DateTime, INTERVAL 5000 MINUTE) AND Event.DateTime
+    AND EventID IN (
+    	SELECT EventUser.EventID FROM EventUser
+        where EventUser.UserId = '${req.params.userId}'
+    );`
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      // If some error occurs, we throw an error.
+      if (error) throw error;
+      // Getting the 'response' from the database and sending it to our route. This is were the data is.
+      res.send(results)
+    });
+  });
+});
+
 router.get('/detail/:eventId', function(req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
