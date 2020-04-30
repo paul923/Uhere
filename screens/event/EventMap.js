@@ -37,6 +37,8 @@ export default function EventMap({ event, eventMembers, locations }) {
     const mapRef = React.useRef();
 
     React.useEffect(() => {
+        console.log("Locations")
+        console.log(locations)
         async function fetchData() {
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }

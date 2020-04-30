@@ -45,14 +45,18 @@ export default function EventDetailScreen({ navigation, route }) {
         loadInitial();
     }, []);
 
-    React.useEffect(() => {
-      console.log("Locations");
-      console.log(locations);
-    }, [locations])
-
     async function loadInitial() {
+      socket.on('requestPosition', async () => {
+        let location = await Location.getCurrentPositionAsync();
+        let user = firebase.auth().currentUser.uid;
+        let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+        setLocations({...locations, [user]: position});
+        socket.emit('position', {
+            user,
+            position
+        })
+      })
       socket.on('updatePosition', ({user, position}) => {
-        console.log("updatePosition");
         setLocations((prevLocations) => {
           return {
             ...prevLocations,
@@ -60,6 +64,7 @@ export default function EventDetailScreen({ navigation, route }) {
           }
         })
       })
+      socket.emit('requestPosition', {event: route.params.EventId});
     }
 
     function toggleSideMenu() {

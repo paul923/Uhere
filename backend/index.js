@@ -46,10 +46,11 @@ io.on('connection', (socket) => {
         })
       });
     });
-    // var clients = io.sockets.adapter.rooms['lobby'].sockets;
-    // Object.keys(clients).forEach(client => {
-    //   console.log(io.sockets.connected[client]);
-    // })
+
+  })
+
+  socket.on('requestPosition', ({event}) => {
+    io.in(event).emit('requestPosition');
   })
 
   socket.on('leave', ({event}) => {
