@@ -8,7 +8,8 @@ const pool = mysql.createPool({
   user: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_SCHEMA,
-  ssl: "Amazon RDS"
+  ssl: "Amazon RDS",
+  timezone: 'utc'
 });
 exports.pool = pool
 exports.mysql = mysql
