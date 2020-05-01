@@ -34,12 +34,12 @@ export default function AddFriendByIdScreen({ navigation, route }) {
 
   async function fetchCurrentUser() {
     let user = await getUserByUid(firebase.auth().currentUser.uid);
-    setCurrentUser(user)
+    setCurrentUser(user);
   }
 
   async function fetchFriendList() {
-    let usersFriends = await getUserRelationship(currentUser.UserId);
-    setUsersFriends(usersFriends)
+    let usersFriends = await getUserRelationship(firebase.auth().currentUser.uid);
+    setUsersFriends(usersFriends);
   }
 
 
