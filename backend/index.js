@@ -63,16 +63,18 @@ io.on('connection', (socket) => {
       socket.currentPosition = {};
     }
     socket.currentPosition.user = position;
-    socket.events.forEach((event) => {
-      console.log('Update position of user in event with values: ');
-      console.log(`Event: ${event}`);
-      console.log(`User: ${user}`);
-      console.log(`Position: ${position}`);
-      io.in(event).emit('updatePosition', {
-        user,
-        position
-      });
-    })
+    if (socket.events){
+      socket.events.forEach((event) => {
+        console.log('Update position of user in event with values: ');
+        console.log(`Event: ${event}`);
+        console.log(`User: ${user}`);
+        console.log(`Position: ${position}`);
+        io.in(event).emit('updatePosition', {
+          user,
+          position
+        });
+      })
+    }
   })
 
   socket.on('disconnect', () => {

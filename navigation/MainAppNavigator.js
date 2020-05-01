@@ -55,8 +55,10 @@ const LOCATION_TASK_NAME = 'background-location-task';
 TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   if (error) {
     // Error occurred - check `error.message` for more details.
+    console.log(error.message);
     return;
   }
+  console.log(socket.id);
   if (data) {
     const { locations } = data;
     const location = locations[0]
@@ -67,7 +69,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
           user,
           position
       })
-      console.log("New location: " + JSON.stringify(location.coords));
+      console.log(socket.id + ": " + JSON.stringify(location.coords));
     }
   }
 });
@@ -81,7 +83,7 @@ export default function MainAppNavigator({ navigation, route }) {
     async function runBackgroundLocationTask() {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,
-        timeInterval: 5000,
+        timeInterval: 1000,
         distanceInterval: 0,
       });
     }
