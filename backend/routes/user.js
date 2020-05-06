@@ -66,4 +66,24 @@ router.post('/', function (req,res) {
   });
 })
 
+router.post('/group/', function (req,res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    console.log("Connected!");
+    var sql = "INSERT INTO UserGroup (UserId1, UserId2, GroupName) VALUES ?";
+    var data = req.body.group
+    connection.query(sql, [data], function (error, results, fields) {
+      if (error) {
+        throw error;
+        connection.release();
+      }
+      if (results.affectedRows > 0) {
+        connection.release();
+        res.json({"status": 200, "response": "Registered"});
+      }
+    });
+  });
+})
+
 module.exports = router;

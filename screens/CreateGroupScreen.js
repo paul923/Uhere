@@ -1,16 +1,54 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList, TouchableWithoutFeedback } from 'react-native';
-import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
+import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
+import FriendCard from '../components/FriendCard';
+
+import { postGroup } from '../API/FriendAPI'
+import firebase from 'firebase';
 
 
 
 export default function CreateGroupScreen({ navigation, route }) {
   const [groupName, setGroupName] = React.useState("");
-  const [friendsGroup, setFriendsGroup] = React.useState(null);
+  const [selectedFriends, setSelectedFriends] = React.useState(null);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-  }, []);
+    route.params && setSelectedFriends(route.params.selectedFriends);
+    route.params && console.log('route is',route.params.selectedFriends);
+  });
+
+  async function createGroup(){
+    let objectArray = selectedFriends.map(function(friend){
+      return {
+        UserId1 : firebase.auth().currentUser.uid,
+        UserId2 : friend.UserId,
+        GroupName : groupName
+      }
+    });
+    let values = objectArray.reduce((o,a)=>{
+      let ini=[];
+      ini.push(a.UserId1);
+      ini.push(a.UserId2);
+      ini.push(a.GroupName);
+      o.push(ini);
+      return o
+    },[])
+    console.log(values)
+    console.log([['1', '2'],['1', '2'],['1', '2']])
+    await postGroup(values);
+  }
+
+  function renderFriendsCard({ item }){
+    return (
+    <FriendCard
+      avatarUrl= {item.AvatarURI}
+      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      displayName = {item.Nickname}
+      userId = {item.Username}
+    />
+    )
+  }
 
 
   return (
@@ -27,7 +65,7 @@ export default function CreateGroupScreen({ navigation, route }) {
           />
         }
         rightComponent={
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => createGroup()}>
             <Text style={{color: 'white'}}>Done</Text>
           </TouchableOpacity>
         }
@@ -35,30 +73,38 @@ export default function CreateGroupScreen({ navigation, route }) {
         centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
         statusBarProps={{translucent: true}}
       />
-      <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
-        <View style={styles.contentContainer}>
-          <View style={styles.groupContainer}>
-            <Text style={styles.fieldText}>Group Name</Text>
-            <TextInput
-              style={{borderWidth: 1, height: 50, color: 'black', borderRadius: 10}}
-              value={groupName}
-              onChangeText={(text)=> setGroupName(text)}
-            />
-          </View>
-          <View style={styles.addFriendsContainer}>
-            <Text style={styles.fieldText}>Add Friends</Text>
-            {/**Friends FlatList */}
-            <TouchableOpacity onPress={()=> navigation.navigate('Add Friend List')}>
-              <View style={styles.addButton}>
-                <Icon
-                  name="plus"
-                  type="entypo"
-                />
-              </View>
-            </TouchableOpacity>
+      <View style={styles.contentContainer}>
+        <View style={styles.groupContainer}>
+          <Text style={styles.fieldText}>Group Name</Text>
+          <TextInput
+            style={{borderWidth: 1, height: 50, color: 'black', borderRadius: 10}}
+            value={groupName}
+            onChangeText={(text)=> setGroupName(text)}
+          />
+        </View>
+        <View style={styles.addFriendsContainer}>
+          <Text style={styles.fieldText}>Add Friends</Text>
+          {/**Friends FlatList */}
+          <TouchableOpacity onPress={()=> navigation.navigate('Add Friend List')}>
+            <View style={styles.addButton}>
+              <Icon
+                name="plus"
+                type="entypo"
+              />
+            </View>
+          </TouchableOpacity>
+          <View style={{flex: 1}}>
+          <FlatList
+            data={selectedFriends}
+            renderItem={renderFriendsCard}
+            keyExtractor={(item) => item.UserId}
+            contentContainerStyle={{
+            }}
+            bounces={false}
+          />
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
 
     </View>
   )
@@ -69,13 +115,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+    flex: 1,
     padding: 20
   },
   groupContainer: {
     marginVertical: 30,
   },
   addFriendsContainer: {
-    height: 100,
+    flex: 1,
   },
   fieldText:{
     fontSize: 20,

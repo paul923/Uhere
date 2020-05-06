@@ -24,3 +24,19 @@ export async function getUserByUid(UserId) {
         return null;
     }
 }
+export async function postGroup(group) {
+    let url = `http://${backend}:3000/user/group`;
+    let response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({group}),
+    });
+    let responseJson = await response.json();
+    console.log(responseJson.response);
+    return responseJson;
+}
+ 
+

@@ -15,7 +15,6 @@ export default function FriendScreen({navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
-  const [ selectedFriends, setSelectedFriends] = React.useState([]);
   const [ dropDownToggle, setDropDownToggle] = React.useState(false);
 
   React.useEffect(() => {
@@ -44,29 +43,16 @@ export default function FriendScreen({navigation}) {
       avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
       displayName = {item.Nickname}
       userId = {item.Username}
-      checkBox={{
-        size: 35,
-        checkedIcon: 'dot-circle-o',
-        uncheckedIcon: 'circle-o',
-        checkedColor:'#ff8a8a',
-        uncheckedColor: '#ff8a8a',
-        checked: selectedFriends.includes(item),
-        onPress: () => selectFriend(item)
-      }}
+      rightElement = {
+        <Button
+          title="Remove"
+          buttonStyle={{backgroundColor: 'red'}}
+          onPress={()=> removeFriend(item.UserId)}
+        />
+      }
     />
     )
   }
-  
-  function selectFriend (item) {
-    console.log(item);
-    if(!selectedFriends.includes(item)){
-      setSelectedFriends([...selectedFriends, item])
-    } else {
-      setSelectedFriends(selectedFriends.filter(a => a !== item));
-    }
-    console.log(selectedFriends)
-  }
-
 
 
   function friendSearch(text) {
@@ -77,6 +63,10 @@ export default function FriendScreen({navigation}) {
     });
   
     setFilteredData(filtered)
+  }
+
+  function removeFriend(friendId){
+    console.log(`Remove Friend Id ${friendId}`);
   }
 
    
@@ -125,14 +115,14 @@ export default function FriendScreen({navigation}) {
               </View>
             </TouchableOpacity>
             <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-            <TouchableOpacity onPress={()=> {this.props.navigation.navigate('Add Friend Selection');setDropDownToggle(false)}}>
+            <TouchableOpacity onPress={()=> {navigation.navigate('Add Friend Selection');setDropDownToggle(false)}}>
               <View style={styles.dropDownButton}>
                 <Icon name="user" type="feather"/>
                 <Text style={styles.dropDownButtonText}>Add Friend</Text>
               </View>
             </TouchableOpacity>
             <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-            <TouchableOpacity onPress={()=> {this.props.navigation.navigate('Create Group');setDropDownToggle(false);}}>
+            <TouchableOpacity onPress={()=> {navigation.navigate('Create Group');setDropDownToggle(false);}}>
               <View style={styles.dropDownButton}>
                 <Icon name="users" type="feather"/>
                 <Text style={styles.dropDownButtonText}>Create Group</Text>
