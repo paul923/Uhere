@@ -27,25 +27,11 @@ export default function AddFriendByIdScreen({ navigation, route }) {
     setResultUser(resultUser);
   };
 
-  // async function searchUserByUsername() {
-  //   let resultUser = await getUserByUsername(searchUsername);
-  //   setResultUser(resultUser);
-  //   //checks if user is friend with searched friend
-  //   if(resultUser !== null){
-  //     setRelationship(usersFriends.find(user => user.Username === resultUser.Username));
-  //   }
-  // }
 
   async function fetchCurrentUser() {
     let user = await getUserByUid(firebase.auth().currentUser.uid);
     setCurrentUser(user);
   }
-
-  // async function fetchFriendList() {
-  //   let usersFriends = await getUserRelationship(firebase.auth().currentUser.uid);
-  //   setUsersFriends(usersFriends);
-  // }
-
 
   async function addSearchedFriend() {
     let userRelationship= {
@@ -91,13 +77,17 @@ export default function AddFriendByIdScreen({ navigation, route }) {
           />
           <View style={styles.searchResultContainer}>
             <Text>Search Result: </Text>
-            <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
-            {resultUser &&
+            
+            {resultUser === undefined ? 
+            (<View>
+              <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
               <Button
                 title={resultUser.Type === "Friend" ? 'Already a Friend' : 'Add'}
                 onPress={addSearchedFriend}
                 disabled={resultUser.Type === "Friend" && true}
               />
+            </View>) 
+            : (<View><Text style={{fontSize: 20, fontWeight: 'bold'}}>User not found</Text></View>)
             }
           </View>
           <View style={styles.myIdContainer}>
