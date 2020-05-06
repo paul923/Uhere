@@ -47,8 +47,13 @@ export async function getRelationshipType(uid, userName) {
         let url = `http://${backend}:3000/relationship/type/${uid}-${userName}`;
         let response = await fetch(url);
         let json = await response.json();
-        let relationship = json.response[0];
-        return relationship;
+        if(json.status === 204){
+            return null;
+        }else {
+            let relationship = json.response[0];
+            return relationship;
+        }
+        return null;
     } catch (error) {
         console.error(error);
         return null;

@@ -13,8 +13,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
   const [searchUsername, setSearchUsername] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState(null);
   const [resultUser, setResultUser] = React.useState(null);
-  const [relationship, setRelationship] = React.useState(null);
-  const [usersFriends, setUsersFriends] = React.useState(null);
+  const [searchButtonClicked, setSearchButtonClicked] = React.useState(false);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -24,7 +23,8 @@ export default function AddFriendByIdScreen({ navigation, route }) {
 
   async function searchUserByUsername() {
     let resultUser = await getRelationshipType(firebase.auth().currentUser.uid, searchUsername);
-    setResultUser(resultUser);
+    setResultUser(resultUser); 
+    setSearchButtonClicked(true);
   };
 
 
@@ -78,7 +78,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
           <View style={styles.searchResultContainer}>
             <Text>Search Result: </Text>
             
-            {resultUser === undefined ? 
+            {resultUser !== null ? 
             (<View>
               <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
               <Button
@@ -87,7 +87,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
                 disabled={resultUser.Type === "Friend" && true}
               />
             </View>) 
-            : (<View><Text style={{fontSize: 20, fontWeight: 'bold'}}>User not found</Text></View>)
+            : searchButtonClicked && (<View><Text style={{fontSize: 20, fontWeight: 'bold'}}>User not found</Text></View>)
             }
           </View>
           <View style={styles.myIdContainer}>
