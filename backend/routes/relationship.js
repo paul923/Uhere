@@ -25,6 +25,25 @@ router.get('/:userId', function(req, res, next) {
   });
 })
 
+router.get('/type/:uid-:userName', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `select UserRelationship.UserId1 as 'currentUserId', UserRelationship.UserId2 as 'searchedUserId', Type, UserId, Username, Nickname, AvatarURI, AvatarColor, RegisteredDate from UserRelationship join User on UserRelationship.UserId2 = User.UserId where UserId1 = '${req.params.uid}' and UserId2 = (select UserId from User where Username = '${req.params.userName}')`;
+    // Executing the MySQL query (select relationship type from the 'UserRelationship' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.length > 0) {
+        res.json({"status": 200, "response": results});
+      } else {
+        res.json({"status": 204, "response": "Not Found"})
+      }
+    });
+  });
+})
+
 router.post('/', function(req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 
-import { getUserByUsername, getUserByUid, addFriend, getUserRelationship } from '../API/FriendAPI'
+import { getUserByUsername, getUserByUid, addFriend, getUserRelationship, getRelationshipType } from '../API/FriendAPI'
 
 import firebase from 'firebase';
 
@@ -10,7 +10,7 @@ import firebase from 'firebase';
 
 export default function AddFriendByIdScreen({ navigation, route }) {
 
-  const [searchId, setSearchId] = React.useState("");
+  const [searchUsername, setSearchUsername] = React.useState("");
   const [currentUser, setCurrentUser] = React.useState(null);
   const [resultUser, setResultUser] = React.useState(null);
   const [relationship, setRelationship] = React.useState(null);
@@ -19,28 +19,32 @@ export default function AddFriendByIdScreen({ navigation, route }) {
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     fetchCurrentUser();
-    fetchFriendList();
   }, []);
 
 
   async function searchUserByUsername() {
-    let resultUser = await getUserByUsername(searchId);
+    let resultUser = await getRelationshipType(firebase.auth().currentUser.uid, searchUsername);
     setResultUser(resultUser);
-    //checks if user is friend with searched friend
-    if(resultUser !== null){
-      setRelationship(usersFriends.find(user => user.Username === resultUser.Username));
-    }
-  }
+  };
+
+  // async function searchUserByUsername() {
+  //   let resultUser = await getUserByUsername(searchUsername);
+  //   setResultUser(resultUser);
+  //   //checks if user is friend with searched friend
+  //   if(resultUser !== null){
+  //     setRelationship(usersFriends.find(user => user.Username === resultUser.Username));
+  //   }
+  // }
 
   async function fetchCurrentUser() {
     let user = await getUserByUid(firebase.auth().currentUser.uid);
     setCurrentUser(user);
   }
 
-  async function fetchFriendList() {
-    let usersFriends = await getUserRelationship(firebase.auth().currentUser.uid);
-    setUsersFriends(usersFriends);
-  }
+  // async function fetchFriendList() {
+  //   let usersFriends = await getUserRelationship(firebase.auth().currentUser.uid);
+  //   setUsersFriends(usersFriends);
+  // }
 
 
   async function addSearchedFriend() {
@@ -76,8 +80,8 @@ export default function AddFriendByIdScreen({ navigation, route }) {
             <Text>User ID</Text>
             <TextInput
               style={{borderBottomWidth: 1, height: 30, color: 'black'}}
-              value={searchId}
-              onChangeText={(text)=> setSearchId(text)}
+              value={searchUsername}
+              onChangeText={(text)=> setSearchUsername(text)}
               onSubmitEditing={searchUserByUsername}
             />
           </View>
@@ -90,9 +94,9 @@ export default function AddFriendByIdScreen({ navigation, route }) {
             <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
             {resultUser &&
               <Button
-                title={relationship ? 'Already a Friend' : 'Add'}
+                title={resultUser.Type === "Friend" ? 'Already a Friend' : 'Add'}
                 onPress={addSearchedFriend}
-                disabled={relationship && true}
+                disabled={resultUser.Type === "Friend" && true}
               />
             }
           </View>
