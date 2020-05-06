@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWit
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
+import { getFriendsList, getUserGroup } from '../API/FriendAPI'
 import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
@@ -14,27 +15,29 @@ import { TouchableOpacity} from 'react-native-gesture-handler'
 export default function FriendScreen({navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
+  const [ groups, setGroups] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
   const [ dropDownToggle, setDropDownToggle] = React.useState(false);
 
   React.useEffect(() => {
-    retrieveFriend();
+    retrieveListData();
+    retrieveGroup();
     // Sorts friends list on initial load
 
   }, []);
 
-  async function retrieveFriend() {
-    let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-    let responseJson = await response.json();
-    responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
-    setFriends(responseJson.response);
+  async function retrieveListData() {
+    let list = await getFriendsList(firebase.auth().currentUser.uid);
+    list.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+    setFriends(list);
   }
+
+  async function retrieveGroup() {
+    let group = await getUserGroup(firebase.auth().currentUser.uid);
+    setGroups(group);
+  }
+
+  
   
   function renderFriendsCard({ item }){
     return (
@@ -46,6 +49,7 @@ export default function FriendScreen({navigation}) {
       rightElement = {
         <Button
           title="Remove"
+          titleStyle= {{fontSize: 12}}
           buttonStyle={{backgroundColor: 'red'}}
           onPress={()=> removeFriend(item.UserId)}
         />
@@ -182,6 +186,14 @@ export default function FriendScreen({navigation}) {
             backgroundColor:"white"
           }}
         />
+
+        {
+         /**
+          * Group section */ 
+        }
+        {
+          groups.map(group=> <Text>{group.GroupName}</Text>)
+        }
 
         <FlatList
           data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}

@@ -24,7 +24,38 @@ export async function getUserByUid(UserId) {
         return null;
     }
 }
-export async function postGroup(group) {
+export async function getFriendsList(UserId) {
+    try{
+        let response = await fetch(`http://${backend}:3000/relationship/${UserId}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        });
+        let json = await response.json();
+        let list = json.response;
+        return list;
+    }catch (error) {
+        console.error(error);
+        return null;
+    }
+
+  }
+
+export async function getUserGroup(UserId) {
+    try {
+        let url = `http://${backend}:3000/user/group/${UserId}`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let groups = json.response;
+        return groups;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+export async function postGroup(group, members) {
     let url = `http://${backend}:3000/user/group`;
     let response = await fetch(url, {
       method: 'POST',
@@ -32,7 +63,10 @@ export async function postGroup(group) {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({group}),
+      body: JSON.stringify({
+          group,
+          members: members
+        }),
     });
     let responseJson = await response.json();
     console.log(responseJson.response);

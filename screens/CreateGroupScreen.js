@@ -19,24 +19,15 @@ export default function CreateGroupScreen({ navigation, route }) {
   });
 
   async function createGroup(){
-    let objectArray = selectedFriends.map(function(friend){
-      return {
-        UserId1 : firebase.auth().currentUser.uid,
-        UserId2 : friend.UserId,
-        GroupName : groupName
-      }
-    });
-    let values = objectArray.reduce((o,a)=>{
-      let ini=[];
-      ini.push(a.UserId1);
-      ini.push(a.UserId2);
-      ini.push(a.GroupName);
-      o.push(ini);
-      return o
-    },[])
-    console.log(values)
-    console.log([['1', '2'],['1', '2'],['1', '2']])
-    await postGroup(values);
+    let group = {
+      UserId : firebase.auth().currentUser.uid,
+      GroupName : groupName
+    }
+    let response = await postGroup(group, selectedFriends);
+    if(response){
+      navigation.goBack()
+    }
+
   }
 
   function renderFriendsCard({ item }){
@@ -74,14 +65,16 @@ export default function CreateGroupScreen({ navigation, route }) {
         statusBarProps={{translucent: true}}
       />
       <View style={styles.contentContainer}>
-        <View style={styles.groupContainer}>
-          <Text style={styles.fieldText}>Group Name</Text>
-          <TextInput
-            style={{borderWidth: 1, height: 50, color: 'black', borderRadius: 10}}
-            value={groupName}
-            onChangeText={(text)=> setGroupName(text)}
-          />
-        </View>
+        <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
+          <View style={styles.groupContainer}>
+            <Text style={styles.fieldText}>Group Name</Text>
+            <TextInput
+              style={{borderWidth: 1, height: 50, color: 'black', borderRadius: 10}}
+              value={groupName}
+              onChangeText={(text)=> setGroupName(text)}
+            />
+          </View>
+        </TouchableWithoutFeedback>
         <View style={styles.addFriendsContainer}>
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}
