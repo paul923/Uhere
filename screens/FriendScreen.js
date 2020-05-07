@@ -8,6 +8,7 @@ import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
 import { TouchableOpacity} from 'react-native-gesture-handler'
+import { useIsFocused } from '@react-navigation/native'
 
 
 
@@ -22,12 +23,13 @@ export default function FriendScreen({navigation}) {
   const [ groupMembers, setGroupMembers] = React.useState([]);
   const [ pressedGroupName, setPressedGroupName] = React.useState('');
 
+  const isFocused = useIsFocused();
+
   React.useEffect(() => {
     retrieveListData();
     retrieveGroup();
     // Sorts friends list on initial load
-
-  }, []);
+  }, [isFocused]);
 
   async function retrieveListData() {
     let list = await getFriendsList(firebase.auth().currentUser.uid);
