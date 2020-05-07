@@ -64,7 +64,7 @@ router.get('/ongoing/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT *
+    var sql = `SELECT EventId
     FROM Event
     WHERE 1=1
     AND NOW() Between DATE_SUB(Event.DateTime, INTERVAL 5000 MINUTE) AND Event.DateTime
@@ -151,7 +151,7 @@ router.post('/', function (req,res) {
             connection.release();
           }
           connection.release();
-          console.log(results);
+
           res.json({"status": 200, "response": "Inserted"});
         })
       }
