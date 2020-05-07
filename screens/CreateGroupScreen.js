@@ -65,16 +65,14 @@ export default function CreateGroupScreen({ navigation, route }) {
         statusBarProps={{translucent: true}}
       />
       <View style={styles.contentContainer}>
-        <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
-          <View style={styles.groupContainer}>
-            <Text style={styles.fieldText}>Group Name</Text>
-            <TextInput
-              style={{borderWidth: 1, height: 50, color: 'black', borderRadius: 10}}
-              value={groupName}
-              onChangeText={(text)=> setGroupName(text)}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+        <View style={styles.groupContainer}>
+          <Text style={styles.fieldText}>Group Name</Text>
+          <TextInput
+            style={{borderWidth: 1, height: 50, color: 'black', borderRadius: 10}}
+            value={groupName}
+            onChangeText={(text)=> setGroupName(text)}
+          />
+        </View>
         <View style={styles.addFriendsContainer}>
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}

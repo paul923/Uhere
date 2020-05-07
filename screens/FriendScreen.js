@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal } from 'react-native';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, TouchableHighlight } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
@@ -85,6 +85,12 @@ export default function FriendScreen({navigation}) {
     setGroupMembers(members)
   }
 
+  function pressDropDownItem(destination){
+    console.log('pressed')
+    navigation.navigate(destination);
+    setDropDownToggle(false);
+  }
+
    
   return (
     <View style={styles.container}>
@@ -119,26 +125,26 @@ export default function FriendScreen({navigation}) {
               backgroundColor: 'white',
               position: 'absolute',
               width: '100%',
-              flex:1,
               flexDirection: 'row',
               justifyContent: 'space-evenly',
               alignItems: 'center'
           }}>
-            <TouchableOpacity onPress={()=> setDropDownToggle(false)}>
+            <TouchableOpacity  onPress={()=> setDropDownToggle(false)}>
               <View style={styles.dropDownButton}>
                 <Icon name="edit" type="entypo"/>
                 <Text style={styles.dropDownButtonText}>Edit Friend</Text>
               </View>
             </TouchableOpacity>
             <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-            <TouchableOpacity onPress={()=> {navigation.navigate('Add Friend Selection');setDropDownToggle(false)}}>
+            
+            <TouchableOpacity onPress={()=> pressDropDownItem('Add Friend Selection')}>
               <View style={styles.dropDownButton}>
                 <Icon name="user" type="feather"/>
                 <Text style={styles.dropDownButtonText}>Add Friend</Text>
               </View>
             </TouchableOpacity>
             <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-            <TouchableOpacity onPress={()=> {navigation.navigate('Create Group');setDropDownToggle(false);}}>
+            <TouchableOpacity onPress={()=> pressDropDownItem('Create Group')}>
               <View style={styles.dropDownButton}>
                 <Icon name="users" type="feather"/>
                 <Text style={styles.dropDownButtonText}>Create Group</Text>
