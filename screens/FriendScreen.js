@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
@@ -18,6 +18,9 @@ export default function FriendScreen({navigation}) {
   const [ groups, setGroups] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
   const [ dropDownToggle, setDropDownToggle] = React.useState(false);
+  const [ modalVisible, setModalVisible] = React.useState(false);
+  const [ groupMembers, setGroupMembers] = React.useState([]);
+  const [ pressedGroupName, setPressedGroupName] = React.useState('');
 
   React.useEffect(() => {
     retrieveListData();
@@ -71,6 +74,13 @@ export default function FriendScreen({navigation}) {
 
   function removeFriend(friendId){
     console.log(`Remove Friend Id ${friendId}`);
+  }
+
+  function getGroupMembers(group){
+    setModalVisible(true);
+    setPressedGroupName(group.GroupName);
+    let members = friends.filter(friend => group.MemberIds.includes(friend.UserId))
+    setGroupMembers(members)
   }
 
    
@@ -137,18 +147,18 @@ export default function FriendScreen({navigation}) {
         )
       }
       {// greyed out background when dropdown is toggled
-        dropDownToggle && (
-          <TouchableWithoutFeedback onPress={()=> {console.log("test");setDropDownToggle(false)}}>
-          <View style={{
-            flex: 1,
-            zIndex: 20,
-            height: "100%",
-            width: '100%',
-            position: 'absolute',
-            backgroundColor: dropDownToggle ? 'black' : null,
-            opacity: dropDownToggle ? 0.7 : null,
-          }}>
-          </View>
+        (dropDownToggle) && (
+          <TouchableWithoutFeedback onPress={()=> {setDropDownToggle(false)}}>
+            <View style={{
+              flex: 1,
+              zIndex: 20,
+              height: "100%",
+              width: '100%',
+              position: 'absolute',
+              backgroundColor: dropDownToggle ? 'black' : null,
+              opacity: dropDownToggle ? 0.7 : null,
+            }}>
+            </View>
           </TouchableWithoutFeedback>
         )
       }
@@ -192,8 +202,44 @@ export default function FriendScreen({navigation}) {
           * Group section */ 
         }
         {
-          groups.map(group=> <Text>{group.GroupName}</Text>)
+          groups.map(group=> 
+            <TouchableOpacity onPress={()=> getGroupMembers(group)}>
+              <View 
+                key={group.GroupId}
+                style={{
+                  margin: 5,
+                  padding: 10,
+                  borderWidth: 2
+                }}
+              >
+                <Text style={{fontSize: 15, fontWeight: 'bold'}}>{group.GroupName}</Text>
+              </View>
+            </TouchableOpacity>
+          )
         }
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(false)
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={{fontWeight: 'bold', fontSize: 20, marginVertical: 10}}>{pressedGroupName}</Text>
+              {
+                groupMembers.map(member=> <Text key={member.UserId}>{member.Nickname}</Text>)
+              }
+              <Button
+                title="Close"
+                onPress={()=> setModalVisible(!modalVisible)}
+              />
+            </View>
+          </View>
+        </Modal>
+
 
         <FlatList
           data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
@@ -227,5 +273,27 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     fontSize: 10,
     fontWeight: 'bold'
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
 });
