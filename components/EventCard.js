@@ -2,9 +2,40 @@ import * as React from 'react';
 import { formatDate, formatTime } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button } from 'react-native-elements';
-
+import { backend } from '../constants/Environment';
+import firebase from 'firebase';
 
 export default function EventCard({onPress, item, status}) {
+  async function accept() {
+    let response = await fetch(`http://${backend}:3000/event/accept`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        EventId: item.EventId,
+        UserId: firebase.auth().currentUser.uid
+      }),
+    });
+    let responseJson = await response.json();
+    alert(responseJson.response);
+  }
+  async function decline() {
+    let response = await fetch(`http://${backend}:3000/event/decline`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        EventId: item.EventId,
+        UserId: firebase.auth().currentUser.uid
+      }),
+    });
+    let responseJson = await response.json();
+    alert(responseJson.response);
+  }
 
   return (
     <View style={styles.container}>
@@ -38,10 +69,10 @@ export default function EventCard({onPress, item, status}) {
         {status === 'PENDING' && (
           <View style={styles.cardButtonContainer}>
             <View style={{...styles.cardButton, backgroundColor: '#A0A0A0', borderTopRightRadius: 10}}>
-              <Icon name="close" color="white"/>
+              <Icon name="close" color="white" onPress={decline}/>
             </View>
             <View style={{...styles.cardButton, backgroundColor: '#5A5A5A', borderBottomRightRadius: 10}}>
-              <Icon name="check" color="white"/>
+              <Icon name="check" color="white" onPress={accept}/>
             </View>
           </View>
         )}

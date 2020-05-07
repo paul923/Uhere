@@ -120,6 +120,48 @@ router.get('/users/:EventId', function(req, res, next) {
   });
 })
 
+router.post('/accept', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET STATUS = 'ACCEPTED' WHERE UserId = ? AND EventId = ?";
+    var parameters = ['EventUser', req.body.UserId, req.body.EventId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.affectedRows > 0) {
+        res.json({"status": 200, "response": "Accepted Event"});
+      } else {
+        res.json({"status": 204, "response": "Error Occurred during Process"})
+      }
+    });
+  });
+})
+
+router.post('/decline', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET STATUS = 'DECLINED' WHERE UserId = ? AND EventId = ?";
+    var parameters = ['EventUser', req.body.UserId, req.body.EventId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.affectedRows > 0) {
+        res.json({"status": 200, "response": "Declined Event"});
+      } else {
+        res.json({"status": 204, "response": "Error Occurred during Process"})
+      }
+    });
+  });
+})
+
 
 router.post('/', function (req,res) {
   // Connecting to the database.
