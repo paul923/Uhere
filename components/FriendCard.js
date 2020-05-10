@@ -7,6 +7,7 @@ import {Icon, Header, Avatar, ListItem} from 'react-native-elements'
 
 export default class FriendCard extends Component {
   render(){
+    const {...props} = this.props
     return (
         <ListItem
           title={this.props.displayName}

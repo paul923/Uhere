@@ -6,7 +6,11 @@ import { formatDate, formatTime } from "../utils/date";
 import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
 import EventMap from './event/EventMap'
 import SideMenu from 'react-native-side-menu'
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
+import * as Location from 'expo-location';
+import firebase from 'firebase';
 import { getEventByID, getEventMembers } from '../API/EventAPI'
+import socket from 'config/socket';
 
 const Stack = createStackNavigator();
 
@@ -15,29 +19,59 @@ export default function EventDetailScreen({ navigation, route }) {
     const [event, setEvent] = React.useState(null);
     const [initialRoute, setInitialRoute] = React.useState();
     const [showSwitch, setShowSwitch] = React.useState(false);
-    const [isOpen, setOpen] = React.useState(false);
     const [eventMembers, setEventMembers] = React.useState(null);
+    const [locations, setLocations] = React.useState({});
+    const [screen, setScreen] = React.useState("EventDetail");
+
+    const drawer = React.useRef(null);
+
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
-            let wihtinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (event.Reminder * 60000)
-            if (wihtinReminder) {
-                setInitialRoute('EventMap');
+            let withinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (5000 * 60000)
+            withinReminder = true;
+            if (withinReminder) {
+                // setInitialRoute('EventMap');
+                setScreen("EventMap")
                 setShowSwitch(true);
             } else {
-                setInitialRoute('EventDetail');
+                // setInitialRoute('EventDetail');
+                setScreen("EventDetail")
                 setShowSwitch(false);
             }
-            setIsLoading(false);
             let eventMembers = await getEventMembers(route.params.EventId)
             setEventMembers(eventMembers);
+            setIsLoading(false);
         }
         fetchData()
+        loadInitial();
     }, []);
 
+    async function loadInitial() {
+      socket.on('requestPosition', async () => {
+        let location = await Location.getCurrentPositionAsync();
+        let user = firebase.auth().currentUser.uid;
+        let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+        setLocations({...locations, [user]: position});
+        socket.emit('position', {
+            user,
+            position
+        })
+      })
+      socket.on('updatePosition', ({user, position}) => {
+        setLocations((prevLocations) => {
+          return {
+            ...prevLocations,
+            [user]: position
+          }
+        })
+      })
+      socket.emit('requestPosition', {event: route.params.EventId});
+    }
+
     function toggleSideMenu() {
-        setOpen(!isOpen)
+        drawer.current.openDrawer();
     }
 
     function renderFriendsCard({ item }) {
@@ -52,13 +86,11 @@ export default function EventDetailScreen({ navigation, route }) {
         );
     }
     function _handleNavigation() {
-        if (initialRoute == 'EventDetail') {
-            setInitialRoute('EventMap');
-            navigation.navigate('EventMap');
-        } else {
-            setInitialRoute('EventDetail');
-            navigation.navigate('EventDetail');
-        }
+      if (screen == "EventDetail"){
+        setScreen("EventMap")
+      } else {
+        setScreen("EventDetail")
+      }
     }
 
     function menuContent() {
@@ -132,12 +164,14 @@ export default function EventDetailScreen({ navigation, route }) {
     }
 
     return (
-      <SideMenu
-          menu={menuContent()}
-          menuPosition='right'
-          isOpen={isOpen}
-          onChange={toggleSideMenu}
-          bounceBackOnOverdraw={false}
+      <React.Fragment>
+      {isLoading !== true && (
+      <DrawerLayout
+          ref={drawer}
+          renderNavigationView={menuContent}
+          drawerWidth={250}
+          drawerPosition={DrawerLayout.positions.Right}
+          drawerType='front'
       >
           <View style={styles.container}>
               {/* Header */}
@@ -155,15 +189,23 @@ export default function EventDetailScreen({ navigation, route }) {
                   centerContainerStyle={{ flex: 1 }}
                   rightComponent={{ icon: 'menu', color: '#fff', onPress: toggleSideMenu }}
               />
-              <Stack.Navigator initialRouteName={initialRoute} headerMode="none" >
-                  <Stack.Screen
-                      name="EventDetail"
-                      component={EventDetailWithMiniMap}
-                      initialParams={{ EventId: route.params.EventId }}
-                      options={{ gestureEnabled: false }}
-                  />
-                  <Stack.Screen name="EventMap" component={EventMap} initialParams={{ EventId: route.params.EventId }} options={{ gestureEnabled: false }} />
-              </Stack.Navigator>
+              {
+                screen === "EventDetail" && (
+                  <EventDetailWithMiniMap
+                    event={event}
+                    eventMembers={eventMembers}
+                    />
+                )
+              }
+              {
+                screen === "EventMap" && (
+                  <EventMap
+                  event={event}
+                  eventMembers={eventMembers}
+                  locations={locations}
+                    />
+                )
+              }
               {/* Switch */}
               {
                 route.params.EventType === "ON-GOING" && showSwitch && (
@@ -178,7 +220,9 @@ export default function EventDetailScreen({ navigation, route }) {
                 )
               }
           </View>
-      </SideMenu>
+      </DrawerLayout>
+      )}
+      </React.Fragment>
     )
 }
 

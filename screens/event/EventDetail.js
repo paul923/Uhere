@@ -3,19 +3,10 @@ import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Al
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import { formatDate, formatTime } from "../../utils/date";
 import moment from 'moment'
-import { getEventByID, getEventMembers } from '../../API/EventAPI'
 
-export default function EventDetail({ EventId }) {
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [event, setEvent] = React.useState();
-    const [members, setMembers] = React.useState([]);
+export default function EventDetail({ event, eventMembers }) {
     React.useEffect(() => {
         async function fetchData() {
-            let event = await getEventByID(EventId);
-            setEvent(event);
-            let members = await getEventMembers(EventId);
-            setMembers(members)
-            setIsLoading(false);
         }
         fetchData()
     }, []);
@@ -23,7 +14,7 @@ export default function EventDetail({ EventId }) {
     return (
         <View style={styles.container}>
         {
-          !isLoading && (
+          event && (
             <View style={styles.detailContainer}>
                 <View style={styles.row}>
                     <Icon name="location-on" />
@@ -61,20 +52,7 @@ export default function EventDetail({ EventId }) {
                 </View>
                 <View style={styles.row}>
                     <Icon name="person" />
-                    {members !== null && (
-                        members.map((u, i) => {
-                            return (
-                                <View style={styles.avatar} key={i}>
-                                    <Avatar
-                                        rounded
-                                        size='medium'
-                                        source={{uri:u.AvatarURI}}
-                                    />
-                                </View>
-                            )
-                        })
-                    )}
-                    <Text>{members.length + "/" + event.MaxMember }</Text>
+                    <Text>{eventMembers.length + "/" + event.MaxMember }</Text>
                 </View>
             </View>
           )

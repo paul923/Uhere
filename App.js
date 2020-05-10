@@ -7,9 +7,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Constants from "expo-constants";
-
 const { manifest } = Constants;
-
+import firebase from 'firebase';
 import { backend } from './constants/Environment';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
@@ -29,8 +28,10 @@ import { AppearanceProvider } from 'react-native-appearance';
 
 const Stack = createStackNavigator();
 
-import AuthContext from './contexts/AuthContext';
-import LoadingContext from './contexts/LoadingContext';
+import AuthContext from 'contexts/AuthContext';
+import LoadingContext from 'contexts/LoadingContext';
+
+
 
 
 export default function App(props) {

@@ -10,21 +10,16 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-export default function EventDetailWithMiniMap({ route }) {
-    const [isLoading, setIsLoading] = React.useState(true);
-    const [event, setEvent] = React.useState();
+export default function EventDetailWithMiniMap({ event, eventMembers }) {
     React.useEffect(() => {
         async function fetchData() {
-            let event = await getEventByID(route.params.EventId);
-            setEvent(event);
-            setIsLoading(false);
         }
         fetchData()
     }, []);
     return (
         <View style={styles.container}>
             {/* Map */}
-            {!isLoading &&
+            {event &&
             (<MapView
                 style={styles.mapStyle}
                 region={
@@ -48,9 +43,11 @@ export default function EventDetailWithMiniMap({ route }) {
             </MapView>
             )}
             {/* Event Detail */}
-            <View style={styles.detailContainer} >
-                <EventDetail EventId={route.params.EventId} />
-            </View>
+            {event && (
+              <View style={styles.detailContainer} >
+                  <EventDetail event={event} eventMembers={eventMembers} />
+              </View>
+            )}
         </View>
     )
 }

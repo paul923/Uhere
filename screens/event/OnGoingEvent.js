@@ -16,7 +16,7 @@ export default function OnGoingEvent({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       try {
-        let url = `http://${backend}:3000/event/ongoing/${firebase.auth().currentUser.uid}`;
+        let url = `http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`;
         let response = await fetch(url);
         let responseJson = await response.json();
         setEvents(formatEventList(responseJson));

@@ -1,4 +1,5 @@
 import { backend } from '../constants/Environment';
+import _ from 'lodash'
 
 export async function getUserByUsername(Username) {
     try {
@@ -29,48 +30,60 @@ export async function getUserByUid(UserId) {
         return null;
     }
 }
+export async function getFriendsList(UserId) {
+    try{
+        let response = await fetch(`http://${backend}:3000/relationship/${UserId}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+        let json = await response.json();
+        let list = json.response;
+        return list;
+    }catch (error) {
+        console.error(error);
+        return null;
+    }
 
-export async function getUserRelationship(UserId) {
+  }
+
+export async function getUserGroup(UserId) {
     try {
-        let url = `http://${backend}:3000/relationship/${UserId}`;
+        let url = `http://${backend}:3000/user/group/${UserId}`;
         let response = await fetch(url);
         let json = await response.json();
-        let users = json.response;
-        return users;
+        let groups = json.response;
+        let sortedGroups = _(groups).groupBy('GroupId').map(function(items, id) {
+            return {
+              GroupId: id,
+              UserId: _.get(_.find(items, 'UserId'), 'UserId'),
+              GroupName: _.get(_.find(items, 'GroupName'), 'GroupName'),
+              MemberIds: _.map(items, 'MemberId'),
+            }
+        }).value();
+        return sortedGroups;
     } catch (error) {
         console.error(error);
         return null;
     }
 }
-export async function getRelationshipType(uid, userName) {
-    try {
-        let url = `http://${backend}:3000/relationship/type/${uid}-${userName}`;
-        let response = await fetch(url);
-        let json = await response.json();
-        if(json.status === 204){
-            return null;
-        }else {
-            let relationship = json.response[0];
-            return relationship;
-        }
-        return null;
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
-
-export async function addFriend(AddFriend) {
-    let url = `http://${backend}:3000/relationship`;
+export async function postGroup(group, members) {
+    let url = `http://${backend}:3000/user/group`;
     let response = await fetch(url, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({AddFriend}),
+      body: JSON.stringify({
+          group,
+          members: members
+        }),
     });
     let responseJson = await response.json();
     console.log(responseJson.response);
     return responseJson;
 }
+ 

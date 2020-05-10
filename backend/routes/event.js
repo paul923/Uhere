@@ -8,11 +8,47 @@ router.get('/pending/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount FROM Event, EventUser
-    where Event.EventID = EventUser.EventID
-    and EventUser.Status = 'PENDING'
-    and EventUser.UserId = '${req.params.userId}'
-    GROUP BY Event.EventID`
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
+    FROM Event, EventUser
+    where 1=1
+    AND Event.EventID = EventUser.EventID
+    AND EXISTS (
+    	SELECT 1
+        FROM EventUser
+        WHERE 1=1
+        AND Event.EventID = EventUser.EventID
+        and EventUser.Status = 'PENDING'
+        and EventUser.UserId = '${req.params.userId}'
+    )
+    GROUP BY Event.EventId`
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      // If some error occurs, we throw an error.
+      if (error) throw error;
+      // Getting the 'response' from the database and sending it to our route. This is were the data is.
+      res.send(results)
+    });
+  });
+});
+
+// Creating a GET route that returns data from the 'users' table.
+router.get('/accepted/:userId', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
+    FROM Event, EventUser
+    where 1=1
+    AND Event.EventID = EventUser.EventID
+    AND EXISTS (
+    	SELECT 1
+        FROM EventUser
+        WHERE 1=1
+        AND Event.EventID = EventUser.EventID
+        and EventUser.Status != 'PENDING'
+        and EventUser.UserId = '${req.params.userId}'
+    )
+    GROUP BY Event.EventId`
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
@@ -28,11 +64,14 @@ router.get('/ongoing/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount FROM Event, EventUser
-    where Event.EventID = EventUser.EventID
-    and EventUser.Status != 'PENDING'
-    and EventUser.UserId = '${req.params.userId}'
-    GROUP BY Event.EventID;`
+    var sql = `SELECT EventId
+    FROM Event
+    WHERE 1=1
+    AND NOW() Between DATE_SUB(Event.DateTime, INTERVAL 5000 MINUTE) AND Event.DateTime
+    AND EventID IN (
+    	SELECT EventUser.EventID FROM EventUser
+        where EventUser.UserId = '${req.params.userId}'
+    );`
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
@@ -81,6 +120,48 @@ router.get('/users/:EventId', function(req, res, next) {
   });
 })
 
+router.post('/accept', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET STATUS = 'ACCEPTED' WHERE UserId = ? AND EventId = ?";
+    var parameters = ['EventUser', req.body.UserId, req.body.EventId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.affectedRows > 0) {
+        res.json({"status": 200, "response": "Accepted Event"});
+      } else {
+        res.json({"status": 204, "response": "Error Occurred during Process"})
+      }
+    });
+  });
+})
+
+router.post('/decline', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET STATUS = 'DECLINED' WHERE UserId = ? AND EventId = ?";
+    var parameters = ['EventUser', req.body.UserId, req.body.EventId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.affectedRows > 0) {
+        res.json({"status": 200, "response": "Declined Event"});
+      } else {
+        res.json({"status": 204, "response": "Error Occurred during Process"})
+      }
+    });
+  });
+})
+
 
 router.post('/', function (req,res) {
   // Connecting to the database.
@@ -112,7 +193,7 @@ router.post('/', function (req,res) {
             connection.release();
           }
           connection.release();
-          console.log(results);
+
           res.json({"status": 200, "response": "Inserted"});
         })
       }

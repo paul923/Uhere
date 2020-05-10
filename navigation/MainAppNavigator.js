@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { BackHandler } from 'react-native';
 import * as Font from 'expo-font';
+import firebase from 'firebase';
+import socket from 'config/socket';
+import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -46,8 +50,45 @@ function showTab(route) {
 
 }
 
+const LOCATION_TASK_NAME = 'background-location-task';
+
+TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+  if (error) {
+    // Error occurred - check `error.message` for more details.
+    console.log(error.message);
+    return;
+  }
+  console.log(socket.id);
+  if (data) {
+    const { locations } = data;
+    const location = locations[0]
+    if (firebase.auth().currentUser){
+      let user = firebase.auth().currentUser.uid;
+      let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+      socket.emit('position', {
+          user,
+          position
+      })
+      console.log(socket.id + ": " + JSON.stringify(location.coords));
+    }
+  }
+});
+
 export default function MainAppNavigator({ navigation, route }) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
+  React.useEffect(() => {
+    socket.connect();
+    socket.emit('joinLobby', {userId: firebase.auth().currentUser.uid});
+    console.log(socket.id);
+    async function runBackgroundLocationTask() {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.Balanced,
+        timeInterval: 1000,
+        distanceInterval: 0,
+      });
+    }
+    runBackgroundLocationTask();
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {

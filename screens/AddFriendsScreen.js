@@ -5,193 +5,172 @@ import { ScrollView } from 'react-native-gesture-handler';
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
 import Collapse from '../components/Collapse';
+import firebase from 'firebase';
+import { backend } from '../constants/Environment';
 
 
 
-export default class AddFriendsScreen extends Component {
-  state = {
-    searchText: "",
-    data: friendsData,
-    filteredData: [],
-    selectedFriends: [],
-  };
+export default function AddFriendsScreen ({navigation}) {
+  const [ searchText, setSearchText] = React.useState("");
+  const [ friends, setFriends] = React.useState([]);
+  const [ filteredData, setFilteredData] = React.useState([]);
+  const [ selectedFriends, setSelectedFriends] = React.useState([]);
 
-  componentDidMount(){
-    friendsData.sort((a,b) => a.displayName.localeCompare(b.displayName));
-    this.setState({data: friendsData});
-  }
+  // Load any resources or data that we need prior to rendering the app
+  React.useEffect(() => {
+    async function retrieveFriend() {
+      let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      let responseJson = await response.json();
+      responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+      setFriends(responseJson.response);
+    }
 
-  componentDidUpdate(){
-    console.log(this.state.selectedFriends)
-  }
+    retrieveFriend();
+    
+    console.log(selectedFriends)
 
-  search = (searchText) => {
-    this.setState({searchText: searchText});
+  }, []);
 
-    let filteredData = this.state.data.filter(function (item) {
-      return item.displayName.toLowerCase().includes(searchText.toLowerCase()) || item.userId.toLowerCase().includes(searchText.toLowerCase())
+
+  function friendSearch(text) {
+    setSearchText(text);
+
+    let filtered = friends.filter(function (item) {
+      return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
     });
 
-    this.setState({filteredData: filteredData})
+    setFilteredData(filtered)
   }
 
-  selectFriend = item => {
-    if(!this.state.selectedFriends.includes(item)){
-      this.setState({selectedFriends: [...this.state.selectedFriends, item]})
-    } else {
-      this.setState({selectedFriends: this.state.selectedFriends.filter(a => a !== item)});
-    }
-  }
-
-
-
-
-  renderFriendsCard = ({ item }) => (
+  function renderFriendsCard({ item }){
+    return (
     <FriendCard
-      avatarUrl= {item.pictureUrl}
-      avatarTitle= {item.userInitial}
-      displayName = {item.displayName}
-      userId = {item.userId}
+      avatarUrl= {item.AvatarURI}
+      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      displayName = {item.Nickname}
+      userId = {item.Username}
       checkBox={{
         size: 35,
         checkedIcon: 'dot-circle-o',
         uncheckedIcon: 'circle-o',
         checkedColor:'#ff8a8a',
         uncheckedColor: '#ff8a8a',
-        checked: this.state.selectedFriends.includes(item),
-        onPress: () => this.selectFriend(item)
+        checked: selectedFriends.includes(item),
+        onPress: () => selectFriend(item)
       }}
     />
-  )
-
-  renderFriendsTile = ({ item }) => (
-    <FriendTile
-      avatarUrl= {item.pictureUrl}
-      avatarTitle= {item.userInitial}
-      displayName = {item.displayName}
-      userId = {item.userId}
-      pressMinus = {() => this.selectFriend(item)}
-    />
-  )
-
-  render(){
-    return (
-      <View style={styles.container}>
-        <Header
-          leftComponent={
-            <Icon
-              name="arrow-left"
-              type="entypo"
-              color= "white"
-              size={30}
-              underlayColor= "transparent"
-              onPress={()=> this.props.navigation.goBack()}
-            />
-          }
-        />
-        <View style={{
-          width: "100%",
-          minHeight: 100,
-          backgroundColor: "#E1E1E1"
-        }}>
-          <FlatList
-            data={this.state.selectedFriends}
-            renderItem={this.renderFriendsTile}
-            contentContainerStyle={{
-              padding: 5,
-            }}
-            keyExtractor={(item) => item.userId}
-            horizontal
-            bounces = {false}
-          />
-        </View>
-
-
-        <SearchBar
-          round={true}
-          lightTheme={true}
-          placeholder="Search..."
-          autoCapitalize='none'
-          autoCorrect={false}
-          onChangeText={this.search}
-          value={this.state.searchText}
-          containerStyle={{
-            backgroundColor:"white",
-            margin: 10,
-            borderColor: "#C4C4C4",
-            borderWidth: 1,
-            borderRadius: 10,
-            padding: 3
-          }}
-          inputContainerStyle={{
-            backgroundColor:"white"
-          }}
-          inputStyle={{
-            backgroundColor:"white"
-          }}
-          leftIconContainerStyle={{
-            backgroundColor:"white"
-          }}
-          rightIconContainerStyle={{
-            backgroundColor:"white"
-          }}
-        />
-        
-        <FlatList
-          data={this.state.filteredData && this.state.filteredData.length > 0 ? this.state.filteredData : (this.state.searchText.length === 0 && this.state.data)}
-          renderItem={this.renderFriendsCard}
-          keyExtractor={(item) => item.userId}
-          contentContainerStyle={{
-            paddingLeft: 20,
-            paddingRight: 20,
-            backgroundColor: "white"
-          }}
-          bounces={false}
-        />
-      </View>
-    );
+    )
   }
 
+  function renderFriendsTile({ item }){
+    return (
+    <FriendTile
+      avatarUrl= {item.AvatarURI}
+      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      displayName = {item.Nickname}
+      userId = {item.Username}
+      pressMinus = {() => selectFriend(item)}
+    />
+  )}
+
+  function selectFriend (item) {
+    if(!selectedFriends.includes(item)){
+      setSelectedFriends([...selectedFriends, item])
+    } else {
+      setSelectedFriends(selectedFriends.filter(a => a !== item));
+    }
+    console.log(selectedFriends)
+  }
+
+  return (
+    <View style={styles.container}>
+      <Header
+        leftComponent={
+          <Icon
+            name="arrow-left"
+            type="entypo"
+            color= "white"
+            size={30}
+            underlayColor= "transparent"
+            onPress={()=> navigation.goBack()}
+          />
+        }
+        rightComponent={
+          <TouchableOpacity onPress={()=> navigation.navigate('Create Group', {selectedFriends: selectedFriends})}>
+            <Text style={{color: 'white', marginHorizontal: 5}}>OK</Text>
+          </TouchableOpacity>
+        }
+      />
+      <View style={{
+        width: "100%",
+        minHeight: 100,
+        backgroundColor: "#E1E1E1"
+      }}>
+        <FlatList
+          data={selectedFriends}
+          renderItem={renderFriendsTile}
+          contentContainerStyle={{
+            padding: 10,
+          }}
+          keyExtractor={(item) => item.UserId}
+          horizontal
+          bounces = {false}
+        />
+      </View>
+
+
+      <SearchBar
+        round={true}
+        lightTheme={true}
+        placeholder="Search..."
+        autoCapitalize='none'
+        autoCorrect={false}
+        onChangeText={friendSearch}
+        value={searchText}
+        containerStyle={{
+          backgroundColor:"white",
+          margin: 10,
+          borderColor: "#C4C4C4",
+          borderWidth: 1,
+          borderRadius: 10,
+          padding: 3
+        }}
+        inputContainerStyle={{
+          backgroundColor:"white"
+        }}
+        inputStyle={{
+          backgroundColor:"white"
+        }}
+        leftIconContainerStyle={{
+          backgroundColor:"white"
+        }}
+        rightIconContainerStyle={{
+          backgroundColor:"white"
+        }}
+      />
+      
+      <FlatList
+        data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
+        renderItem={renderFriendsCard}
+        keyExtractor={(item) => item.userId}
+        contentContainerStyle={{
+          paddingLeft: 20,
+          paddingRight: 20,
+          backgroundColor: "white"
+        }}
+        bounces={false}
+      />
+    </View>
+  );
 }
 
-const friendsData = [
-  {
-    displayName: "Justin Choi",
-    userId : "Crescent1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "Paul Kim",
-    userId : "pk1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "Jay Suhr",
-    userId : "js1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "Matthew Kim",
-    userId : "mk1234",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "JYP",
-    userId : "andWondergirls",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-  {
-    displayName: "You Hee Yeol",
-    userId : "uhere",
-    pictureUrl : "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-    userInitial : "",
-  },
-]
+
 
 
 
