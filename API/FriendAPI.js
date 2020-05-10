@@ -69,6 +69,48 @@ export async function getUserGroup(UserId) {
         return null;
     }
 }
+export async function getUserRelationship(UserId) {
+    try {
+        let url = `http://${backend}:3000/relationship/${UserId}`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let users = json.response;
+        console.log(users)
+        return users;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getRelationshipType(uid, userName) {
+    try {
+        let url = `http://${backend}:3000/relationship/type/${uid}-${userName}`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let relationship = json.response[0];
+        return relationship;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+export async function addFriend(AddFriend) {
+    let url = `http://${backend}:3000/relationship`;
+    let response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({AddFriend}),
+    });
+    let responseJson = await response.json();
+    console.log(responseJson.response);
+    return responseJson;
+}
+
+
 export async function postGroup(group, members) {
     let url = `http://${backend}:3000/user/group`;
     let response = await fetch(url, {
@@ -86,4 +128,3 @@ export async function postGroup(group, members) {
     console.log(responseJson.response);
     return responseJson;
 }
- 
