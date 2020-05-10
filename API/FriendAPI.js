@@ -6,8 +6,13 @@ export async function getUserByUsername(Username) {
         let url = `http://${backend}:3000/user/username/${Username}`;
         let response = await fetch(url);
         let json = await response.json();
-        let user = json.response[0];
-        return user;
+        if(json.status === 204){
+            return null;
+        }else {
+            let user = json.response[0];
+            return user;
+        }
+        return null;
     } catch (error) {
         console.error(error);
         return null;
@@ -82,4 +87,3 @@ export async function postGroup(group, members) {
     return responseJson;
 }
  
-

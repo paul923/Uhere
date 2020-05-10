@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 
-import { getUserByUsername, getUserByUid } from '../API/FriendAPI'
+import { getUserByUsername, getUserByUid, addFriend, getUserRelationship, getRelationshipType } from '../API/FriendAPI'
 
 import firebase from 'firebase';
 
@@ -10,9 +10,10 @@ import firebase from 'firebase';
 
 export default function AddFriendByIdScreen({ navigation, route }) {
 
-  const [searchId, setSearchId] = React.useState("");
-  const [currentUserId, setCurrentUserId] = React.useState("");
-  const [resultUserId, setResultUserId] = React.useState("");
+  const [searchUsername, setSearchUsername] = React.useState("");
+  const [currentUser, setCurrentUser] = React.useState(null);
+  const [resultUser, setResultUser] = React.useState(null);
+  const [searchButtonClicked, setSearchButtonClicked] = React.useState(false);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -21,14 +22,26 @@ export default function AddFriendByIdScreen({ navigation, route }) {
 
 
   async function searchUserByUsername() {
-    let resultUser = await getUserByUsername(searchId);
-    setResultUserId(resultUser.Nickname)
-  }
+    let resultUser = await getRelationshipType(firebase.auth().currentUser.uid, searchUsername);
+    setResultUser(resultUser); 
+    setSearchButtonClicked(true);
+  };
+
 
   async function fetchCurrentUser() {
-    let resultUser = await getUserByUid(firebase.auth().currentUser.uid);
-    setCurrentUserId(resultUser.Username)
+    let user = await getUserByUid(firebase.auth().currentUser.uid);
+    setCurrentUser(user);
   }
+
+  async function addSearchedFriend() {
+    let userRelationship= {
+      UserId1 : currentUser.UserId,
+      UserId2 : resultUser.UserId,
+      Type : "Friend"
+    }
+    await addFriend(userRelationship);
+  }
+
 
   return (
     <View style={styles.container}>
@@ -44,7 +57,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
           />
         }
         containerStyle={{zIndex:200}}
-        centerComponent={{ text: 'FRIENDS', style: { color: '#fff', fontSize: 20 } }}
+        centerComponent={{ text: 'Add Friend', style: { color: '#fff', fontSize: 20 } }}
         statusBarProps={{translucent: true}}
       />
       <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
@@ -53,8 +66,8 @@ export default function AddFriendByIdScreen({ navigation, route }) {
             <Text>User ID</Text>
             <TextInput
               style={{borderBottomWidth: 1, height: 30, color: 'black'}}
-              value={searchId}
-              onChangeText={(text)=> setSearchId(text)}
+              value={searchUsername}
+              onChangeText={(text)=> setSearchUsername(text)}
               onSubmitEditing={searchUserByUsername}
             />
           </View>
@@ -63,11 +76,23 @@ export default function AddFriendByIdScreen({ navigation, route }) {
             onPress={searchUserByUsername}
           />
           <View style={styles.searchResultContainer}>
-            <Text>Search Result (User Nickname): {resultUserId}</Text>
+            <Text>Search Result: </Text>
+            
+            {resultUser !== null ? 
+            (<View>
+              <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
+              <Button
+                title={resultUser.Type === "Friend" ? 'Already a Friend' : 'Add'}
+                onPress={addSearchedFriend}
+                disabled={resultUser.Type === "Friend" && true}
+              />
+            </View>) 
+            : searchButtonClicked && (<View><Text style={{fontSize: 20, fontWeight: 'bold'}}>User not found</Text></View>)
+            }
           </View>
           <View style={styles.myIdContainer}>
             <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 18}}>My ID</Text>
-            <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 15}}>{currentUserId}</Text>
+            <Text style={{marginHorizontal: 5, fontWeight: 'bold', fontSize: 15}}>{currentUser && currentUser.Username}</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
