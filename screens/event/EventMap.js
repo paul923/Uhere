@@ -21,23 +21,6 @@ export default function EventMap({ event, eventMembers, locations }) {
         async function fetchData() {
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-            // let initialMemberLocations = []; 
-            // Object.keys(locations).map((key) => {
-            //     const member = eventMembers.find(m => m.UserId === key);
-            //     const latitude = locations[key].latitude;
-            //     const longitude = locations[key].longitude;
-            //     const memberLocation = {
-            //         member: member,
-            //         location: new AnimatedRegion({
-            //             latitude: latitude,
-            //             longitude: longitude,
-            //             latitudeDelta: LATITUDE_DELTA_MAP,
-            //             longitudeDelta: LONGITUDE_DELTA_MAP,
-            //         })
-            //     }
-            //     initialMemberLocations.push(memberLocation);
-            // })
-            // setMemberLocations(initialMemberLocations);
             setMapRegion(region);
             setIsLoading(false);
         }
@@ -87,8 +70,10 @@ export default function EventMap({ event, eventMembers, locations }) {
         coordinates.push({ latitude: event.LocationGeolat, longitude: event.LocationGeolong });
         // eventMembers' locations
         Object.keys(locations).map((key) => {
-            let coordinate = { latitude: locations[key].latitude, longitude: locations[key].longitude }
-            coordinates.push(coordinate);
+            if (key !== firebase.auth().currentUser.uid) {
+                let coordinate = { latitude: locations[key].latitude, longitude: locations[key].longitude }
+                coordinates.push(coordinate);
+            }
         })
         mapRef.current.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
     }
@@ -129,6 +114,7 @@ export default function EventMap({ event, eventMembers, locations }) {
                                         <MapView.Marker.Animated
                                             key={memberLocation.member.UserId}
                                             pinColor={memberLocation.member.AvatarColor}
+                                            title={memberLocation.member.Nickname}
                                             coordinate={memberLocation.location}
                                         />
                                     )
