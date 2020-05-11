@@ -71,7 +71,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
           user,
           position
       })
-      console.log(user + ": " + JSON.stringify(position));
+      //console.log(user + ": " + JSON.stringify(position));
     }
   }
 });
