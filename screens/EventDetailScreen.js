@@ -191,6 +191,7 @@ export default function EventDetailScreen({ navigation, route }) {
                   <EventDetailWithMiniMap
                     event={event}
                     eventMembers={eventMembers}
+                    onPress={toggleSideMenu}
                     />
                 )
               }

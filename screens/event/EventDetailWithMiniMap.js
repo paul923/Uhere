@@ -10,7 +10,7 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-export default function EventDetailWithMiniMap({ event, eventMembers }) {
+export default function EventDetailWithMiniMap({ event, eventMembers, onPress }) {
     React.useEffect(() => {
         async function fetchData() {
         }
@@ -45,7 +45,7 @@ export default function EventDetailWithMiniMap({ event, eventMembers }) {
             {/* Event Detail */}
             {event && (
               <View style={styles.detailContainer} >
-                  <EventDetail event={event} eventMembers={eventMembers} />
+                  <EventDetail event={event} eventMembers={eventMembers} onPress={onPress} />
               </View>
             )}
         </View>

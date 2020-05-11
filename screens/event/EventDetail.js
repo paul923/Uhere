@@ -4,7 +4,7 @@ import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import { formatDate, formatTime } from "../../utils/date";
 import moment from 'moment'
 
-export default function EventDetail({ event, eventMembers }) {
+export default function EventDetail({ event, eventMembers, onPress }) {
     React.useEffect(() => {
         async function fetchData() {
         }
@@ -53,7 +53,7 @@ export default function EventDetail({ event, eventMembers }) {
                         <View style={styles.row}>
                             <Icon name="person" />
                             <View style={styles.column}>
-                                <Text>{eventMembers.length + "/" + event.MaxMember}</Text>
+                                <Text onPress={onPress}>{eventMembers.length + "/" + event.MaxMember}</Text>
                             </View>
                         </View>
                     </View>
