@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, Dimensions } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
+import firebase from 'firebase';
 import Timer from '../../components/Timer'
 
 const SCREEN = Dimensions.get('window');
@@ -10,35 +11,15 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA_MAP = 0.0922;
 const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
-const testEventMembers = [
-    {
-        name: 'Matthew Kim',
-        initial: 'MK',
-        color: '#fc0f03',
-        location: { latitude: 49.3049901, longitude: -122.8332702 },
-    },
-    {
-        name: 'Paul Kim',
-        initial: 'PK',
-        color: '#0362fc',
-        location: { latitude: 49.2620402, longitude: -122.8763948 },
-    },
-    {
-        name: 'Justin Choi',
-        initial: 'JC',
-        color: '#fcba03',
-        location: { latitude: 49.2509886, longitude: -122.8920569 },
-    },
-]
-
 export default function EventMap({ event, eventMembers, locations }) {
     const [isLoading, setIsLoading ] = React.useState(true);
     const [mapRegion, setMapRegion] = React.useState();
     const mapRef = React.useRef();
 
     React.useEffect(() => {
-        console.log("Locations")
-        console.log(locations)
+        //console.log("Locations")
+        //console.log(locations)
+        //console.log(eventMembers)
         async function fetchData() {
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
@@ -62,7 +43,10 @@ export default function EventMap({ event, eventMembers, locations }) {
         // meeting location
         coordinates.push({ latitude: event.LocationGeolat, longitude: event.LocationGeolong });
         // eventMembers' locations
-        testEventMembers.map((u) => coordinates.push(u.location))
+        Object.keys(locations).map((key) => {
+            let coordinate = { latitude: locations[key].latitude, longitude: locations[key].longitude }
+            coordinates.push(coordinate);   
+        })
         mapRef.current.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
     }
 
@@ -81,7 +65,7 @@ export default function EventMap({ event, eventMembers, locations }) {
                   showsUserLocation={true}
                   showsMyLocationButton={false}
                   // region : which section of the map to render/zoom
-                  region={mapRegion}
+                  initialRegion={mapRegion}
               >
                   {/* Meeting Location Circle */}
                   <MapView.Circle
@@ -96,19 +80,22 @@ export default function EventMap({ event, eventMembers, locations }) {
                   />
                   {/* Member Markers */}
                   {
-                      Object.keys(locations).map((key) => {
-                          return (
-                              <MapView.Marker
-                                  key={key}
-                                  pinColor={"black"}
-                                  coordinate={
-                                      {
-                                          latitude: locations[key].latitude,
-                                          longitude: locations[key].longitude,
-                                      }
-                                  }
-                              />
-                          )
+                    Object.keys(locations).map((key) => {
+                        const member = eventMembers.find(m => m.UserId === key);
+                        if (key !== firebase.auth().currentUser.uid) {
+                            return (
+                                <MapView.Marker
+                                    key={key}
+                                    pinColor={member.AvatarColor}
+                                    coordinate={
+                                        {
+                                            latitude: locations[key].latitude,
+                                            longitude: locations[key].longitude,
+                                        }
+                                    }
+                                />
+                            )
+                        }
                       })
                   }
               </MapView>
@@ -146,19 +133,22 @@ export default function EventMap({ event, eventMembers, locations }) {
                       </View>
                       {/* eventMembers */}
                       {
-                          testEventMembers.map((u, i) => {
-                              let memberRegion = { latitude: u.location.latitude, longitude: u.location.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-                              return (
-                                  <View style={styles.avatar} key={i}>
-                                      <Avatar
-                                          rounded
-                                          size='medium'
-                                          title={u.initial}
-                                          onPress={() => mapRef.current.animateToRegion(memberRegion)}
-                                      />
-                                  </View>
-                              )
-                          })
+                        Object.keys(locations).map((key) => {
+                            const member = eventMembers.find(m => m.UserId === key);
+                            if (key !== firebase.auth().currentUser.uid) {
+                                let memberRegion = { latitude: locations[key].latitude, longitude: locations[key].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+                                return (
+                                    <View style={styles.avatar} key={key}>
+                                        <Avatar
+                                            rounded
+                                            size='medium'
+                                            title={member.Nickname.substring(0, 2)}
+                                            onPress={() => mapRef.current.animateToRegion(memberRegion)}
+                                        />
+                                    </View>
+                                )
+                            }
+                        })
                       }
                   </ScrollView>
               </View>

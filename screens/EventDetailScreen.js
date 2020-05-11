@@ -27,7 +27,7 @@ export default function EventDetailScreen({ navigation, route }) {
             let event = await getEventByID(route.params.EventId);
             setEvent(event);
             let withinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (5000 * 60000)
-            withinReminder = true;
+            //withinReminder = true;
             if (withinReminder) {
                 // setInitialRoute('EventMap');
                 setScreen("EventMap")

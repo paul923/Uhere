@@ -13,50 +13,52 @@ export default function EventDetail({ event, eventMembers }) {
 
     return (
         <View style={styles.container}>
-        {
-          event && (
-            <View style={styles.detailContainer}>
-                <View style={styles.row}>
-                    <Icon name="location-on" />
-                    {
-                      event.IsOnline ? (
-                        <View style={styles.column}>
-                            <Text h5>Online Meeting</Text>
+            {
+                event && (
+                    <View style={styles.detailContainer}>
+                        <View style={styles.row}>
+                            <Icon name="location-on" />
+                            {
+                                event.IsOnline ? (
+                                    <View style={styles.column}>
+                                        <Text h5>Online Meeting</Text>
+                                    </View>
+                                ) : (
+                                        <View style={styles.column}>
+                                            <Text h5>{event.LocationName}</Text>
+                                            <Text h5>{event.LocationAddress}</Text>
+                                        </View>
+                                    )
+                            }
                         </View>
-                      ) : (
-                        <View style={styles.column}>
-                            <Text h5>{event.LocationName}</Text>
-                            <Text h5>{event.LocationAddress}</Text>
+                        <View style={styles.row}>
+                            <Icon name="event" />
+                            <View style={styles.column}>
+                                <Text h5>{formatDate(new Date(event.DateTime)) + ", " + formatTime(new Date(event.DateTime))}</Text>
+                                <Text h5>{moment(new Date(event.DateTime)).fromNow()}</Text>
+                            </View>
                         </View>
-                      )
-                    }
-                </View>
-                <View style={styles.row}>
-                    <Icon name="event" />
-                    <View style={styles.column}>
-                        <Text h5>{formatDate(new Date(event.DateTime)) + ", " + formatTime(new Date(event.DateTime))}</Text>
-                        <Text h5>{moment(new Date(event.DateTime)).fromNow()}</Text>
+                        <View style={styles.row}>
+                            <Icon name="keyboard-voice" />
+                            <View style={styles.column}>
+                                <Text h5>{event.Description}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.row}>
+                            <Icon name="remove-circle" />
+                            <View style={styles.column}>
+                                <Text>Losers buy {event.Penalty}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.row}>
+                            <Icon name="person" />
+                            <View style={styles.column}>
+                                <Text>{eventMembers.length + "/" + event.MaxMember}</Text>
+                            </View>
+                        </View>
                     </View>
-                </View>
-                <View style={styles.row}>
-                    <Icon name="keyboard-voice" />
-                    <View style={styles.column}>
-                        <Text h5>{event.Description}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <Icon name="remove-circle" />
-                    <View style={styles.column}>
-                        <Text>Losers buy {event.Penalty}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <Icon name="person" />
-                    <Text>{eventMembers.length + "/" + event.MaxMember }</Text>
-                </View>
-            </View>
-          )
-        }
+                )
+            }
         </View>
     )
 }
