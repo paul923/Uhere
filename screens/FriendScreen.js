@@ -19,9 +19,7 @@ export default function FriendScreen({navigation}) {
   const [ groups, setGroups] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
   const [ dropDownToggle, setDropDownToggle] = React.useState(false);
-  const [ modalVisible, setModalVisible] = React.useState(false);
   const [ groupMembers, setGroupMembers] = React.useState([]);
-  const [ pressedGroupName, setPressedGroupName] = React.useState('');
 
   const isFocused = useIsFocused();
 
@@ -78,11 +76,9 @@ export default function FriendScreen({navigation}) {
     console.log(`Remove Friend Id ${friendId}`);
   }
 
-  function getGroupMembers(group){
-    setModalVisible(true);
-    setPressedGroupName(group.GroupName);
+  function groupDetail(group){
     let members = friends.filter(friend => group.MemberIds.includes(friend.UserId))
-    setGroupMembers(members)
+    navigation.navigate('Create Group', {selectedFriends: members, group: group, editMode: true})
   }
 
   function pressDropDownItem(destination){
@@ -209,11 +205,12 @@ export default function FriendScreen({navigation}) {
          /**
           * Group section */ 
         }
-        {
+        { groups &&
           groups.map(group=> 
-            <TouchableOpacity onPress={()=> getGroupMembers(group)}>
+            <TouchableOpacity 
+              key={group.GroupId} 
+              onPress={()=> groupDetail(group)}>
               <View 
-                key={group.GroupId}
                 style={{
                   margin: 5,
                   padding: 10,
@@ -225,29 +222,6 @@ export default function FriendScreen({navigation}) {
             </TouchableOpacity>
           )
         }
-
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(false)
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={{fontWeight: 'bold', fontSize: 20, marginVertical: 10}}>{pressedGroupName}</Text>
-              {
-                groupMembers.map(member=> <Text key={member.UserId}>{member.Nickname}</Text>)
-              }
-              <Button
-                title="Close"
-                onPress={()=> setModalVisible(!modalVisible)}
-              />
-            </View>
-          </View>
-        </Modal>
-
 
         <FlatList
           data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}

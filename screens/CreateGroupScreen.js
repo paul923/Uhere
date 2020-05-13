@@ -3,19 +3,22 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import { postGroup } from '../API/FriendAPI'
+import { postGroup, updateGroup } from '../API/FriendAPI'
 import firebase from 'firebase';
 
 
 
 export default function CreateGroupScreen({ navigation, route }) {
-  const [groupName, setGroupName] = React.useState("");
+  const [userGroup, setUserGroup] = React.useState(null);
+  const [groupName, setGroupName] = React.useState(route.params ? route.params.group.GroupName : "");
   const [selectedFriends, setSelectedFriends] = React.useState(null);
+  const [editMode, setEditMode] = React.useState(false);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    route.params && setUserGroup(route.params.group);
     route.params && setSelectedFriends(route.params.selectedFriends);
-    route.params && console.log('route is',route.params.selectedFriends);
+    route.params && setEditMode(route.params.editMode);
   });
 
   async function createGroup(){
@@ -27,7 +30,18 @@ export default function CreateGroupScreen({ navigation, route }) {
     if(response){
       navigation.goBack()
     }
+  }
 
+  async function editGroup(){
+    let group = {
+      UserId : firebase.auth().currentUser.uid,
+      GroupId : userGroup.GroupId,
+      GroupName : groupName
+    }
+    let response = await updateGroup(group, selectedFriends);
+    if(response){
+      navigation.goBack()
+    }
   }
 
   function renderFriendsCard({ item }){
@@ -56,11 +70,13 @@ export default function CreateGroupScreen({ navigation, route }) {
           />
         }
         rightComponent={
-          <TouchableOpacity onPress={() => createGroup()}>
-            <Text style={{color: 'white'}}>Done</Text>
+          <TouchableOpacity 
+            disabled = { groupName.length !== 0 ? false : true}
+            onPress={() => !editMode ? createGroup() : editGroup()}>
+            <Text style={{color:  groupName.length !== 0 ? 'white' : 'black'}}>Done</Text>
           </TouchableOpacity>
         }
-        centerComponent={{ text: 'Create Group', style: { color: '#fff', fontSize: 20 } }}
+        centerComponent={{ text: !editMode ? 'Create Group' : 'Edit Group', style: { color: '#fff', fontSize: 20 } }}
         containerStyle={{zIndex:200}}
         statusBarProps={{translucent: true}}
       />
@@ -76,7 +92,7 @@ export default function CreateGroupScreen({ navigation, route }) {
         <View style={styles.addFriendsContainer}>
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}
-          <TouchableOpacity onPress={()=> navigation.navigate('Add Friend List')}>
+          <TouchableOpacity onPress={()=> {navigation.navigate('Add Friend List', {selectedFriends: selectedFriends}); console.log(selectedFriends)}}>
             <View style={styles.addButton}>
               <Icon
                 name="plus"

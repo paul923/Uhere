@@ -10,11 +10,11 @@ import { backend } from '../constants/Environment';
 
 
 
-export default function AddFriendsScreen ({navigation}) {
+export default function AddFriendsScreen ({route, navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
-  const [ selectedFriends, setSelectedFriends] = React.useState([]);
+  const [ selectedFriends, setSelectedFriends] = React.useState(route.params && route.params.selectedFriends);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -32,8 +32,6 @@ export default function AddFriendsScreen ({navigation}) {
     }
 
     retrieveFriend();
-    
-    console.log(selectedFriends)
 
   }, []);
 
@@ -61,7 +59,7 @@ export default function AddFriendsScreen ({navigation}) {
         uncheckedIcon: 'circle-o',
         checkedColor:'#ff8a8a',
         uncheckedColor: '#ff8a8a',
-        checked: selectedFriends.includes(item),
+        checked: selectedFriends.some(i => i.UserId === item.UserId),
         onPress: () => selectFriend(item)
       }}
     />

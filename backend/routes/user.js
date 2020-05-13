@@ -63,28 +63,24 @@ router.get('/group/:userId', function(req, res, next) {
     });
   });
 })
-router.post('/', function (req,res) {
-  // Connecting to the database.
+router.put('/group/', function(req, res, next) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var user = req.body.user;
-    var sql = "INSERT INTO ?? SET ?";
-    var parameters = ['User'];
-    sql = mysql.format(sql, parameters);
+    var sql = "UPDATE UserGroup SET ? WHERE GroupId = ?";
+    var data = [req.body.group, req.body.groupId];
     // Executing the MySQL query (select all data from the 'users' table).
-    connection.query(sql, user, function (error, results, fields) {
-      if (error) {
+    connection.query(sql,data, function (error, results, fields) {
+      connection.release();
+      if(error){
         throw error;
         connection.release();
       }
-      if (results.affectedRows > 0) {
-        connection.release();
-        res.json({"status": 200, "response": "Registered"});
-      }
+      connection.release();
+      console.log(results);
+      res.json({"status": 200, "response": "updated"});
     });
   });
 })
-
 router.post('/group/', function (req,res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
@@ -113,5 +109,28 @@ router.post('/group/', function (req,res) {
     });
   });
 })
+router.post('/', function (req,res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var user = req.body.user;
+    var sql = "INSERT INTO ?? SET ?";
+    var parameters = ['User'];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, user, function (error, results, fields) {
+      if (error) {
+        throw error;
+        connection.release();
+      }
+      if (results.affectedRows > 0) {
+        connection.release();
+        res.json({"status": 200, "response": "Registered"});
+      }
+    });
+  });
+})
+
+
 
 module.exports = router;
