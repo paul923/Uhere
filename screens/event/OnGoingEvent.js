@@ -23,10 +23,7 @@ export default function OnGoingEvent({ navigation, route }) {
           const value = await AsyncStorage.getItem('ongoingeventfilter');
           if (value !== null) {
             // We have data!!
-            let filterDate = new Date(JSON.parse(value).date);
-            let filterFriends = JSON.parse(value).friends;
-            console.log(filterDate);
-            console.log(filterFriends);
+            console.log(value);
           }
         } catch (error) {
           // Error retrieving data

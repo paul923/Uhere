@@ -4,8 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { ListItem, Icon } from 'react-native-elements';
 import Collapsible from 'react-native-collapsible';
 
-export default function Collapse({title, content}) {
-  const [ isCollapsed, setIsCollapsed ] = React.useState(false);
+export default function Collapse({title, collapsed, content}) {
+  const [ isCollapsed, setIsCollapsed ] = React.useState(collapsed);
   return (
     <View>
       <ListItem

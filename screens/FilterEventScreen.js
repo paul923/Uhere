@@ -5,7 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
-import { Image, Button, Text, Input, Icon, Divider, Header, SearchBar } from 'react-native-elements';
+import { Image, Button, Text, Input, Icon, CheckBox , Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
@@ -21,10 +21,18 @@ import penaltyImage from '../assets/images/robot-dev.png';
 export default function FilterEventScreen({ navigation }) {
 
   const [date, setDate] = React.useState(new Date());
+  
   const [friends, setFriends] = React.useState([]);
-  const [searchText, setSearchText] = React.useState("");
-  const [filteredData, setFilteredData] = React.useState([]);
+  const [searchFriendText, setSearchFriendText] = React.useState("");
+  const [searchedFriends, setSearchedFriends] = React.useState([]);
   const [selectedFriends, setSelectedFriends] = React.useState([]);
+  
+  const [locations, setLocations] = React.useState([]);
+  const [searchLocationText, setSearchLocationText] = React.useState("");
+  const [searchedLocations, setSearchedLocations] = React.useState([]);
+  const [selectedLocations, setSeletedLocations] = React.useState([]);
+
+
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -39,6 +47,16 @@ export default function FilterEventScreen({ navigation }) {
       let responseJson = await response.json();
       responseJson.response.sort((a, b) => a.Nickname.localeCompare(b.Nickname));
       setFriends(responseJson.response);
+
+      let eventResponse = await fetch(`http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`);
+      let eventJson = await eventResponse.json();
+      let arry = [];
+      eventJson.forEach(event => {
+        if (locations.filter(location => location === event.LocationName).length == 0) {
+          arry.push(event.LocationName);
+        }
+      });
+      setLocations(arry);
     }
     retrieveFriends();
     _retrieveFilter();
@@ -46,11 +64,19 @@ export default function FilterEventScreen({ navigation }) {
 
 
   function friendSearch(text) {
-    setSearchText(text);
+    setSearchFriendText(text);
     let filtered = friends.filter(function (item) {
       return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
     });
-    setFilteredData(filtered)
+    setSearchedFriends(filtered)
+  }
+
+  function locationSearch(text) {
+    setSearchLocationText(text);
+    let filtered = locations.filter(function (item) {
+      return item.toLowerCase().includes(text.toLowerCase())
+    });
+    setSearchedLocations(filtered)
   }
 
   function selectFriend(item) {
@@ -58,6 +84,14 @@ export default function FilterEventScreen({ navigation }) {
       setSelectedFriends([...selectedFriends, item])
     } else {
       setSelectedFriends(selectedFriends.filter(a => a.UserId !== item.UserId));
+    }
+  }
+
+  function selectLocation(item) {
+    if (selectedLocations.filter(location => location === item).length == 0) {
+      setSeletedLocations([...selectedLocations, item])
+    } else {
+      setSeletedLocations(selectedLocations.filter(a => a !== item));
     }
   }
 
@@ -81,15 +115,33 @@ export default function FilterEventScreen({ navigation }) {
     )
   }
 
+  function renderLocations({ item }) {
+    return (
+      <CheckBox
+        right  
+        iconRight
+        title={item}
+        checkedIcon='dot-circle-o'
+        uncheckedIcon='circle-o'  
+        bottomDivider
+        checked={selectedLocations.filter(location => location === item).length > 0}
+        onPress={() => selectLocation(item)}
+      />
+    )
+  }
+
   function applyFilter() {
     _storeData()
   }
 
   async function _storeData() {
+    
     let filter = {
       date: date,
       friends: selectedFriends,
+      locations: selectedLocations,
     }
+    console.log(filter);
     try {
       await AsyncStorage.setItem('ongoingeventfilter', JSON.stringify(filter));
     } catch (error) {
@@ -101,9 +153,9 @@ export default function FilterEventScreen({ navigation }) {
     try {
       const value = await AsyncStorage.getItem('ongoingeventfilter');
       if (value !== null) {
-        // We have data!!
         setDate(new Date(JSON.parse(value).date));
         setSelectedFriends(JSON.parse(value).friends);
+        setSeletedLocations(JSON.parse(value).locations);
       }
     } catch (error) {
       // Error retrieving data
@@ -125,6 +177,7 @@ export default function FilterEventScreen({ navigation }) {
       />
       <Collapse
         title="Date"
+        collapsed={true}
         content={
           <View>
             <DateTimePicker
@@ -139,6 +192,7 @@ export default function FilterEventScreen({ navigation }) {
       />
       <Collapse
         title="Friends"
+        collapsed={true}
         content={
           <View>
             <SearchBar
@@ -148,7 +202,7 @@ export default function FilterEventScreen({ navigation }) {
               autoCapitalize='none'
               autoCorrect={false}
               onChangeText={friendSearch}
-              value={searchText}
+              value={searchFriendText}
               containerStyle={{
                 backgroundColor: "white",
                 margin: 10,
@@ -171,7 +225,7 @@ export default function FilterEventScreen({ navigation }) {
               }}
             />
             <FlatList
-              data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
+              data={searchedFriends && searchedFriends.length > 0 ? searchedFriends : (searchFriendText.length === 0 && friends)}
               renderItem={renderFriendsCard}
               keyExtractor={(item) => item.UserId}
               contentContainerStyle={{
@@ -184,11 +238,47 @@ export default function FilterEventScreen({ navigation }) {
       />
       <Collapse
         title="Location"
+        collapsed={true}
         content={
           <View>
-            <Text>
-              Locations...
-            </Text>
+            <SearchBar
+              round={true}
+              lightTheme={true}
+              placeholder="Search..."
+              autoCapitalize='none'
+              autoCorrect={false}
+              onChangeText={locationSearch}
+              value={searchLocationText}
+              containerStyle={{
+                backgroundColor: "white",
+                margin: 10,
+                borderColor: "#C4C4C4",
+                borderWidth: 1,
+                borderRadius: 10,
+                padding: 3
+              }}
+              inputContainerStyle={{
+                backgroundColor: "white"
+              }}
+              inputStyle={{
+                backgroundColor: "white"
+              }}
+              leftIconContainerStyle={{
+                backgroundColor: "white"
+              }}
+              rightIconContainerStyle={{
+                backgroundColor: "white"
+              }}
+            />
+            <FlatList
+              data={searchedLocations && searchedLocations.length > 0 ? searchedLocations : (searchLocationText.length === 0 && locations)}
+              renderItem={renderLocations}
+              keyExtractor={(item) => item}
+              contentContainerStyle={{
+                backgroundColor: "white"
+              }}
+              bounces={false}
+            />
           </View>
         }
       />
