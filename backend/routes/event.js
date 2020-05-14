@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../db').pool;
 var mysql = require('../db').mysql;
+var CronJob = require('cron').CronJob;
 
 // Creating a GET route that returns data from the 'users' table.
 router.get('/pending/:userId', function (req, res) {
@@ -183,17 +184,51 @@ router.post('/', function (req,res) {
       }
       if (results.insertId) {
         const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false]);
+        const eventId = results.insertId;
         users.push([results.insertId, req.body.host, 'ACCEPTED', true]);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);
-        connection.query(eventUserSql, [users], function (error, results, fields) {
+        connection.query(eventUserSql, [users], function (error, eventUserResults, fields) {
           if (error) {
             throw error;
             connection.release();
           }
-          connection.release();
+          console.log(event.DateTime);
+          var job = new CronJob(
+          	new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30)),
+          	function() {
+          		console.log(`Cron Job For ${eventId} Started`);
+              var sql = `select UserId FROM EventUser where EventID = '${eventId}'`
+              connection.query(sql, function (error, userResults, fields) {
+                if (error) {
+                  throw error;
+                  connection.release();
+                }
+                connection.release();
+                req.app.get('io').in('lobby').clients(function(error, clients) {
+                  clients.forEach(function(socketId){
+                    const socket = req.app.get('io').sockets.connected[socketId];
+                    if (socket.events){
+                      socket.events.push(eventId)
+                    } else {
+                      socket.events = [eventId]
+                    }
+                    if (userResults.some(user => {
+                      return user.UserId === socket.userId
+                    })){
+                      console.log(`${socket.userId} Joined Room ${eventId}`)
+                      socket.join(eventId);
+                    }
+                  })
+                })
+              });
 
+          	},
+          	null,
+          	true,
+          	'America/Vancouver'
+          );
           res.json({"status": 200, "response": "Inserted"});
         })
       }

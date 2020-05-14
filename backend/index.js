@@ -19,44 +19,7 @@ const server = require('http').Server(app);
 
 const io = require('socket.io')(server);
 app.set('io', io);
-var job = new CronJob(
-	'0 * * * * *',
-	function() {
-		console.log('You will see this message every minute');
-    io.in('lobby').clients(function(error, clients) {
-      console.log(clients);
-      clients.forEach(function(socketId){
-        const socket = io.sockets.connected[socketId];
-        pool.getConnection(function (err, connection) {
-            if (err) throw err; // not connected!
-            var sql = `SELECT EventId
-            FROM Event
-            WHERE 1=1
-            AND NOW() Between DATE_SUB(Event.DateTime, INTERVAL 5000 MINUTE) AND Event.DateTime
-            AND EventID IN (
-            	SELECT EventUser.EventID FROM EventUser
-                where EventUser.UserId = '${socket.userId}'
-            );`
-            connection.query(sql, function (error, results, fields) {
-              connection.release();
-              // If some error occurs, we throw an error.
-              if (error) throw error;
-              // Getting the 'response' from the database and sending it to our route. This is were the data is.
-              socket.events = results.map(event => event.EventId);
-              results.forEach(result => {
-                console.log(`${socket.userId} Joined Room ${result.EventId}`)
-                socket.join(result.EventId);
-              })
-            });
-          });
 
-      })
-    })
-	},
-	null,
-	true,
-	'America/Vancouver'
-);
 io.on('connection', (socket) => {
   // Join Lobby
   socket.on('joinLobby', ({userId}) => {

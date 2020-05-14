@@ -70,7 +70,7 @@ export default function CreateEventScreen({navigation}) {
   }, []);
 
   async function publish() {
-    let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), eventTime.getSeconds());
+    let date = eventDate.setHours(eventTime.getHours(), eventTime.getMinutes(), 0);
     let event = {
       Name: eventName,
       Description: eventDescription,
