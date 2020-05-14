@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, Picker } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { RectButton } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import { Image, Button, Text, Input, Icon, CheckBox, Header, SearchBar } from 'react-native-elements';
@@ -17,10 +17,13 @@ import { backend } from '../constants/Environment';
 import FriendCard from '../components/FriendCard';
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from '../assets/images/robot-dev.png';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Appearance, useColorScheme } from 'react-native-appearance';
 
 export default function FilterEventScreen({ navigation }) {
-
-  const [date, setDate] = React.useState(new Date());
+  
+  const [date, setDate] = React.useState();
+  const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
 
   const [friends, setFriends] = React.useState([]);
   const [searchFriendText, setSearchFriendText] = React.useState("");
@@ -32,6 +35,8 @@ export default function FilterEventScreen({ navigation }) {
   const [searchedLocations, setSearchedLocations] = React.useState([]);
   const [selectedLocations, setSeletedLocations] = React.useState([]);
 
+  
+  let colorScheme = useColorScheme();
 
 
   // Load any resources or data that we need prior to rendering the app
@@ -50,13 +55,8 @@ export default function FilterEventScreen({ navigation }) {
 
       let eventResponse = await fetch(`http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`);
       let eventJson = await eventResponse.json();
-      let arry = [];
-      eventJson.forEach(event => {
-        if (locations.filter(location => location === event.LocationName).length == 0) {
-          arry.push(event.LocationName);
-        }
-      });
-      setLocations(arry);
+      const uniqueLocations = [...new Set(eventJson.map(event => event.LocationName))];
+      setLocations(uniqueLocations);
     }
     retrieveFriends();
     _retrieveFilter();
@@ -162,10 +162,23 @@ export default function FilterEventScreen({ navigation }) {
     }
   };
 
+  function resetFilters(){
+    setDate();
+    setSelectedFriends([]);
+    setSeletedLocations([]);
+  }
 
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = date => {
+    setDate(date);
+    hideDatePicker();
   };
 
   return (
@@ -180,13 +193,17 @@ export default function FilterEventScreen({ navigation }) {
         collapsed={true}
         content={
           <View>
-            <DateTimePicker
-              timeZoneOffsetInMinutes={0}
-              value={date}
-              mode={'date'}
-              display="default"
-              onChange={onChange}
+            <DateTimePickerModal
+              date={date}
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+              isDarkModeEnabled={colorScheme === 'dark'}
             />
+            <TouchableOpacity onPress={showDatePicker} style={{minHeight: 30}}>
+              <Text>Select Date you want to filter</Text>
+            </TouchableOpacity>
           </View>
         }
       />
@@ -282,6 +299,11 @@ export default function FilterEventScreen({ navigation }) {
           </View>
         }
       />
+      <Button  
+        title="Reset Filters"
+        onPress={resetFilters}
+      />
+        
     </View>
 
   )
