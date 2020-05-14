@@ -19,7 +19,7 @@ export default function OnGoingEvent({ navigation, route }) {
     for (let i = 0; i < events.length; i++) {
       // date
       let dateMatch = true;
-      if (date !== undefined) {
+      if (!(date === undefined || date === null)) {
         let eventDate = new Date(events[i].DateTime);
         let filterDate = new Date(date);
         dateMatch = filterDate.getFullYear() == eventDate.getFullYear() && filterDate.getMonth() == eventDate.getMonth() && filterDate.getDate() == eventDate.getDate()
@@ -65,12 +65,14 @@ export default function OnGoingEvent({ navigation, route }) {
           const value = await AsyncStorage.getItem('ongoingeventfilter');
           if (value !== null) {
             // We have data!!
-            console.log(value);
             let filterDate = JSON.parse(value).date;
             let filterFriends = JSON.parse(value).friends;
             let filterLocations = JSON.parse(value).locations;
             let filteredEvents = await filterEvents(responseJson, filterDate, filterFriends, filterLocations); 
             setEvents(formatEventList(filteredEvents))
+          }
+          else {
+            setEvents(formatEventList(responseJson))
           }
         } catch (error) {
           // Error retrieving data

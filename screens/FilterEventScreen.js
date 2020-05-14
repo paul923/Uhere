@@ -153,7 +153,9 @@ export default function FilterEventScreen({ navigation }) {
     try {
       const value = await AsyncStorage.getItem('ongoingeventfilter');
       if (value !== null) {
-        setDate(new Date(JSON.parse(value).date));
+        if(JSON.parse(value).date !== undefined){
+          setDate(new Date(JSON.parse(value).date));
+        }
         setSelectedFriends(JSON.parse(value).friends);
         setSeletedLocations(JSON.parse(value).locations);
       }
@@ -194,7 +196,7 @@ export default function FilterEventScreen({ navigation }) {
         content={
           <View>
             <DateTimePickerModal
-              date={date}
+              date={date === undefined ? new Date() : date}
               isVisible={isDatePickerVisible}
               mode="date"
               onConfirm={handleConfirm}
@@ -202,7 +204,7 @@ export default function FilterEventScreen({ navigation }) {
               isDarkModeEnabled={colorScheme === 'dark'}
             />
             <TouchableOpacity onPress={showDatePicker} style={{minHeight: 30}}>
-              <Text>Select Date you want to filter</Text>
+        {date === undefined ? <Text>Select Date you want to filter</Text> : <Text>{formatDate(date)}</Text>}
             </TouchableOpacity>
           </View>
         }
