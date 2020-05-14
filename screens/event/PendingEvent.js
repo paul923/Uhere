@@ -12,6 +12,7 @@ import { backend } from '../../constants/Environment';
 
 export default function PendingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
+  const [isFetching, setIsFetching] = React.useState(false);
   React.useEffect(() => {
     async function fetchData() {
       try {
@@ -31,11 +32,27 @@ export default function PendingEvent({ navigation, route }) {
     return unsubscribeFocus;
 
   }, []);
+
+  async function onRefresh() {
+    setIsFetching(true);
+    try {
+      let url = `http://${backend}:3000/event/pending/${firebase.auth().currentUser.uid}`;
+      let response = await fetch(url);
+      let responseJson = await response.json();
+      console.log(responseJson);
+      setEvents(formatEventList(responseJson));
+      setIsFetching(false);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <View style={styles.container}>
       <SectionList
         style={styles.listContainer}
         sections={events}
+        onRefresh={() => onRefresh()}
+        refreshing={isFetching}
         renderItem={({ item }) => (
           <EventCard
             item={item}
