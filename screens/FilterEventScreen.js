@@ -5,7 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
-import { Image, Button, Text, Input, Icon, CheckBox , Header, SearchBar } from 'react-native-elements';
+import { Image, Button, Text, Input, Icon, CheckBox, Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
@@ -21,12 +21,12 @@ import penaltyImage from '../assets/images/robot-dev.png';
 export default function FilterEventScreen({ navigation }) {
 
   const [date, setDate] = React.useState(new Date());
-  
+
   const [friends, setFriends] = React.useState([]);
   const [searchFriendText, setSearchFriendText] = React.useState("");
   const [searchedFriends, setSearchedFriends] = React.useState([]);
   const [selectedFriends, setSelectedFriends] = React.useState([]);
-  
+
   const [locations, setLocations] = React.useState([]);
   const [searchLocationText, setSearchLocationText] = React.useState("");
   const [searchedLocations, setSearchedLocations] = React.useState([]);
@@ -118,11 +118,11 @@ export default function FilterEventScreen({ navigation }) {
   function renderLocations({ item }) {
     return (
       <CheckBox
-        right  
+        right
         iconRight
         title={item}
         checkedIcon='dot-circle-o'
-        uncheckedIcon='circle-o'  
+        uncheckedIcon='circle-o'
         bottomDivider
         checked={selectedLocations.filter(location => location === item).length > 0}
         onPress={() => selectLocation(item)}
@@ -135,7 +135,7 @@ export default function FilterEventScreen({ navigation }) {
   }
 
   async function _storeData() {
-    
+
     let filter = {
       date: date,
       friends: selectedFriends,
