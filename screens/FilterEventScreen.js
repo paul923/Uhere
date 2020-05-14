@@ -10,23 +10,111 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AuthContext from '../contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from '../config/firebase';
-import {formatDate, formatTime} from '../utils/date';
-import Collpase from '../components/Collapse';
-
+import { formatDate, formatTime } from '../utils/date';
+import Collapse from '../components/Collapse';
+import { AsyncStorage, FlatList } from 'react-native';
+import { backend } from '../constants/Environment';
+import FriendCard from '../components/FriendCard';
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from '../assets/images/robot-dev.png';
 
+export default function FilterEventScreen({ navigation }) {
 
-export default function FilterEventScreen({navigation}) {
+  const [date, setDate] = React.useState(new Date());
+  const [friends, setFriends] = React.useState([]);
+  const [searchText, setSearchText] = React.useState("");
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [selectedFriends, setSelectedFriends] = React.useState([]);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
+    async function retrieveFriends() {
+      let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      let responseJson = await response.json();
+      responseJson.response.sort((a, b) => a.Nickname.localeCompare(b.Nickname));
+      setFriends(responseJson.response);
+    }
+    retrieveFriends();
+    _retrieveFilter();
   }, []);
 
-  function applyFilter() {
 
+  function friendSearch(text) {
+    setSearchText(text);
+    let filtered = friends.filter(function (item) {
+      return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
+    });
+    setFilteredData(filtered)
   }
 
+  function selectFriend(item) {
+    if (selectedFriends.filter(friend => friend.UserId === item.UserId).length == 0) {
+      setSelectedFriends([...selectedFriends, item])
+    } else {
+      setSelectedFriends(selectedFriends.filter(a => a.UserId !== item.UserId));
+    }
+  }
+
+  function renderFriendsCard({ item }) {
+    return (
+      <FriendCard
+        avatarUrl={item.AvatarURI}
+        avatarTitle={!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+        displayName={item.Nickname}
+        userId={item.Username}
+        checkBox={{
+          size: 35,
+          checkedIcon: 'dot-circle-o',
+          uncheckedIcon: 'circle-o',
+          checkedColor: '#ff8a8a',
+          uncheckedColor: '#ff8a8a',
+          checked: selectedFriends.filter(friend => friend.UserId === item.UserId).length > 0,
+          onPress: () => selectFriend(item)
+        }}
+      />
+    )
+  }
+
+  function applyFilter() {
+    _storeData()
+  }
+
+  async function _storeData() {
+    let filter = {
+      date: date,
+      friends: selectedFriends,
+    }
+    try {
+      await AsyncStorage.setItem('ongoingeventfilter', JSON.stringify(filter));
+    } catch (error) {
+      // Error saving data
+    }
+  };
+
+  async function _retrieveFilter() {
+    try {
+      const value = await AsyncStorage.getItem('ongoingeventfilter');
+      if (value !== null) {
+        // We have data!!
+        setDate(new Date(JSON.parse(value).date));
+        setSelectedFriends(JSON.parse(value).friends);
+      }
+    } catch (error) {
+      // Error retrieving data
+    }
+  };
+
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+  };
 
   return (
     <View style={styles.container}>
@@ -34,36 +122,72 @@ export default function FilterEventScreen({navigation}) {
         leftComponent={{ icon: 'chevron-left', color: '#fff', onPress: () => navigation.navigate('Event') }}
         centerComponent={{ text: 'FILTER EVENT', style: { color: '#fff' } }}
         rightComponent={{ icon: 'check', color: '#fff', onPress: () => applyFilter() }}
-        />
-      <Collpase
+      />
+      <Collapse
         title="Date"
         content={
           <View>
-            <Text>
-              Bacon ipsum dolor amet chuck turducken landjaeger tongue spare
-              ribs
-            </Text>
+            <DateTimePicker
+              timeZoneOffsetInMinutes={0}
+              value={date}
+              mode={'date'}
+              display="default"
+              onChange={onChange}
+            />
           </View>
         }
       />
-      <Collpase
+      <Collapse
         title="Friends"
         content={
           <View>
-            <Text>
-              Bacon ipsum dolor amet chuck turducken landjaeger tongue spare
-              ribs
-            </Text>
+            <SearchBar
+              round={true}
+              lightTheme={true}
+              placeholder="Search..."
+              autoCapitalize='none'
+              autoCorrect={false}
+              onChangeText={friendSearch}
+              value={searchText}
+              containerStyle={{
+                backgroundColor: "white",
+                margin: 10,
+                borderColor: "#C4C4C4",
+                borderWidth: 1,
+                borderRadius: 10,
+                padding: 3
+              }}
+              inputContainerStyle={{
+                backgroundColor: "white"
+              }}
+              inputStyle={{
+                backgroundColor: "white"
+              }}
+              leftIconContainerStyle={{
+                backgroundColor: "white"
+              }}
+              rightIconContainerStyle={{
+                backgroundColor: "white"
+              }}
+            />
+            <FlatList
+              data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
+              renderItem={renderFriendsCard}
+              keyExtractor={(item) => item.UserId}
+              contentContainerStyle={{
+                backgroundColor: "white"
+              }}
+              bounces={false}
+            />
           </View>
         }
       />
-      <Collpase
+      <Collapse
         title="Location"
         content={
           <View>
             <Text>
-              Bacon ipsum dolor amet chuck turducken landjaeger tongue spare
-              ribs
+              Locations...
             </Text>
           </View>
         }
@@ -74,8 +198,8 @@ export default function FilterEventScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'stretch'
-    },
+  container: {
+    flex: 1,
+    alignItems: 'stretch'
+  },
 });

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
+import { SectionList, AsyncStorage, StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
 import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
@@ -19,6 +19,18 @@ export default function OnGoingEvent({ navigation, route }) {
         let url = `http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`;
         let response = await fetch(url);
         let responseJson = await response.json();
+        try {
+          const value = await AsyncStorage.getItem('ongoingeventfilter');
+          if (value !== null) {
+            // We have data!!
+            let filterDate = new Date(JSON.parse(value).date);
+            let filterFriends = JSON.parse(value).friends;
+            console.log(filterDate);
+            console.log(filterFriends);
+          }
+        } catch (error) {
+          // Error retrieving data
+        }
         setEvents(formatEventList(responseJson));
       } catch (error) {
         console.error(error);

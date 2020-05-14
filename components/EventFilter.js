@@ -9,17 +9,9 @@ export default function EventFilter({item, status}) {
   return (
     <View style={styles.container}>
       <View style={styles.buttonContainer}>
-        <Button title="DATE"
+        <Button title="Filter"
           buttonStyle={styles.button}
           onPress={() => navigation.navigate('Filter Event')}/>
-      </View>
-      <View style={{flex: 1}}>
-        <Button title="FRIENDS"
-          buttonStyle={styles.button}/>
-      </View>
-      <View style={{flex: 1}}>
-        <Button title="LOCATION"
-          buttonStyle={styles.button}/>
       </View>
     </View>
   )
