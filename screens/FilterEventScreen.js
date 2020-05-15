@@ -50,9 +50,10 @@ export default function FilterEventScreen({ navigation }) {
         },
       });
       let responseJson = await response.json();
-      responseJson.response.sort((a, b) => a.Nickname.localeCompare(b.Nickname));
-      setFriends(responseJson.response);
-
+      if (responseJson.status !== 204) {
+        responseJson.response.sort((a, b) => a.Nickname.localeCompare(b.Nickname));
+        setFriends(responseJson.response);
+      }
       let eventResponse = await fetch(`http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`);
       let eventJson = await eventResponse.json();
       const uniqueLocations = [...new Set(eventJson.map(event => event.LocationName))];
