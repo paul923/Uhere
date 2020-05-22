@@ -226,15 +226,24 @@ export default function OnGoingEvent({ navigation, route }) {
         animationType="slide"
         transparent={false}
         visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-        }}
       >
         <View>
           <Header
-            leftComponent={{ text: 'Cancel', style: { color: '#fff' }, onPress: () => setModalVisible(false) }}
+            leftComponent={
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={{ color: '#fff' }}>Cancel</Text>
+              </TouchableOpacity>
+            }
             centerComponent={{ text: 'Filters', style: { color: '#fff' } }}
-            rightComponent={{ text: 'Reset', style: { color: '#fff' }, onPress: () => resetFilters() }}
+            rightComponent={
+              <TouchableOpacity
+                onPress={() => resetFilters()}
+              >
+                <Text style={{ color: '#fff' }}>Reset</Text>
+              </TouchableOpacity>
+            }
           />
           <Collapse
             title="Date"
