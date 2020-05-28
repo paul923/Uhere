@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { formatDate, formatTime } from "../utils/date";
+import { formatDate, formatTime, convertDateToLocalTimezone } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button } from 'react-native-elements';
 import { backend } from '../constants/Environment';
@@ -45,8 +45,8 @@ export default function EventCard({onPress, item, status}) {
           <View style={styles.row}>
             <Icon name="event"/>
             <View style={styles.cardColumn}>
-              <Text h5 style={styles.cardColumnText}>{formatDate(new Date(item.DateTime))}</Text>
-              <Text h5 style={styles.cardColumnText}>{formatTime(new Date(item.DateTime))}</Text>
+              <Text h5 style={styles.cardColumnText}>{formatDate(convertDateToLocalTimezone(new Date(item.DateTime)))}</Text>
+              <Text h5 style={styles.cardColumnText}>{formatTime(convertDateToLocalTimezone(new Date(item.DateTime)))}</Text>
             </View>
             <Icon name="remove-circle"/>
             <View style={styles.cardColumn}>

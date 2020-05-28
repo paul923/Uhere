@@ -1,4 +1,5 @@
 import { format, formatDistance, formatRelative, subDays } from 'date-fns';
+import * as Localization from 'expo-localization';
 
 export function formatDate(date) {
   return format(date, 'MMM do, yyyy')
@@ -32,4 +33,9 @@ export function millisToMinutesAndSeconds(millis) {
 
 export function createDateAsUTC(date) {
     return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()));
+}
+
+export function convertDateToLocalTimezone(date) {
+  var localizedDate = date.toLocaleString("en-US", {timeZone: Localization.timezone});
+  return new Date(localizedDate);
 }
