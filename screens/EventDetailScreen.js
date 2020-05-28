@@ -16,7 +16,6 @@ const Stack = createStackNavigator();
 export default function EventDetailScreen({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
     const [event, setEvent] = React.useState(null);
-    const [initialRoute, setInitialRoute] = React.useState();
     const [showSwitch, setShowSwitch] = React.useState(false);
     const [isOpen, setOpen] = React.useState(false);
     const [eventMembers, setEventMembers] = React.useState(null);

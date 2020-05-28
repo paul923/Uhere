@@ -20,37 +20,29 @@ export default function OnGoingEvent({ navigation, route }) {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [events, setEvents] = React.useState([]);
   
-  const [date, setDate] = React.useState();
-  const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
+  const [fromDate, setFromDate] = React.useState();
+  const [isFromDatePickerVisible, setFromDatePickerVisibility] = React.useState(false);
+
+  const [toDate, setToDate] = React.useState();
+  const [isToDatePickerVisible, setToDatePickerVisibility] = React.useState(false);
 
   const [friends, setFriends] = React.useState([]);
   const [searchFriendText, setSearchFriendText] = React.useState("");
   const [searchedFriends, setSearchedFriends] = React.useState([]);
   const [selectedFriends, setSelectedFriends] = React.useState([]);
 
-  const [locations, setLocations] = React.useState([]);
-  const [searchLocationText, setSearchLocationText] = React.useState("");
-  const [searchedLocations, setSearchedLocations] = React.useState([]);
-  const [selectedLocations, setSeletedLocations] = React.useState([]);
-
-
   let colorScheme = useColorScheme();
 
-  async function filterEvents(events, date, friends, locations){
+  async function filterEvents(events, fromDate, toDate, friends){
     let filtered = [];
     for (let i = 0; i < events.length; i++) {
       // date
       let dateMatch = true;
-      if (!(date === undefined || date === null)) {
-        let eventDate = new Date(events[i].DateTime);
-        let filterDate = new Date(date);
-        dateMatch = filterDate.getFullYear() == eventDate.getFullYear() && filterDate.getMonth() == eventDate.getMonth() && filterDate.getDate() == eventDate.getDate()
-      }
-      
-      // location
-      let locationMatch = true;
-      if (!(locations === undefined || locations.length == 0)){
-        locationMatch = locations.filter(location => location === events[i].LocationName).length > 0;
+      if (!(fromDate === undefined || fromDate === null || toDate === undefined || toDate === null)) {
+        let check = new Date(events[i].DateTime);
+        let from = new Date(fromDate);
+        let to = new Date(toDate);
+        dateMatch = check >= from && check <= to;
       }
 
       // friends
@@ -69,7 +61,7 @@ export default function OnGoingEvent({ navigation, route }) {
         }
       }
       // final aggregate filter
-      if(dateMatch && locationMatch && friendMatch){
+      if(dateMatch && friendMatch){
         filtered.push(events[i]);
       }
     }
@@ -82,12 +74,13 @@ export default function OnGoingEvent({ navigation, route }) {
       let response = await fetch(url);
       let responseJson = await response.json();
       let filter = Filter.getFilter();
-      let filteredEvents = await filterEvents(responseJson, filter.date, filter.friends, filter.locations); 
+      let filteredEvents = await filterEvents(responseJson, filter.fromDate, filter.toDate, filter.friends); 
       setEvents(formatEventList(filteredEvents))
     } catch (error) {
       console.error(error);
     }
   }
+  
   React.useEffect(() => {
     const unsubscribeFocus = navigation.addListener('focus', () => {
       fetchData();
@@ -109,10 +102,6 @@ export default function OnGoingEvent({ navigation, route }) {
         responseJson.response.sort((a, b) => a.Nickname.localeCompare(b.Nickname));
         setFriends(responseJson.response);
       }
-      let eventResponse = await fetch(`http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`);
-      let eventJson = await eventResponse.json();
-      const uniqueLocations = [...new Set(eventJson.map(event => event.LocationName))];
-      setLocations(uniqueLocations);
     }
     retrieveFriends();
   }, []);
@@ -126,27 +115,11 @@ export default function OnGoingEvent({ navigation, route }) {
     setSearchedFriends(filtered)
   }
 
-  function locationSearch(text) {
-    setSearchLocationText(text);
-    let filtered = locations.filter(function (item) {
-      return item.toLowerCase().includes(text.toLowerCase())
-    });
-    setSearchedLocations(filtered)
-  }
-
   function selectFriend(item) {
     if (selectedFriends.filter(friend => friend.UserId === item.UserId).length == 0) {
       setSelectedFriends([...selectedFriends, item])
     } else {
       setSelectedFriends(selectedFriends.filter(a => a.UserId !== item.UserId));
-    }
-  }
-
-  function selectLocation(item) {
-    if (selectedLocations.filter(location => location === item).length == 0) {
-      setSeletedLocations([...selectedLocations, item])
-    } else {
-      setSeletedLocations(selectedLocations.filter(a => a !== item));
     }
   }
 
@@ -170,21 +143,6 @@ export default function OnGoingEvent({ navigation, route }) {
     )
   }
 
-  function renderLocations({ item }) {
-    return (
-      <CheckBox
-        right
-        iconRight
-        title={item}
-        checkedIcon='dot-circle-o'
-        uncheckedIcon='circle-o'
-        bottomDivider
-        checked={selectedLocations.filter(location => location === item).length > 0}
-        onPress={() => selectLocation(item)}
-      />
-    )
-  }
-
   function applyFilter() {
     _storeFilter()
     setModalVisible(false)
@@ -194,30 +152,40 @@ export default function OnGoingEvent({ navigation, route }) {
   async function _storeFilter() {
 
     let filter = {
-      date: date,
+      fromDate: fromDate,
+      toDate: toDate,
       friends: selectedFriends,
-      locations: selectedLocations,
     }
     Filter.setFilter(filter);
   };
 
   function resetFilters() {
-    setDate();
+    setFromDate();
+    setToDate();
     setSelectedFriends([]);
-    setSeletedLocations([]);
   }
 
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
+  const showFromDatePicker = () => {
+    setFromDatePickerVisibility(true);
+  };
+  const showToDatePicker = () => {
+    setToDatePickerVisibility(true);
   };
 
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
+  const hideFromDatePicker = () => {
+    setFromDatePickerVisibility(false);
+  };
+  const hideToDatePicker = () => {
+    setToDatePickerVisibility(false);
   };
 
-  const handleConfirm = date => {
-    setDate(date);
-    hideDatePicker();
+  const handleFromConfirm = date => {
+    setFromDate(date);
+    hideFromDatePicker();
+  };
+  const handleToConfirm = date => {
+    setToDate(date);
+    hideToDatePicker();
   };
 
   return (
@@ -231,7 +199,10 @@ export default function OnGoingEvent({ navigation, route }) {
           <Header
             leftComponent={
               <TouchableOpacity
-                onPress={() => setModalVisible(false)}
+                onPress={() => {
+                  resetFilters()
+                  setModalVisible(false)}
+                }
               >
                 <Text style={{ color: '#fff' }}>Cancel</Text>
               </TouchableOpacity>
@@ -247,19 +218,32 @@ export default function OnGoingEvent({ navigation, route }) {
           />
           <Collapse
             title="Date"
-            collapsed={true}
+            collapsed={false}
             content={
               <View>
                 <DateTimePickerModal
-                  date={date === undefined ? new Date() : date}
-                  isVisible={isDatePickerVisible}
+                  date={fromDate === undefined ? new Date() : fromDate}
+                  isVisible={isFromDatePickerVisible}
                   mode="date"
-                  onConfirm={handleConfirm}
-                  onCancel={hideDatePicker}
+                  onConfirm={handleFromConfirm}
+                  onCancel={hideFromDatePicker}
                   isDarkModeEnabled={colorScheme === 'dark'}
                 />
-                <TouchableOpacity onPress={showDatePicker} style={{ minHeight: 30 }}>
-                  {date === undefined ? <Text>Select Date you want to filter</Text> : <Text>{formatDate(date)}</Text>}
+                <TouchableOpacity onPress={showFromDatePicker} style={{ minHeight: 30 }}>
+                  {fromDate === undefined ? <Text>Select Date you want to filter</Text> : <Text>From: {formatDate(fromDate)}</Text>}
+                </TouchableOpacity>
+
+
+                <DateTimePickerModal
+                  date={toDate === undefined ? new Date() : toDate}
+                  isVisible={isToDatePickerVisible}
+                  mode="date"
+                  onConfirm={handleToConfirm}
+                  onCancel={hideToDatePicker}
+                  isDarkModeEnabled={colorScheme === 'dark'}
+                />
+                <TouchableOpacity onPress={showToDatePicker} style={{ minHeight: 30 }}>
+                  {toDate === undefined ? <Text>Select Date you want to filter</Text> : <Text>To: {formatDate(toDate)}</Text>}
                 </TouchableOpacity>
               </View>
             }
@@ -302,52 +286,6 @@ export default function OnGoingEvent({ navigation, route }) {
                   data={searchedFriends && searchedFriends.length > 0 ? searchedFriends : (searchFriendText.length === 0 && friends)}
                   renderItem={renderFriendsCard}
                   keyExtractor={(item) => item.UserId}
-                  contentContainerStyle={{
-                    backgroundColor: "white"
-                  }}
-                  bounces={false}
-                />
-              </View>
-            }
-          />
-          <Collapse
-            title="Location"
-            collapsed={true}
-            content={
-              <View>
-                <SearchBar
-                  round={true}
-                  lightTheme={true}
-                  placeholder="Search..."
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  onChangeText={locationSearch}
-                  value={searchLocationText}
-                  containerStyle={{
-                    backgroundColor: "white",
-                    margin: 10,
-                    borderColor: "#C4C4C4",
-                    borderWidth: 1,
-                    borderRadius: 10,
-                    padding: 3
-                  }}
-                  inputContainerStyle={{
-                    backgroundColor: "white"
-                  }}
-                  inputStyle={{
-                    backgroundColor: "white"
-                  }}
-                  leftIconContainerStyle={{
-                    backgroundColor: "white"
-                  }}
-                  rightIconContainerStyle={{
-                    backgroundColor: "white"
-                  }}
-                />
-                <FlatList
-                  data={searchedLocations && searchedLocations.length > 0 ? searchedLocations : (searchLocationText.length === 0 && locations)}
-                  renderItem={renderLocations}
-                  keyExtractor={(item) => item}
                   contentContainerStyle={{
                     backgroundColor: "white"
                   }}

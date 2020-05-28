@@ -13,7 +13,7 @@ var Filter = (function () {
         getFilter: getFilter,
         setFilter: setFilter
     }
-
+    
 })();
 
 export default Filter;
