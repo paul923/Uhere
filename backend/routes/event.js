@@ -194,42 +194,66 @@ router.post('/', function (req,res) {
             throw error;
             connection.release();
           }
-          console.log(event.DateTime);
-          var job = new CronJob(
-          	new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30)),
-          	function() {
-          		console.log(`Cron Job For ${eventId} Started`);
-              var sql = `select UserId FROM EventUser where EventID = '${eventId}'`
-              connection.query(sql, function (error, userResults, fields) {
-                if (error) {
-                  throw error;
-                  connection.release();
-                }
-                connection.release();
-                req.app.get('io').in('lobby').clients(function(error, clients) {
-                  clients.forEach(function(socketId){
-                    const socket = req.app.get('io').sockets.connected[socketId];
-                    if (socket.events){
-                      socket.events.push(eventId)
-                    } else {
-                      socket.events = [eventId]
+          var eventJob = {
+            EventId: results.insertId,
+            DateTime: new Date(req.body.event.DateTime),
+            IsProcessed: 0
+          }
+          var eventJobSql = "INSERT INTO ?? SET ?";
+          parameters = ['EventJob']
+          eventJobSql = mysql.format(eventJobSql, parameters);
+          connection.query(eventJobSql, eventJob, function (error, eventJobResult, fields) {
+            connection.release();
+            if (error) {
+              throw error;
+            }
+            console.log(eventJobResult);
+            var cronJobTime = new Date(req.body.event.DateTime);
+            var job = new CronJob(
+            	new Date(cronJobTime.setMinutes(cronJobTime.getMinutes() - 30)),
+            	function() {
+            		console.log(`Cron Job For ${eventId} Started`);
+                pool.getConnection(function (err, connection) {
+                  var sql = `select UserId FROM EventUser where EventID = '${eventId}'`
+                  connection.query(sql, function (error, userResults, fields) {
+                    if (error) {
+                      throw error;
+                      connection.release();
                     }
-                    if (userResults.some(user => {
-                      return user.UserId === socket.userId
-                    })){
-                      console.log(`${socket.userId} Joined Room ${eventId}`)
-                      socket.join(eventId);
-                    }
-                  })
+                    req.app.get('io').in('lobby').clients(function(error, clients) {
+                      clients.forEach(function(socketId){
+                        const socket = req.app.get('io').sockets.connected[socketId];
+                        if (socket.events){
+                          socket.events.push(eventId)
+                        } else {
+                          socket.events = [eventId]
+                        }
+                        if (userResults.some(user => {
+                          return user.UserId === socket.userId
+                        })){
+                          console.log(`${socket.userId} Joined Room ${eventId}`)
+                          socket.join(eventId);
+                        }
+                      })
+                    })
+                    eventJobSql = "UPDATE ?? SET IsProcessed = 1 WHERE EventId = ?";
+                    parameters = ['EventJob', eventId]
+                    eventJobSql = mysql.format(eventJobSql, parameters);
+                    connection.query(eventJobSql, function (error, eventJobResult, fields) {
+                      connection.release();
+                      if (error) {
+                        throw error;
+                      }
+                    })
+                  });
                 })
-              });
-
-          	},
-          	null,
-          	true,
-          	'America/Vancouver'
-          );
-          res.json({"status": 200, "response": "Inserted"});
+            	},
+            	null,
+            	true,
+            	null
+            );
+            res.json({"status": 200, "response": "Inserted"});
+          })
         })
       }
     });

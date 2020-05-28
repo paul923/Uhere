@@ -21,7 +21,7 @@ import { backend } from '../constants/Environment';
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
 
-import {formatDate, formatTime, combineDateAndTime} from '../utils/date';
+import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from '../utils/date';
 
 import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from '../assets/images/penalty.png';
@@ -228,7 +228,7 @@ export default function CreateEventScreen({navigation}) {
               mode="date"
               display="default"
               minimumDate={new Date()}
-              onChange={(event, date) => {setShowDatePicker(false); date && setEventDate(date)}}
+              onChange={(event, date) => {console.log(date); setShowDatePicker(false); date && setEventDate(date)}}
             />}
             {showTimePicker && <DateTimePicker
               value={eventTime}

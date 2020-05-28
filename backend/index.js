@@ -20,6 +20,69 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 app.set('io', io);
 
+pool.getConnection(function (err, connection) {
+  if (err) throw err; // not connected!
+  var sql = "SELECT * FROM EventJob where IsProcessed = false";
+  // Executing the MySQL query (select all data from the 'users' table).
+  connection.query(sql, function (error, results, fields) {
+    connection.release();
+    if (error) {
+      throw error;
+    }
+    results.forEach(function(event){
+      console.log(event);
+      var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
+      var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
+      console.log(new Date());
+      console.log(jobDate);
+      var job = new CronJob(
+        jobDate,
+        function() {
+          console.log("test");
+          console.log(`Cron Job For ${event.EventId} Started`);
+          var sql = `select UserId FROM EventUser where EventID = '${event.EventId}'`
+          pool.getConnection(function (err, connection) {
+            connection.query(sql, function (error, userResults, fields) {
+              if (error) {
+                throw error;
+                connection.release();
+              }
+              io.in('lobby').clients(function(error, clients) {
+                clients.forEach(function(socketId){
+                  const socket = io.sockets.connected[socketId];
+                  if (socket.events){
+                    socket.events.push(event.EventId)
+                  } else {
+                    socket.events = [event.EventId]
+                  }
+                  if (userResults.some(user => {
+                    return user.UserId === socket.userId
+                  })){
+                    console.log(`${socket.userId} Joined Room ${event.EventId}`)
+                    socket.join(eventId);
+                  }
+                })
+              })
+              eventJobSql = "UPDATE ?? SET IsProcessed = 1 WHERE EventId = ?";
+              parameters = ['EventJob', event.EventId]
+              eventJobSql = mysql.format(eventJobSql, parameters);
+              connection.query(eventJobSql, function (error, eventJobResult, fields) {
+                connection.release();
+                if (error) {
+                  throw error;
+                }
+              })
+            });
+          })
+        },
+        null,
+        true,
+        null
+      );
+    })
+  });
+});
+
 io.on('connection', (socket) => {
   // Join Lobby
   socket.on('joinLobby', ({userId}) => {
