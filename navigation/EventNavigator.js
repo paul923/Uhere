@@ -10,6 +10,7 @@ import FilterEventScreen from '../screens/FilterEventScreen';
 import EventDetailScreen from '../screens/EventDetailScreen';
 import DetailEditPage from '../screens/DetailEditPage'
 import LocationSearchScreen from '../screens/LocationSearchScreen'
+import EventHistoryDetail from '../screens/event/EventHistoryDetail'
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,10 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Event Detail"
         component={EventDetailScreen}
+      />
+      <Stack.Screen
+        name="Event History"
+        component={EventHistoryDetail}
       />
       <Stack.Screen
         name="Event Edit"

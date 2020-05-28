@@ -250,7 +250,7 @@ export default function OnGoingEvent({ navigation, route }) {
           />
           <Collapse
             title="Friends"
-            collapsed={true}
+            collapsed={false}
             content={
               <View>
                 <SearchBar

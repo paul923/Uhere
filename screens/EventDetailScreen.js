@@ -11,8 +11,6 @@ import firebase from 'firebase';
 import { getEventByID, getEventMembers } from '../API/EventAPI'
 import socket from 'config/socket';
 
-const Stack = createStackNavigator();
-
 export default function EventDetailScreen({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
     const [event, setEvent] = React.useState(null);
@@ -278,42 +276,3 @@ const styles = StyleSheet.create({
         marginHorizontal: 10
     }
 })
-
-const friendsData = [
-    {
-        displayName: "Justin Choi",
-        userId: "Crescent1234",
-        pictureUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-        userInitial: "",
-    },
-    {
-        displayName: "Paul Kim",
-        userId: "pk1234",
-        pictureUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-        userInitial: "",
-    },
-    {
-        displayName: "Jay Suhr",
-        userId: "js1234",
-        pictureUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-        userInitial: "",
-    },
-    {
-        displayName: "Matthew Kim",
-        userId: "mk1234",
-        pictureUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-        userInitial: "",
-    },
-    {
-        displayName: "JYP",
-        userId: "andWondergirls",
-        pictureUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-        userInitial: "",
-    },
-    {
-        displayName: "You Hee Yeol",
-        userId: "uhere",
-        pictureUrl: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Red_rose_flower_detailed_imge.jpg",
-        userInitial: "",
-    },
-]

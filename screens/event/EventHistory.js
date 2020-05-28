@@ -41,7 +41,7 @@ export default function EventHistory({ navigation, route }) {
           <EventCard
             item={item}
             status="HISTORY"
-            onPress={() => navigation.navigate('Event Detail', {
+            onPress={() => navigation.navigate('Event History', {
               EventId: item.EventId,
               EventType: "HISTORY"
             })}
@@ -51,7 +51,6 @@ export default function EventHistory({ navigation, route }) {
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
-        ListHeaderComponent={EventFilter}
         ItemSeparatorComponent={() => (<Divider style={{ height: 1, margin: 5, backgroundColor: 'black' }} />)}
         showsVerticalScrollIndicator={false}
       />

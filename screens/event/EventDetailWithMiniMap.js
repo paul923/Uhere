@@ -11,11 +11,6 @@ const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function EventDetailWithMiniMap({ event, eventMembers, onPress }) {
-    React.useEffect(() => {
-        async function fetchData() {
-        }
-        fetchData()
-    }, []);
     return (
         <View style={styles.container}>
             {/* Map */}
