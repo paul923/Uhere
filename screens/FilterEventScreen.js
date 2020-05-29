@@ -192,7 +192,7 @@ export default function FilterEventScreen({ navigation }) {
         rightComponent={{ icon: 'check', color: '#fff', onPress: () => applyFilter() }}
       />
       <Collapse
-        title="Date"
+        title="CHOOSE A DATE RANGE"
         collapsed={true}
         content={
           <View>

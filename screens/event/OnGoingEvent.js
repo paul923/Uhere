@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SectionList, AsyncStorage, StyleSheet, View, Modal, TouchableOpacity, FlatList  } from 'react-native';
+import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
 import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import EventCard from '../../components/EventCard';
 import EventFilter from '../../components/EventFilter';
@@ -15,6 +15,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Appearance, useColorScheme } from 'react-native-appearance';
 import FriendCard from '../../components/FriendCard';
 import Filter from '../../contexts/Filter'
+import Modal from 'react-native-modal';
 
 export default function OnGoingEvent({ navigation, route }) {
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -191,12 +192,14 @@ export default function OnGoingEvent({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
+        style={{margin: 0 , justifyContent: 'flex-end',}}
+        isVisible={modalVisible}
+        swipeDirection={['down']}
+        onSwipeComplete={() => setModalVisible(false)}
       >
-        <View>
+        <SafeAreaView style={{backgroundColor:'white'}}>
           <Header
+            containerStyle={{ paddingTop: 0, height: 56 }}
             leftComponent={
               <TouchableOpacity
                 onPress={() => {
@@ -217,7 +220,7 @@ export default function OnGoingEvent({ navigation, route }) {
             }
           />
           <Collapse
-            title="Date"
+            title="CHOOSE A DATE RANGE"
             collapsed={false}
             content={
               <View>
@@ -230,7 +233,7 @@ export default function OnGoingEvent({ navigation, route }) {
                   isDarkModeEnabled={colorScheme === 'dark'}
                 />
                 <TouchableOpacity onPress={showFromDatePicker} style={{ minHeight: 30 }}>
-                  {fromDate === undefined ? <Text>Select Date you want to filter</Text> : <Text>From: {formatDate(fromDate)}</Text>}
+                  {fromDate === undefined ? <Text>Select From Date</Text> : <Text>From: {formatDate(fromDate)}</Text>}
                 </TouchableOpacity>
 
 
@@ -243,7 +246,7 @@ export default function OnGoingEvent({ navigation, route }) {
                   isDarkModeEnabled={colorScheme === 'dark'}
                 />
                 <TouchableOpacity onPress={showToDatePicker} style={{ minHeight: 30 }}>
-                  {toDate === undefined ? <Text>Select Date you want to filter</Text> : <Text>To: {formatDate(toDate)}</Text>}
+                  {toDate === undefined ? <Text>Select To Date</Text> : <Text>To: {formatDate(toDate)}</Text>}
                 </TouchableOpacity>
               </View>
             }
@@ -295,10 +298,11 @@ export default function OnGoingEvent({ navigation, route }) {
             }
           />
           <Button
+            style={{margin:5}}
             title="Apply Filters"
             onPress={applyFilter}
           />
-        </View>
+        </SafeAreaView>
       </Modal>
 
       <Button title="Filter"
