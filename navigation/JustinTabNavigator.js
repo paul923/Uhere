@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import JustinTestScreen from '../screens/debug/JustinTestScreen'
 import DatabaseTestScreen from '../screens/debug/DatabaseTestScreen';
 import SocketTestScreen from '../screens/debug/SocketTestScreen';
+import RouletteTestScreen from '../screens/debug/RouletteTestScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,10 @@ export default function JustinTabNavigator({ navigation, route }) {
       <Stack.Screen
         name="SocketTestScreen"
         component={SocketTestScreen}
+      />
+      <Stack.Screen
+        name="RouletteTestScreen"
+        component={RouletteTestScreen}
       />
     </Stack.Navigator>
   )
