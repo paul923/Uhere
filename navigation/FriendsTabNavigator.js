@@ -6,6 +6,7 @@ import AddFriendSelectionScreen from '../screens/AddFriendSelectionScreen'
 import AddFriendByIdScreen from '../screens/AddFriendByIdScreen'
 import FriendScreen from '../screens/FriendScreen'
 import AddFriendsScreen from '../screens/AddFriendsScreen'
+import GroupDetailScreen from '../screens/GroupDetailScreen'
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,10 @@ export default function FriendsTabNavigator({ navigation, route }) {
       <Stack.Screen
         name="Add Friend List"
         component={AddFriendsScreen}
+      />
+      <Stack.Screen
+        name="Group Detail"
+        component={GroupDetailScreen}
       />
     </Stack.Navigator>
   )

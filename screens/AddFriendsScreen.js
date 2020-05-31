@@ -32,6 +32,7 @@ export default function AddFriendsScreen ({route, navigation}) {
     }
 
     retrieveFriend();
+    console.log('selectedfriends', selectedFriends)
 
   }, []);
 
@@ -59,7 +60,6 @@ export default function AddFriendsScreen ({route, navigation}) {
         uncheckedIcon: 'circle-o',
         checkedColor:'#ff8a8a',
         uncheckedColor: '#ff8a8a',
-        checked: selectedFriends.some(i => i.UserId === item.UserId),
         onPress: () => selectFriend(item)
       }}
     />
@@ -78,12 +78,11 @@ export default function AddFriendsScreen ({route, navigation}) {
   )}
 
   function selectFriend (item) {
-    if(!selectedFriends.includes(item)){
+    if(!selectedFriends.some(i => i.UserId === item.UserId)){
       setSelectedFriends([...selectedFriends, item])
     } else {
-      setSelectedFriends(selectedFriends.filter(a => a !== item));
+      setSelectedFriends(selectedFriends.filter(a => a.UserId !== item.UserId));
     }
-    console.log(selectedFriends)
   }
 
   return (
@@ -100,7 +99,7 @@ export default function AddFriendsScreen ({route, navigation}) {
           />
         }
         rightComponent={
-          <TouchableOpacity onPress={()=> navigation.navigate('Create Group', {selectedFriends: selectedFriends})}>
+          <TouchableOpacity onPress={()=> {navigation.navigate('Create Group', {selectedFriends: selectedFriends}); console.log(selectedFriends)}}>
             <Text style={{color: 'white', marginHorizontal: 5}}>OK</Text>
           </TouchableOpacity>
         }

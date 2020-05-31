@@ -6,9 +6,7 @@ export async function getUserByUsername(Username) {
         let url = `http://${backend}:3000/user/username/${Username}`;
         let response = await fetch(url);
         let json = await response.json();
-        if(json.status === 204){
-            return null;
-        }else {
+        if(json.status !== 204){
             let user = json.response[0];
             return user;
         }
@@ -73,8 +71,25 @@ export async function getUserGroup(UserId) {
         return null;
     }
 }
-export async function updateGroup(group, members) {
-    let url = `http://${backend}:3000/user/group/${group.GroupId}`;
+export async function updateGroupName(group) {
+    let url = `http://${backend}:3000/user/group/name`;
+    let response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          group
+      }),
+    });
+    let responseJson = await response.json();
+    if(!responseJson)
+        return null;
+    return responseJson;
+}
+export async function addGroupMember(group, newMembers) {
+    let url = `http://${backend}:3000/user/group/member/${group.GroupId}`;
     let response = await fetch(url, {
       method: 'PUT',
       headers: {
@@ -83,12 +98,46 @@ export async function updateGroup(group, members) {
       },
       body: JSON.stringify({
           group,
-          members: members
+          newMembers: newMembers,
       }),
     });
     let responseJson = await response.json();
-    console.log(responseJson.response);
-    return null
+    if(!responseJson)
+        return null;
+    return responseJson;
+}
+export async function deleteGroupMember(group, deleteMembers) {
+    let url = `http://${backend}:3000/user/group/member/${group.GroupId}`;
+    let response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          group,
+          deleteMembers: deleteMembers
+      }),
+    });
+    let responseJson = await response.json();
+    if(!responseJson)
+        return null;
+    return responseJson;
+}
+
+export async function deleteGroup(groupId) {
+    let url = `http://${backend}:3000/user/group/${groupId}`;
+    let response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    let responseJson = await response.json();
+    if(!responseJson)
+        return null;
+    return responseJson;
 }
 
 export async function getUserRelationship(UserId) {
@@ -107,11 +156,14 @@ export async function getUserRelationship(UserId) {
 
 export async function getRelationshipType(uid, userName) {
     try {
-        let url = `http://${backend}:3000/relationship/type/${uid}-${userName}`;
+        let url = `http://${backend}:3000/relationship/type/${uid}/${userName}`;
         let response = await fetch(url);
         let json = await response.json();
-        let relationship = json.response[0];
-        return relationship;
+        if(json.status !== 204){
+            let relationship = json.response[0];
+            return relationship;
+        }
+        return null;
     } catch (error) {
         console.error(error);
         return null;
@@ -126,6 +178,35 @@ export async function addFriend(AddFriend) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({AddFriend}),
+    });
+    let responseJson = await response.json();
+    console.log(responseJson.response);
+    return responseJson;
+}
+export async function addFriendByFlag(AddFriend) {
+    let url = `http://${backend}:3000/relationship`;
+    let response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({AddFriend}),
+    });
+    let responseJson = await response.json();
+    console.log(responseJson)
+    return responseJson;
+}
+
+export async function deleteFriend(DeleteFriend) {
+    let url = `http://${backend}:3000/relationship`;
+    let response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({DeleteFriend}),
     });
     let responseJson = await response.json();
     console.log(responseJson.response);

@@ -3,42 +3,29 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import { postGroup, updateGroup } from '../API/FriendAPI'
+import { postGroup } from '../API/FriendAPI'
 import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native'
 
 
 
 export default function CreateGroupScreen({ navigation, route }) {
-  const [userGroup, setUserGroup] = React.useState(null);
-  const [groupName, setGroupName] = React.useState(route.params ? route.params.group.GroupName : "");
-  const [selectedFriends, setSelectedFriends] = React.useState(null);
-  const [editMode, setEditMode] = React.useState(false);
+  const [groupName, setGroupName] = React.useState("");
+  const [newSelectedFriends, setNewSelectedFriends] = React.useState([]);
+
+  const isFocused = useIsFocused();
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    route.params && setUserGroup(route.params.group);
-    route.params && setSelectedFriends(route.params.selectedFriends);
-    route.params && setEditMode(route.params.editMode);
-  });
+    route.params && setNewSelectedFriends(route.params.selectedFriends);
+  }, [isFocused]);
 
   async function createGroup(){
     let group = {
       UserId : firebase.auth().currentUser.uid,
       GroupName : groupName
     }
-    let response = await postGroup(group, selectedFriends);
-    if(response){
-      navigation.goBack()
-    }
-  }
-
-  async function editGroup(){
-    let group = {
-      UserId : firebase.auth().currentUser.uid,
-      GroupId : userGroup.GroupId,
-      GroupName : groupName
-    }
-    let response = await updateGroup(group, selectedFriends);
+    let response = await postGroup(group, newSelectedFriends);
     if(response){
       navigation.goBack()
     }
@@ -72,11 +59,11 @@ export default function CreateGroupScreen({ navigation, route }) {
         rightComponent={
           <TouchableOpacity 
             disabled = { groupName.length !== 0 ? false : true}
-            onPress={() => !editMode ? createGroup() : editGroup()}>
+            onPress={() => createGroup()}>
             <Text style={{color:  groupName.length !== 0 ? 'white' : 'black'}}>Done</Text>
           </TouchableOpacity>
         }
-        centerComponent={{ text: !editMode ? 'Create Group' : 'Edit Group', style: { color: '#fff', fontSize: 20 } }}
+        centerComponent={{ text: 'Create Group', style: { color: '#fff', fontSize: 20 } }}
         containerStyle={{zIndex:200}}
         statusBarProps={{translucent: true}}
       />
@@ -92,7 +79,7 @@ export default function CreateGroupScreen({ navigation, route }) {
         <View style={styles.addFriendsContainer}>
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}
-          <TouchableOpacity onPress={()=> {navigation.navigate('Add Friend List', {selectedFriends: selectedFriends}); console.log(selectedFriends)}}>
+          <TouchableOpacity onPress={()=> {navigation.navigate('Add Friend List', {selectedFriends: newSelectedFriends}); console.log(newSelectedFriends)}}>
             <View style={styles.addButton}>
               <Icon
                 name="plus"
@@ -102,7 +89,7 @@ export default function CreateGroupScreen({ navigation, route }) {
           </TouchableOpacity>
           <View style={{flex: 1}}>
           <FlatList
-            data={selectedFriends}
+            data={newSelectedFriends}
             renderItem={renderFriendsCard}
             keyExtractor={(item) => item.UserId}
             contentContainerStyle={{

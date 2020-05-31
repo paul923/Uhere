@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, Alert } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
-import { getFriendsList, getUserGroup } from '../API/FriendAPI'
+import { getFriendsList, getUserGroup, deleteFriend } from '../API/FriendAPI'
 import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
-import { TouchableOpacity} from 'react-native-gesture-handler'
+import { TouchableOpacity, ScrollView} from 'react-native-gesture-handler'
 import { useIsFocused } from '@react-navigation/native'
 
 
@@ -29,6 +29,27 @@ export default function FriendScreen({navigation}) {
     // Sorts friends list on initial load
   }, [isFocused]);
 
+  const createTwoButtonRemoveAlert = (user) =>{
+    Alert.alert(
+      `Remove ${user.Nickname}?`,
+      `You cannot undo this action`,
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { 
+          text: "OK", 
+          onPress: () => {
+            console.log("OK Pressed");
+            removeFriend(user.UserId);
+          } 
+        }
+      ],
+      { cancelable: false }
+    );}
+
   async function retrieveListData() {
     let list = await getFriendsList(firebase.auth().currentUser.uid);
     list.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
@@ -37,30 +58,47 @@ export default function FriendScreen({navigation}) {
 
   async function retrieveGroup() {
     let group = await getUserGroup(firebase.auth().currentUser.uid);
+    console.log(group)
     setGroups(group);
   }
 
-  
-  
   function renderFriendsCard({ item }){
     return (
-    <FriendCard
-      avatarUrl= {item.AvatarURI}
-      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
-      displayName = {item.Nickname}
-      userId = {item.Username}
-      rightElement = {
-        <Button
-          title="Remove"
-          titleStyle= {{fontSize: 12}}
-          buttonStyle={{backgroundColor: 'red'}}
-          onPress={()=> removeFriend(item.UserId)}
-        />
-      }
-    />
+      <FriendCard
+        avatarUrl= {item.AvatarURI}
+        avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+        displayName = {item.Nickname}
+        userId = {item.Username}
+        rightElement = {
+          <Button
+            title="Remove"
+            titleStyle= {{fontSize: 12}}
+            buttonStyle={{backgroundColor: 'red'}}
+            onPress={()=>createTwoButtonRemoveAlert(item)}
+          />
+        }
+      />
     )
   }
+  function renderGroupsCard({ item }){
+    return(
+      <TouchableOpacity onPress={()=> navigation.navigate('Group Detail')}>
+        <FriendCard
+          displayName = {item.GroupName}
+          userId = {item.GroupName}
+        />
+      </TouchableOpacity>
+    )
+  }
+  async function removeFriend(friendId){
+    console.log(`Remove Friend Id ${friendId}`);
 
+    let userRelationship= {
+      UserId1 : firebase.auth().currentUser.uid,
+      UserId2 : friendId,
+    }
+    await deleteFriend(userRelationship);
+  }
 
   function friendSearch(text) {
     setSearchText(text);
@@ -72,14 +110,6 @@ export default function FriendScreen({navigation}) {
     setFilteredData(filtered)
   }
 
-  function removeFriend(friendId){
-    console.log(`Remove Friend Id ${friendId}`);
-  }
-
-  function groupDetail(group){
-    let members = friends.filter(friend => group.MemberIds.includes(friend.UserId))
-    navigation.navigate('Create Group', {selectedFriends: members, group: group, editMode: true})
-  }
 
   function pressDropDownItem(destination){
     console.log('pressed')
@@ -205,35 +235,34 @@ export default function FriendScreen({navigation}) {
          /**
           * Group section */ 
         }
-        { groups &&
-          groups.map(group=> 
-            <TouchableOpacity 
-              key={group.GroupId} 
-              onPress={()=> groupDetail(group)}>
-              <View 
-                style={{
-                  margin: 5,
-                  padding: 10,
-                  borderWidth: 2
-                }}
-              >
-                <Text style={{fontSize: 15, fontWeight: 'bold'}}>{group.GroupName}</Text>
-              </View>
-            </TouchableOpacity>
-          )
-        }
-
-        <FlatList
-          data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
-          renderItem={renderFriendsCard}
-          keyExtractor={(item) => item.UserId}
-          contentContainerStyle={{
-            paddingLeft: 20,
-            paddingRight: 20,
-            backgroundColor: "white"
-          }}
-          bounces={false}
-        />
+        <ScrollView>
+          <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
+            <Text style={{fontSize: 18, fontWeight: 'bold'}}>Group</Text>
+          </View>
+          <FlatList
+            data={ groups }
+            renderItem={renderGroupsCard}
+            keyExtractor={(item) => item.GroupId}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              backgroundColor: "white"
+            }}
+          />
+          <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
+            <Text style={{fontSize: 18, fontWeight: 'bold'}}>Friends</Text>
+          </View>
+          <FlatList
+            data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
+            renderItem={renderFriendsCard}
+            keyExtractor={(item) => item.UserId}
+            contentContainerStyle={{
+              paddingHorizontal: 20,
+              backgroundColor: "white"
+            }}
+            bounces={false}
+            scrollEnabled={false}
+          />
+        </ScrollView>
       </View>
     </View>
   )

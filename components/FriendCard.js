@@ -22,7 +22,7 @@ export default class FriendCard extends Component {
           containerStyle={{
             backgroundColor: '#C4C4C4',
             borderRadius: 10,
-            marginTop: 10,
+            marginVertical: 7,
           }}
           bottomDivider
           {...this.props}

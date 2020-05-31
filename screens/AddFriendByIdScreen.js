@@ -2,10 +2,9 @@ import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 
-import { getUserByUsername, getUserByUid, addFriend, getUserRelationship, getRelationshipType } from '../API/FriendAPI'
+import { getUserByUsername, getUserByUid, addFriend, addFriendByFlag, getUserRelationship, getRelationshipType } from '../API/FriendAPI'
 
 import firebase from 'firebase';
-
 
 
 export default function AddFriendByIdScreen({ navigation, route }) {
@@ -14,6 +13,8 @@ export default function AddFriendByIdScreen({ navigation, route }) {
   const [currentUser, setCurrentUser] = React.useState(null);
   const [resultUser, setResultUser] = React.useState(null);
   const [searchButtonClicked, setSearchButtonClicked] = React.useState(false);
+  const [addedFlag, setAddedFlag] = React.useState(false);
+
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -23,9 +24,12 @@ export default function AddFriendByIdScreen({ navigation, route }) {
 
   async function searchUserByUsername() {
     let resultUser = await getRelationshipType(firebase.auth().currentUser.uid, searchUsername);
-    setResultUser(resultUser); 
+    console.log(resultUser)
+    setResultUser(resultUser);
     setSearchButtonClicked(true);
+    setAddedFlag(false)
   };
+
 
 
   async function fetchCurrentUser() {
@@ -34,12 +38,28 @@ export default function AddFriendByIdScreen({ navigation, route }) {
   }
 
   async function addSearchedFriend() {
-    let userRelationship= {
-      UserId1 : currentUser.UserId,
-      UserId2 : resultUser.UserId,
-      Type : "Friend"
+    if(!resultUser.WasDeleted){
+      let newRelationship= {
+        UserId1 : currentUser.UserId,
+        UserId2 : resultUser.UserId,
+        Type : "Friend"
+      }
+      let response = await addFriend(newRelationship);
+      if(response.status === 200){
+        setAddedFlag(true);
+      }
     }
-    await addFriend(userRelationship);
+    else{
+      let userRelationship= {
+        UserId1 : currentUser.UserId,
+        UserId2 : resultUser.UserId,
+      }
+      
+      let response = await addFriendByFlag(userRelationship);
+      if(response.status === 200){
+        setAddedFlag(true);
+      }
+    } 
   }
 
 
@@ -82,9 +102,9 @@ export default function AddFriendByIdScreen({ navigation, route }) {
             (<View>
               <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
               <Button
-                title={resultUser.Type === "Friend" ? 'Already a Friend' : 'Add'}
+                title={resultUser.HasRelationship || addedFlag ? 'Already a Friend' : 'Add'}
                 onPress={addSearchedFriend}
-                disabled={resultUser.Type === "Friend" && true}
+                disabled={resultUser.HasRelationship || addedFlag ? true : false}
               />
             </View>) 
             : searchButtonClicked && (<View><Text style={{fontSize: 20, fontWeight: 'bold'}}>User not found</Text></View>)
