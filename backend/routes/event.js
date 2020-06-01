@@ -183,9 +183,9 @@ router.post('/', function (req,res) {
         connection.release();
       }
       if (results.insertId) {
-        const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false]);
+        const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false, null]);
         const eventId = results.insertId;
-        users.push([results.insertId, req.body.host, 'ACCEPTED', true]);
+        users.push([results.insertId, req.body.host, 'ACCEPTED', true, null]);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);
