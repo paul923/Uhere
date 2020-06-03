@@ -17,6 +17,9 @@ export default function EventDetailWithMiniMap({ event, eventMembers, onPress })
             {event &&
             (<MapView
                 style={styles.mapStyle}
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
                 region={
                     {
                         latitude: event.LocationGeolat,

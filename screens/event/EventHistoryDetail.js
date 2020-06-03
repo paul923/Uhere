@@ -4,6 +4,7 @@ import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import EventDetail from './EventDetail'
 import { getEventByID, getEventMembers } from '../../API/EventAPI'
 import { formatDate, formatTime } from "../../utils/date";
+import EventUser from '../../components/EventUser'
 
 export default function EventHistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -32,22 +33,8 @@ export default function EventHistoryDetail({ navigation, route }) {
             comparison = -1;
         }
         return comparison;
-      }
-
-    function Item({ item, index }) {
-        return (
-            <View style={styles.item}>
-                <View style={styles.row}>
-                    <Text style={styles.title}>{index + 1}.</Text>
-                    <View style={styles.column}>
-                        <Text style={styles.title}>{item.Nickname}</Text>
-                    </View>
-                    <Text style={styles.status}>{new Date(item.ArrivedTime) <= new Date(event.DateTime) ? 'On Time' : 'Late'}</Text>
-                </View>
-            </View>
-        );
     }
-    
+
     return (
         <View style={styles.container}>
             {isLoading !== true && (
@@ -71,17 +58,17 @@ export default function EventHistoryDetail({ navigation, route }) {
                     <View style={styles.statusContainer}>
                         <FlatList
                             data={eventMembers}
-                            renderItem={({ item, index }) => <Item item={item} index={index} />}
+                            renderItem={({ item, index }) => <EventUser item={item} index={index} event={event} />}
                             keyExtractor={item => item.UserId}
                         />
                     </View>
                     {/* Buttons */}
                     <View style={{ flexDirection: "row" }}>
                         <View style={styles.buttonStyle}>
-                            <Button title='Shout'/>
+                            <Button title='Shout' />
                         </View>
                         <View style={styles.buttonStyle}>
-                            <Button title='Play'/>
+                            <Button title='Play' />
                         </View>
                     </View>
                     {/* Event Detail */}
@@ -100,28 +87,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     statusContainer: {
-        flex: 1,
+        flex: 2,
     },
-    buttonStyle:{
+    buttonStyle: {
         flex: 1,
     },
     detailContainer: {
-        flex: 1,
-    },
-    item: {
-        padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
-    },
-    title: {
-    },
-    status: {
-    },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-    },
-    column: {
-        marginLeft: 15,
+        flex: 2,
     },
 })

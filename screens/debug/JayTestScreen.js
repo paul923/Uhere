@@ -75,6 +75,7 @@ export default function JayTestScreen({ navigation }) {
                         <MapView.Marker.Animated
                             ref={markerRef}
                             coordinate={markerCoordinate}
+                            image={require('../../assets/markers/marker-128.png')}
                         />
                     </MapView>
                 )}
