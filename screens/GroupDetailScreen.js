@@ -5,17 +5,17 @@ import FriendCard from '../components/FriendCard';
 
 import {  } from '../API/FriendAPI'
 
-import { store, StateProvider } from 'contexts/GroupContext';
+import { GroupContext, GroupProvider, useStateValue } from 'contexts/GroupContext';
 
 
 export default function GroupDetailScreen({ navigation, route }) {
   const [groupName, setGroupName] = React.useState("");
-  const { state, dispatch } = React.useContext(store);
+  const [state, dispatch] = React.useContext(GroupContext);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     console.log(state);
-    // dispatch({type: 'change group data'})
+    dispatch({type: 'change group data', newValue:'Hello'})
   }, []);
 
   function manageFriends(){
@@ -27,7 +27,6 @@ export default function GroupDetailScreen({ navigation, route }) {
   }
 
   return (
-    <StateProvider>
     <View style={styles.container}>
       <Header
         leftComponent={
@@ -63,6 +62,7 @@ export default function GroupDetailScreen({ navigation, route }) {
        * TODO: display list of group members on Flatlist
        */}
       <FlatList/>
+      <Text>{state.groupData.value}</Text>
       <Button
         style={styles.button}
         icon={
@@ -81,7 +81,6 @@ export default function GroupDetailScreen({ navigation, route }) {
       />
 
     </View>
-    </StateProvider>
   )
 }
 

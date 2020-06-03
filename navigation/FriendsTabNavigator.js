@@ -7,6 +7,7 @@ import AddFriendByIdScreen from '../screens/AddFriendByIdScreen'
 import FriendScreen from '../screens/FriendScreen'
 import AddFriendsScreen from '../screens/AddFriendsScreen'
 import GroupDetailScreen from '../screens/GroupDetailScreen'
+import { GroupProvider } from 'contexts/GroupContext';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ export default function FriendsTabNavigator({ navigation, route }) {
   }, []);
 
   return (
+    <GroupProvider>
     <Stack.Navigator initialRouteName="Friend Screen" headerMode="none">
       <Stack.Screen
         name="Add Friend Selection"
@@ -43,5 +45,7 @@ export default function FriendsTabNavigator({ navigation, route }) {
         component={GroupDetailScreen}
       />
     </Stack.Navigator>
+    </GroupProvider>
+
   )
 }

@@ -5,27 +5,27 @@ const initialState = {
     value: "test"
   },
 }
-const store = React.createContext(initialState);
+export const GroupContext = React.createContext();
 
-const { Provider } = store;
-
-const StateProvider = ( { children } ) => {
-  const [state, dispatch] = React.useReducer((state, action) => {
-    switch(action.type) {
-      case 'change group data':
-        const newState = {
-          groupData: {
-            value: action.newValue
-          }
+const reducer = (state, action) => {
+  switch(action.type) {
+    case 'change group data':
+      const newState = {
+        groupData: {
+          value: action.newValue
         }
-        return newState;
-      default:
-        throw new Error();
-    };
-  }, initialState);
+      }
+      return newState;
+    default:
+      return state;
+  };
+}
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>;
-};
-
-
-export { store, StateProvider }
+export const GroupProvider = ( { children } ) => {
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+  return (
+    <GroupContext.Provider value={[state, dispatch]}>
+      {children}
+    </GroupContext.Provider>
+  )
+}
