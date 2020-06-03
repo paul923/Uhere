@@ -39,12 +39,12 @@ export default function FriendScreen({navigation}) {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { 
-          text: "OK", 
+        {
+          text: "OK",
           onPress: () => {
             console.log("OK Pressed");
             removeFriend(user.UserId);
-          } 
+          }
         }
       ],
       { cancelable: false }
@@ -82,7 +82,9 @@ export default function FriendScreen({navigation}) {
   }
   function renderGroupsCard({ item }){
     return(
-      <TouchableOpacity onPress={()=> navigation.navigate('Group Detail')}>
+      <TouchableOpacity onPress={()=> navigation.navigate('Group Detail', {
+        groupId: item.GroupId
+      })}>
         <FriendCard
           displayName = {item.GroupName}
           userId = {item.GroupName}
@@ -102,11 +104,11 @@ export default function FriendScreen({navigation}) {
 
   function friendSearch(text) {
     setSearchText(text);
-  
+
     let filtered = friends.filter(function (item) {
       return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
     });
-  
+
     setFilteredData(filtered)
   }
 
@@ -117,7 +119,7 @@ export default function FriendScreen({navigation}) {
     setDropDownToggle(false);
   }
 
-   
+
   return (
     <View style={styles.container}>
       <Header
@@ -162,7 +164,7 @@ export default function FriendScreen({navigation}) {
               </View>
             </TouchableOpacity>
             <View style={{height: '70%', borderWidth: 0.5, borderColor: '#EBEBEB'}}></View>
-            
+
             <TouchableOpacity onPress={()=> pressDropDownItem('Add Friend Selection')}>
               <View style={styles.dropDownButton}>
                 <Icon name="user" type="feather"/>
@@ -233,7 +235,7 @@ export default function FriendScreen({navigation}) {
 
         {
          /**
-          * Group section */ 
+          * Group section */
         }
         <ScrollView>
           <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
