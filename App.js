@@ -54,7 +54,7 @@ export default function App(props) {
     console.log('ios', ios == null ? 'not ios' : ios.scope);
     console.log('android', android == null ? 'not android' : android.scope);
     // first time installing give you undetermined
-    if (Platform.OS === 'ios' ? (status === 'granted' && ios.scope === 'always') : (status === 'granted' && android.scope === 'fine')) {
+    if (Platform.OS === 'ios' ? (status === 'granted' && ios.scope === 'whenInUse') : (status === 'granted' && android.scope === 'fine')) {
       setLocationPermissionGranted(true);
     } else {
       setLocationPermissionGranted(false);

@@ -220,6 +220,7 @@ export default function EventHistory({ navigation, route }) {
         swipeDirection={['down']}
         onSwipeComplete={() => setModalVisible(false)}
         onBackdropPress={() => setModalVisible(false)}
+        avoidKeyboard={true}
       >
         <SafeAreaView style={{backgroundColor:'white'}}>
           <Header
@@ -262,14 +263,14 @@ export default function EventHistory({ navigation, route }) {
             <Text style={{ margin: 10 }}>CHOOSE A DATE RANGE</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
 
-              <TouchableOpacity onPress={showFromDatePicker} style={{ flex: 1, backgroundColor:'blue' }}>
+              <TouchableOpacity onPress={showFromDatePicker} style={{ flex: 1, backgroundColor:'white' }}>
                 <View style={{ flexDirection: 'column', margin:10 }}>
                   <Text>From</Text>
                   {fromDate === undefined ? <Text>Pick a date</Text> : <Text>{formatDate(fromDate)}</Text>}
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity onPress={showToDatePicker} style={{ flex: 1, backgroundColor:'red' }}>
+              <TouchableOpacity onPress={showToDatePicker} style={{ flex: 1, backgroundColor:'white' }}>
                 <View style={{ flexDirection: 'column', margin:10 }}>
                   <Text>To</Text>
                   {toDate === undefined ? <Text>Pick a date</Text> : <Text>{formatDate(toDate)}</Text>}
@@ -315,7 +316,7 @@ export default function EventHistory({ navigation, route }) {
               keyExtractor={(item) => item.UserId}
               contentContainerStyle={{
                 backgroundColor: "white"
-                ,height:400
+                ,height:300
               }}
               bounces={true}
             />
