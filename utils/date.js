@@ -6,7 +6,7 @@ export function formatDate(date) {
 }
 
 export function formatTime(date) {
-  return format(date, 'a hh:mm')
+  return format(date, 'hh:mm a')
 }
 
 export function formatMonth(date) {
