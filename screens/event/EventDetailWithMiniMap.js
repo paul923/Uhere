@@ -10,18 +10,16 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA = 0.002;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-export default function EventDetailWithMiniMap({ event, eventMembers }) {
-    React.useEffect(() => {
-        async function fetchData() {
-        }
-        fetchData()
-    }, []);
+export default function EventDetailWithMiniMap({ event, eventMembers, onPress }) {
     return (
         <View style={styles.container}>
             {/* Map */}
             {event &&
             (<MapView
                 style={styles.mapStyle}
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
                 region={
                     {
                         latitude: event.LocationGeolat,
@@ -45,7 +43,7 @@ export default function EventDetailWithMiniMap({ event, eventMembers }) {
             {/* Event Detail */}
             {event && (
               <View style={styles.detailContainer} >
-                  <EventDetail event={event} eventMembers={eventMembers} />
+                  <EventDetail event={event} eventMembers={eventMembers} onPress={onPress} />
               </View>
             )}
         </View>

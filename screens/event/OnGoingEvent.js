@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
-import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
+import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
+import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import EventCard from '../../components/EventCard';
-import EventFilter from '../../components/EventFilter';
 import { formatEventList } from '../../utils/event';
+import { formatDate, formatTime } from '../../utils/date';
 import Constants from "expo-constants";
 import firebase from "firebase";
-
 const { manifest } = Constants;
 import { backend } from '../../constants/Environment';
-
 
 export default function OnGoingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
@@ -20,7 +18,7 @@ export default function OnGoingEvent({ navigation, route }) {
         let url = `http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`;
         let response = await fetch(url);
         let responseJson = await response.json();
-        setEvents(formatEventList(responseJson));
+        setEvents(formatEventList(responseJson))
       } catch (error) {
         console.error(error);
       }
@@ -28,7 +26,6 @@ export default function OnGoingEvent({ navigation, route }) {
     const unsubscribeFocus = navigation.addListener('focus', () => {
       fetchData();
     });
-
     return unsubscribeFocus;
   }, []);
   async function onRefresh() {
@@ -65,7 +62,6 @@ export default function OnGoingEvent({ navigation, route }) {
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
-        ListHeaderComponent={EventFilter}
         ItemSeparatorComponent={() => (<Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />)}
         showsVerticalScrollIndicator={false}
       />
@@ -88,5 +84,5 @@ const styles = StyleSheet.create({
       backgroundColor: 'gray',
       paddingLeft: 5,
       zIndex: 99
-    }
+    },
 });

@@ -67,7 +67,6 @@ export default function PendingEvent({ navigation, route }) {
         renderSectionHeader={({ section }) => (
           <Text style={styles.sectionHeader}>{section.title}</Text>
         )}
-        ListHeaderComponent={EventFilter}
         ItemSeparatorComponent={() => (<Divider style={{ height: 1, margin: 5, backgroundColor: 'black' }} />)}
         showsVerticalScrollIndicator={false}
       />

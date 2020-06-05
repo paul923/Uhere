@@ -64,12 +64,14 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     const location = locations[0]
     if (firebase.auth().currentUser){
       let user = firebase.auth().currentUser.uid;
-      let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+      let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
+      let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
+      let position = { latitude: location.coords.latitude += randomMovelat, longitude: location.coords.longitude += randomMovelon }
       socket.emit('position', {
           user,
           position
       })
-      console.log(socket.id + ": " + JSON.stringify(location.coords));
+      //console.log(user + ": " + JSON.stringify(position));
     }
   }
 });
@@ -83,7 +85,7 @@ export default function MainAppNavigator({ navigation, route }) {
     async function runBackgroundLocationTask() {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,
-        timeInterval: 1000,
+        timeInterval: 5000,
         distanceInterval: 0,
       });
     }

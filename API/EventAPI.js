@@ -22,6 +22,7 @@ export async function getEventMembers(EventId) {
         let members = [];
         for (const eventuser of eventusers) {
             let member = await getUserByID(eventuser.UserId);
+            member.ArrivedTime = eventuser.ArrivedTime
             members.push(member);
         }
         return members;

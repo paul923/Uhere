@@ -61,6 +61,35 @@ router.get('/accepted/:userId', function (req, res) {
 });
 
 // Creating a GET route that returns data from the 'users' table.
+router.get('/history/:userId', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
+    FROM Event, EventUser
+    where 1=1
+    AND Event.DateTime < NOW()
+    AND Event.EventID = EventUser.EventID
+    AND EXISTS (
+    	SELECT 1
+        FROM EventUser
+        WHERE 1=1
+        AND Event.EventID = EventUser.EventID
+        and EventUser.Status != 'PENDING'
+        and EventUser.UserId = '${req.params.userId}'
+    )
+    GROUP BY Event.EventId`
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      // If some error occurs, we throw an error.
+      if (error) throw error;
+      // Getting the 'response' from the database and sending it to our route. This is were the data is.
+      res.send(results)
+    });
+  });
+});
+
+// Creating a GET route that returns data from the 'users' table.
 router.get('/ongoing/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
