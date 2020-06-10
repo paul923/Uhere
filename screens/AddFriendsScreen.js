@@ -8,13 +8,15 @@ import Collapse from '../components/Collapse';
 import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 
+import { GroupContext } from 'contexts/GroupContext';
 
 
 export default function AddFriendsScreen ({route, navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
-  const [ selectedFriends, setSelectedFriends] = React.useState(route.params && route.params.selectedFriends);
+  const [ state, dispatch] = React.useContext(GroupContext);
+  const [ selectedFriends, setSelectedFriends] = React.useState(state.groupData.Members ?? []);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -30,10 +32,8 @@ export default function AddFriendsScreen ({route, navigation}) {
       responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
       setFriends(responseJson.response);
     }
-
+    console.log(state)
     retrieveFriend();
-    console.log('selectedfriends', selectedFriends)
-
   }, []);
 
 
@@ -60,6 +60,7 @@ export default function AddFriendsScreen ({route, navigation}) {
         uncheckedIcon: 'circle-o',
         checkedColor:'#ff8a8a',
         uncheckedColor: '#ff8a8a',
+        checked: selectedFriends.some(i => i.UserId === item.UserId),
         onPress: () => selectFriend(item)
       }}
     />

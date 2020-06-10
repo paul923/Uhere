@@ -6,12 +6,14 @@ import FriendCard from '../components/FriendCard';
 import { postGroup } from '../API/FriendAPI'
 import firebase from 'firebase';
 import { useIsFocused } from '@react-navigation/native'
+import { GroupContext } from 'contexts/GroupContext';
 
 
 
 export default function CreateGroupScreen({ navigation, route }) {
   const [groupName, setGroupName] = React.useState("");
   const [newSelectedFriends, setNewSelectedFriends] = React.useState([]);
+  const [ state, dispatch] = React.useContext(GroupContext);
 
   const isFocused = useIsFocused();
 
@@ -79,7 +81,11 @@ export default function CreateGroupScreen({ navigation, route }) {
         <View style={styles.addFriendsContainer}>
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}
-          <TouchableOpacity onPress={()=> {navigation.navigate('Add Friend List', {selectedFriends: newSelectedFriends}); console.log(newSelectedFriends)}}>
+          <TouchableOpacity onPress={()=> {
+            navigation.navigate('Add Friend List', {selectedFriends: newSelectedFriends}); 
+            console.log(newSelectedFriends);
+            dispatch({type: 'change group data', dataObject: []})
+          }}>
             <View style={styles.addButton}>
               <Icon
                 name="plus"

@@ -49,7 +49,7 @@ export async function getFriendsList(UserId) {
 
 export async function getUserGroup(UserId) {
     try {
-        let url = `http://${backend}:3000/user/group/${UserId}`;
+        let url = `http://${backend}:3000/user/${UserId}/group`;
         let response = await fetch(url);
         let json = await response.json();
         if(json.status !== 204){
@@ -59,9 +59,46 @@ export async function getUserGroup(UserId) {
                   GroupId: id,
                   UserId: _.get(_.find(items, 'UserId'), 'UserId'),
                   GroupName: _.get(_.find(items, 'GroupName'), 'GroupName'),
-                  MemberIds: _.map(items, 'MemberId'),
+                  Members: items.map(function(item){
+                      return {
+                          MemberId : item.MemberId,
+                          Nickname : item.Nickname,
+                          Username : item.Username
+                      }
+                  }),
                 }
             }).value();
+            return sortedGroups;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getGroupById(UserId, GroupId) {
+    try {
+        let url = `http://${backend}:3000/user/${UserId}/group/${GroupId}`;
+        let response = await fetch(url);
+        let json = await response.json();
+        if(json.status !== 204){
+            let group = json.response;
+            let sortedGroups = 
+                {
+                  GroupId: _.get(_.find(group, 'GroupId'), 'GroupId'),
+                  UserId: _.get(_.find(group, 'UserId'), 'UserId'),
+                  GroupName: _.get(_.find(group, 'GroupName'), 'GroupName'),
+                  Members: _.map(group, function (obj) {
+                    let member = _.omit(obj, ["UserId","GroupId", "GroupName"]);
+                    member['UserId'] = member["MemberId"];
+                    delete member["MemberId"];
+                    return member;
+                  })
+                }
+            ;
+            console.log("sortedGroup",sortedGroups)
             return sortedGroups;
         } else {
             return null;
@@ -125,8 +162,8 @@ export async function deleteGroupMember(group, deleteMembers) {
     return responseJson;
 }
 
-export async function deleteGroup(groupId) {
-    let url = `http://${backend}:3000/user/group/${groupId}`;
+export async function deleteGroupById(userId, groupId) {
+    let url = `http://${backend}:3000/user/${userId}/group/${groupId}`;
     let response = await fetch(url, {
       method: 'DELETE',
       headers: {

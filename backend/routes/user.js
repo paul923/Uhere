@@ -44,10 +44,10 @@ router.get('/username/:username', function(req, res, next) {
     });
   });
 })
-router.get('/group/:userId', function(req, res, next) {
+router.get('/:userId/group', function(req, res, next) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = "SELECT UserGroup.GroupId, UserId, MemberId, GroupName FROM uhere.UserGroup join GroupMember on UserGroup.GroupId = GroupMember.GroupId WHERE UserId = ? AND UserGroup.IsDeleted = 0 AND GroupMember.IsDeleted = 0";
+    var sql = "SELECT UserGroup.GroupId, UserGroup.UserId, MemberId, GroupName, User.Nickname, User.Username FROM uhere.UserGroup join GroupMember on UserGroup.GroupId = GroupMember.GroupId join User on GroupMember.MemberId = User.UserId WHERE UserGroup.UserId = ? AND UserGroup.IsDeleted = 0 AND GroupMember.IsDeleted = 0";
     var user = req.params.userId;
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql,user, function (error, results, fields) {
@@ -77,6 +77,24 @@ router.put('/group/name', function(req, res, next) {
       }
       console.log(results);
       res.json({"status": 200, "response": "updated"});
+    });
+  });
+})
+router.get('/:userId/group/:groupId', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = `SELECT UserGroup.GroupId, UserGroup.UserId, GroupName, MemberId, Username, Nickname, AvatarURI, AvatarColor, RegisteredDate, GroupMember.IsDeleted FROM UserGroup join GroupMember on UserGroup.GroupId = GroupMember.GroupId join User on GroupMember.MemberId = User.UserId WHERE UserGroup.UserId = '${req.params.userId}' AND UserGroup.GroupId = ${req.params.groupId} AND GroupMember.IsDeleted = 0 AND UserGroup.IsDeleted = 0`;
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.length > 0) {
+        res.json({"status": 200, "response": results});
+      } else {
+        res.json({"status": 204, "response": "Not Found"})
+      }
     });
   });
 })
@@ -180,11 +198,11 @@ router.delete('/group/member/:groupId', function(req, res, next) {
   });
 })
 
-router.delete('/group/:groupId', function(req, res, next) {
+router.delete('/:userId/group/:groupId', function(req, res, next) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     console.log("Connected!");
-    var sql = `update UserGroup SET IsDeleted = 1 where GroupId = ${req.params.groupId}`;
+    var sql = `update UserGroup SET IsDeleted = 1 where GroupId = ${req.params.groupId} AND UserId = '${req.params.userId}'`;
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
       if (error) {

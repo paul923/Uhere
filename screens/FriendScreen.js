@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, Alert } from 'react-native';
+import { StyleSheet, Text, View, SectionList, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, Alert } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
@@ -17,6 +17,7 @@ export default function FriendScreen({navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
   const [ groups, setGroups] = React.useState([]);
+  const [ combinedData, setCombinedData] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
   const [ dropDownToggle, setDropDownToggle] = React.useState(false);
   const [ groupMembers, setGroupMembers] = React.useState([]);
@@ -24,8 +25,7 @@ export default function FriendScreen({navigation}) {
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
-    retrieveListData();
-    retrieveGroup();
+    retrieveData();
     // Sorts friends list on initial load
   }, [isFocused]);
 
@@ -50,48 +50,29 @@ export default function FriendScreen({navigation}) {
       { cancelable: false }
     );}
 
-  async function retrieveListData() {
+
+  async function retrieveData() {
     let list = await getFriendsList(firebase.auth().currentUser.uid);
     list.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
     setFriends(list);
-  }
 
-  async function retrieveGroup() {
     let group = await getUserGroup(firebase.auth().currentUser.uid);
-    console.log(group)
     setGroups(group);
+    console.log(group)
+
+    let data = [
+      {
+        title: "Groups",
+        data: group
+      },
+      {
+        title: "Friends",
+        data: list
+      }
+    ]
+    setCombinedData(data)
   }
 
-  function renderFriendsCard({ item }){
-    return (
-      <FriendCard
-        avatarUrl= {item.AvatarURI}
-        avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
-        displayName = {item.Nickname}
-        userId = {item.Username}
-        rightElement = {
-          <Button
-            title="Remove"
-            titleStyle= {{fontSize: 12}}
-            buttonStyle={{backgroundColor: 'red'}}
-            onPress={()=>createTwoButtonRemoveAlert(item)}
-          />
-        }
-      />
-    )
-  }
-  function renderGroupsCard({ item }){
-    return(
-      <TouchableOpacity onPress={()=> navigation.navigate('Group Detail', {
-        groupId: item.GroupId
-      })}>
-        <FriendCard
-          displayName = {item.GroupName}
-          userId = {item.GroupName}
-        />
-      </TouchableOpacity>
-    )
-  }
   async function removeFriend(friendId){
     console.log(`Remove Friend Id ${friendId}`);
 
@@ -105,10 +86,37 @@ export default function FriendScreen({navigation}) {
   function friendSearch(text) {
     setSearchText(text);
 
-    let filtered = friends.filter(function (item) {
-      return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
-    });
+    // let filtered = friends.filter(function (item) {
+    //   return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
+    // });
+    let filtered = combinedData.map(section => {
+      if(section.title === "Friends"){
+        let filteredFriends = section.data.filter(function(item){
+          return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
+        })
+        let filteredObject =
+        {
+          title: "Friends",
+          data: filteredFriends
+        };
+        return filteredObject;
+      } else if(section.title === "Groups"){
+        let filteredGroups = section.data.filter(function(item){
+          let flag = item.GroupName.toLowerCase().includes(text.toLowerCase()) || item.Members.some(function(item){
+            return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
+          })
+          return flag;
+        })
+        let filteredObject =
+        {
+          title: "Groups",
+          data: filteredGroups
+        };
+        return filteredObject;
+      }
 
+    })
+    console.log(filtered)
     setFilteredData(filtered)
   }
 
@@ -237,6 +245,9 @@ export default function FriendScreen({navigation}) {
          /**
           * Group section */
         }
+        {
+         /**
+          
         <ScrollView>
           <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
             <Text style={{fontSize: 18, fontWeight: 'bold'}}>Group</Text>
@@ -265,6 +276,52 @@ export default function FriendScreen({navigation}) {
             scrollEnabled={false}
           />
         </ScrollView>
+
+        * Group section */
+        }
+
+        <SectionList
+          sections={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && combinedData)}
+          keyExtractor={(item, index) => item + index}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            backgroundColor: "white"
+          }}
+          renderItem={({ item, section }) => {
+            if(section.title === "Groups"){
+              return (
+                <TouchableOpacity onPress={()=> navigation.navigate('Group Detail', {
+                  groupId: item.GroupId
+                })}>
+                  <FriendCard
+                    displayName = {item.GroupName}
+                    userId = {item.GroupName}
+                  />
+                </TouchableOpacity>
+              )
+            } else if(section.title === "Friends"){
+              return (
+                <FriendCard
+                  avatarUrl= {item.AvatarURI}
+                  avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+                  displayName = {item.Nickname}
+                  userId = {item.Username}
+                  rightElement = {
+                    <Button
+                      title="Remove"
+                      titleStyle= {{fontSize: 12}}
+                      buttonStyle={{backgroundColor: 'red'}}
+                      onPress={()=>createTwoButtonRemoveAlert(item)}
+                    />
+                  }
+                />
+              )
+            }
+          }}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={{fontSize: 18, fontWeight: 'bold'}}>{title}</Text>
+          )}
+        />
       </View>
     </View>
   )

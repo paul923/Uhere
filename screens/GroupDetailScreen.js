@@ -1,29 +1,72 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList, Alert } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import {  } from '../API/FriendAPI'
+import { getGroupById, deleteGroupById } from '../API/FriendAPI'
+import firebase from 'firebase';
 
 import { GroupContext, GroupProvider, useStateValue } from 'contexts/GroupContext';
 
 
 export default function GroupDetailScreen({ navigation, route }) {
-  const [groupName, setGroupName] = React.useState("");
   const [state, dispatch] = React.useContext(GroupContext);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    console.log(state);
-    dispatch({type: 'change group data', newValue:'Hello'})
+    console.log("Groupdetailscreen state",state);
+    route.params && retrieveGroupById(route.params.groupId)
   }, []);
+
+  const createTwoButtonRemoveAlert = () =>{
+    Alert.alert(
+      `Remove ${state.groupData.GroupName}?`,
+      `You cannot undo this action`,
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            console.log("OK Pressed");
+            deleteGroup();
+          }
+        }
+      ],
+      { cancelable: false }
+    );}
+
+  async function retrieveGroupById(groupId){
+    let userGroup = await getGroupById(firebase.auth().currentUser.uid,groupId);
+    dispatch({type: 'change group data', dataObject: userGroup})
+  }
 
   function manageFriends(){
     navigation.navigate('Add Friend List')
   }
 
-  function deleteGroup(){
+  async function deleteGroup(){
+    console.log("Deleting group");
+    let response = await deleteGroupById(firebase.auth().currentUser.uid, state.groupData.GroupId)
+    if(response.status === 200){
+      navigation.goBack();
+    } else {
+      console.error("error has occurred")
+    }
+  }
 
+  function renderFriendsCard({ item }){
+    return (
+      <FriendCard
+        avatarUrl= {item.AvatarURI}
+        avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+        displayName = {item.Nickname}
+        userId = {item.Username}
+      />
+    )
   }
 
   return (
@@ -58,11 +101,17 @@ export default function GroupDetailScreen({ navigation, route }) {
         onPress={() => manageFriends()}
       />
 
-      {/**
-       * TODO: display list of group members on Flatlist
-       */}
-      <FlatList/>
-      <Text>{state.groupData.value}</Text>
+      <FlatList
+        data={state.groupData.Members}
+        renderItem={renderFriendsCard}
+        keyExtractor={(item) => {item.GroupId + item.UserId}}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          backgroundColor: "white"
+        }}
+        bounces={false}
+        scrollEnabled={false}
+      />
       <Button
         style={styles.button}
         icon={
@@ -77,12 +126,13 @@ export default function GroupDetailScreen({ navigation, route }) {
           backgroundColor: "#FF5B5B",
           borderRadius: 10
         }}
-        onPress={() => deleteGroup()}
+        onPress={() => createTwoButtonRemoveAlert()}
       />
 
     </View>
   )
 }
+
 
 const styles = StyleSheet.create({
   container: {

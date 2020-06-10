@@ -11,9 +11,7 @@ const reducer = (state, action) => {
   switch(action.type) {
     case 'change group data':
       const newState = {
-        groupData: {
-          value: action.newValue
-        }
+        groupData: action.dataObject
       }
       return newState;
     default:
