@@ -8,13 +8,15 @@ import Collapse from '../components/Collapse';
 import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 
+import { GroupContext } from 'contexts/GroupContext';
 
 
-export default function AddFriendsScreen ({navigation}) {
+export default function AddFriendsScreen ({route, navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
-  const [ selectedFriends, setSelectedFriends] = React.useState([]);
+  const [ state, dispatch] = React.useContext(GroupContext);
+  const [ selectedFriends, setSelectedFriends] = React.useState(state.groupData.Members ?? []);
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -30,11 +32,8 @@ export default function AddFriendsScreen ({navigation}) {
       responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
       setFriends(responseJson.response);
     }
-
+    console.log(state)
     retrieveFriend();
-    
-    console.log(selectedFriends)
-
   }, []);
 
 
@@ -61,7 +60,7 @@ export default function AddFriendsScreen ({navigation}) {
         uncheckedIcon: 'circle-o',
         checkedColor:'#ff8a8a',
         uncheckedColor: '#ff8a8a',
-        checked: selectedFriends.includes(item),
+        checked: selectedFriends.some(i => i.UserId === item.UserId),
         onPress: () => selectFriend(item)
       }}
     />
@@ -80,12 +79,11 @@ export default function AddFriendsScreen ({navigation}) {
   )}
 
   function selectFriend (item) {
-    if(!selectedFriends.includes(item)){
+    if(!selectedFriends.some(i => i.UserId === item.UserId)){
       setSelectedFriends([...selectedFriends, item])
     } else {
-      setSelectedFriends(selectedFriends.filter(a => a !== item));
+      setSelectedFriends(selectedFriends.filter(a => a.UserId !== item.UserId));
     }
-    console.log(selectedFriends)
   }
 
   return (
@@ -102,7 +100,7 @@ export default function AddFriendsScreen ({navigation}) {
           />
         }
         rightComponent={
-          <TouchableOpacity onPress={()=> navigation.navigate('Create Group', {selectedFriends: selectedFriends})}>
+          <TouchableOpacity onPress={()=> {navigation.navigate('Create Group', {selectedFriends: selectedFriends}); console.log(selectedFriends)}}>
             <Text style={{color: 'white', marginHorizontal: 5}}>OK</Text>
           </TouchableOpacity>
         }

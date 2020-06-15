@@ -11,18 +11,20 @@ export default class FriendCard extends Component {
     return (
         <ListItem
           title={this.props.displayName}
+          titleStyle={{fontSize: 17, fontWeight: "bold"}}
           subtitle={`@${this.props.userId}`}
-          titleStyle={{fontSize: 20, fontWeight: "bold"}}
+          subtitleStyle={{fontSize: 12}}
           leftAvatar={{
             rounded: true,
-            size: 60,
+            size: 50,
             title: `${this.props.avatarTitle}`,
             source: {uri: `${this.props.avatarUrl}`}
           }}
           containerStyle={{
             backgroundColor: '#C4C4C4',
             borderRadius: 10,
-            marginTop: 10,
+            marginVertical: 3,
+            padding: 10
           }}
           bottomDivider
           {...this.props}

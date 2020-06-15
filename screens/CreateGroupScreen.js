@@ -5,29 +5,32 @@ import FriendCard from '../components/FriendCard';
 
 import { postGroup } from '../API/FriendAPI'
 import firebase from 'firebase';
+import { useIsFocused } from '@react-navigation/native'
+import { GroupContext } from 'contexts/GroupContext';
 
 
 
 export default function CreateGroupScreen({ navigation, route }) {
   const [groupName, setGroupName] = React.useState("");
-  const [selectedFriends, setSelectedFriends] = React.useState(null);
+  const [newSelectedFriends, setNewSelectedFriends] = React.useState([]);
+  const [ state, dispatch] = React.useContext(GroupContext);
+
+  const isFocused = useIsFocused();
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    route.params && setSelectedFriends(route.params.selectedFriends);
-    route.params && console.log('route is',route.params.selectedFriends);
-  });
+    route.params && setNewSelectedFriends(route.params.selectedFriends);
+  }, [isFocused]);
 
   async function createGroup(){
     let group = {
       UserId : firebase.auth().currentUser.uid,
       GroupName : groupName
     }
-    let response = await postGroup(group, selectedFriends);
+    let response = await postGroup(group, newSelectedFriends);
     if(response){
       navigation.goBack()
     }
-
   }
 
   function renderFriendsCard({ item }){
@@ -56,8 +59,10 @@ export default function CreateGroupScreen({ navigation, route }) {
           />
         }
         rightComponent={
-          <TouchableOpacity onPress={() => createGroup()}>
-            <Text style={{color: 'white'}}>Done</Text>
+          <TouchableOpacity 
+            disabled = { groupName.length !== 0 ? false : true}
+            onPress={() => createGroup()}>
+            <Text style={{color:  groupName.length !== 0 ? 'white' : 'black'}}>Done</Text>
           </TouchableOpacity>
         }
         centerComponent={{ text: 'Create Group', style: { color: '#fff', fontSize: 20 } }}
@@ -76,7 +81,11 @@ export default function CreateGroupScreen({ navigation, route }) {
         <View style={styles.addFriendsContainer}>
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}
-          <TouchableOpacity onPress={()=> navigation.navigate('Add Friend List')}>
+          <TouchableOpacity onPress={()=> {
+            navigation.navigate('Add Friend List', {selectedFriends: newSelectedFriends}); 
+            console.log(newSelectedFriends);
+            dispatch({type: 'change group data', dataObject: []})
+          }}>
             <View style={styles.addButton}>
               <Icon
                 name="plus"
@@ -86,7 +95,7 @@ export default function CreateGroupScreen({ navigation, route }) {
           </TouchableOpacity>
           <View style={{flex: 1}}>
           <FlatList
-            data={selectedFriends}
+            data={newSelectedFriends}
             renderItem={renderFriendsCard}
             keyExtractor={(item) => item.UserId}
             contentContainerStyle={{
