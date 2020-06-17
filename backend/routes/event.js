@@ -10,10 +10,9 @@ router.get('/', function (req, res) {
   var acceptStatus = req.query.acceptStatus;
   var history = req.query.history ? req.query.history : 'false';
   var userId = req.query.userId;
-  var limit = req.query.limit ? req.query.offset : 20;
+  var limit = req.query.limit ? req.query.limit : 20;
   var offset = req.query.offset ? req.query.offset : 0;
   var sort = req.query.sort;
-
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     if (history === 'true') {
