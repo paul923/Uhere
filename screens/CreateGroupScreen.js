@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import { postGroup } from '../API/FriendAPI'
+import { postGroup } from '../API/GroupAPI'
 import firebase from 'firebase';
 import { useIsFocused } from '@react-navigation/native'
 import { GroupContext } from 'contexts/GroupContext';

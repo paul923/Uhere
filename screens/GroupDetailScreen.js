@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import { getGroupById, deleteGroupById } from '../API/FriendAPI'
+import { getGroupById, deleteGroupById } from '../API/GroupAPI'
 import firebase from 'firebase';
 
 import { GroupContext, GroupProvider, useStateValue } from 'contexts/GroupContext';
@@ -40,7 +40,7 @@ export default function GroupDetailScreen({ navigation, route }) {
     );}
 
   async function retrieveGroupById(groupId){
-    let userGroup = await getGroupById(firebase.auth().currentUser.uid,groupId);
+    let userGroup = await getGroupById(groupId);
     dispatch({type: 'change group data', dataObject: userGroup})
   }
 
@@ -50,7 +50,7 @@ export default function GroupDetailScreen({ navigation, route }) {
 
   async function deleteGroup(){
     console.log("Deleting group");
-    let response = await deleteGroupById(firebase.auth().currentUser.uid, state.groupData.GroupId)
+    let response = await deleteGroupById(state.groupData.GroupId)
     if(response.status === 200){
       navigation.goBack();
     } else {
