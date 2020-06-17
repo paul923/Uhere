@@ -5,18 +5,18 @@ var mysql = require('../db').mysql;
 var CronJob = require('cron').CronJob;
 
 
-//TODO: Apply limit, offset, sort filter
+//TODO: Apply sort filter
 router.get('/', function (req, res) {
   var acceptStatus = req.query.acceptStatus;
-  var history = req.query.history;
+  var history = req.query.history ? req.query.history : 'false';
   var userId = req.query.userId;
-  var limit = req.query.limit;
-  var offset = req.query.offset;
+  var limit = req.query.limit ? req.query.offset : 20;
+  var offset = req.query.offset ? req.query.offset : 0;
   var sort = req.query.sort;
 
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    if (history) {
+    if (history === 'true') {
       var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
       FROM Event, EventUser
       where 1=1
@@ -30,7 +30,8 @@ router.get('/', function (req, res) {
           and EventUser.Status = '${acceptStatus}'
           and EventUser.UserId = '${userId}'
       )
-      GROUP BY Event.EventId`
+      GROUP BY Event.EventId
+      LIMIT ${limit} OFFSET ${offset}`
     } else {
       var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
       FROM Event, EventUser
@@ -45,7 +46,8 @@ router.get('/', function (req, res) {
           and EventUser.Status = '${acceptStatus}'
           and EventUser.UserId = '${userId}'
       )
-      GROUP BY Event.EventId`
+      GROUP BY Event.EventId
+      LIMIT ${limit} OFFSET ${offset}`
     }
 
     connection.query(sql, function (error, results, fields) {
