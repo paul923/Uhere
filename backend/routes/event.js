@@ -81,16 +81,20 @@ router.get('/:eventId', function (req, res) {
       }
       // Getting the 'response' from the database and sending it to our route. This is were the data is.
       if (results.length > 0) {
-        var sql = "SELECT * FROM ?? WHERE EventId = ?";
-        var parameters = ['EventUser', req.params.EventId];
-        sql = mysql.format(sql, parameters);
+        sql = `SELECT * FROM EventUser
+        left join User on EventUser.UserId = User.UserId
+          WHERE 1=1
+          AND EventUser.EventId = ${req.params.eventId}
+          AND EventUser.IsDeleted = false
+          AND User.IsDeleted = false`;
         // Executing the MySQL query (select all data from the 'users' table).
         connection.query(sql, function (error, eventUsers, fields) {
           connection.release();
           if (error) {
             res.status(500).send(error);
           }
-          results.eventUsers = eventUsers
+          results[0].eventUsers = eventUsers
+          console.log(results)
           res.status(200).send(results);
 
         });
