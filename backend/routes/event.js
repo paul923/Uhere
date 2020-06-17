@@ -21,6 +21,7 @@ router.get('/', function (req, res) {
       where 1=1
       AND Event.DateTime < NOW()
       AND Event.EventID = EventUser.EventID
+      AND Event.IsDeleted = false
       AND EXISTS (
       	SELECT 1
           FROM EventUser
@@ -37,6 +38,7 @@ router.get('/', function (req, res) {
       where 1=1
       AND Event.DateTime > NOW()
       AND Event.EventID = EventUser.EventID
+      AND Event.IsDeleted = false
       AND EXISTS (
       	SELECT 1
           FROM EventUser
@@ -69,7 +71,7 @@ router.get('/:eventId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `select * FROM ?? WHERE EventId = ?`;
+    var sql = `select * FROM ?? WHERE EventId = ? and IsDeleted = false`;
     var parameters = ['Event', req.params.eventId];
     sql = mysql.format(sql, parameters);
     connection.query(sql, function (error, results, fields) {
@@ -104,7 +106,7 @@ router.patch('/:eventId/users/:userId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = "UPDATE ?? SET STATUS = ? WHERE UserId = ? AND EventId = ?";
+    var sql = "UPDATE ?? SET STATUS = ? WHERE UserId = ? AND EventId = ? AND IsDeleted = false";
     var parameters = ['EventUser', status, req.params.userId, req.params.eventId];
     sql = mysql.format(sql, parameters);
     // Executing the MySQL query (select all data from the 'users' table).
@@ -122,22 +124,28 @@ router.patch('/:eventId/users/:userId', function (req, res) {
   });
 })
 
-//TODO: Handle existing EventJob associated with eventId
 router.delete('/:eventId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = "UPDATE ?? SET isDeleted = ? WHERE EventId = ?";
+    var sql = "UPDATE ?? SET isDeleted = ? WHERE EventId = ? AND IsDeleted = false";
     var parameters = ['Event', true, req.params.eventId];
     sql = mysql.format(sql, parameters);
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
-      connection.release();
       if (error) {
         res.status(500).send(error);
       }
       if (results.affectedRows > 0) {
-        res.status(200).send();
+        sql = "UPDATE ?? SET isDeleted = ? WHERE EventId = ?";
+        parameters = ['EventJob', true, req.params.eventId];
+        sql = mysql.format(sql, parameters);
+        connection.query(sql, function (error, results, fields) {
+          if (error) {
+            res.status(500).send(error);
+          }
+          res.status(200).send();
+        })
       } else {
         res.status(404).send();
       }

@@ -22,7 +22,7 @@ app.set('io', io);
 
 pool.getConnection(function (err, connection) {
   if (err) throw err; // not connected!
-  var sql = "SELECT * FROM EventJob where IsProcessed = false";
+  var sql = "SELECT * FROM EventJob where IsProcessed = false and IsDeleted = false";
   // Executing the MySQL query (select all data from the 'users' table).
   connection.query(sql, function (error, results, fields) {
     connection.release();
