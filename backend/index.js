@@ -152,7 +152,7 @@ io.on('connection', (socket) => {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use('/event', eventRouter);
+app.use('/events', eventRouter);
 app.use('/user', userRouter);
 app.use('/relationship', relationshipRouter);
 
