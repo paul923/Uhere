@@ -176,9 +176,12 @@ router.post('/', function (req,res) {
         res.status(500).send(error);
       }
       if (results.insertId) {
-        const users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false, null]);
+        let users = [];
+        if (req.body.users){
+          users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false, null, 0]);
+        }
+        users.push([results.insertId, req.body.host, 'ACCEPTED', true, null, 0]);
         const eventId = results.insertId;
-        users.push([results.insertId, req.body.host, 'ACCEPTED', true, null]);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);
@@ -197,14 +200,14 @@ router.post('/', function (req,res) {
           parameters = ['EventJob']
           eventJobSql = mysql.format(eventJobSql, parameters);
           connection.query(eventJobSql, eventJob, function (error, eventJobResult, fields) {
-            connection.release();
             if (error) {
               res.status(500).send(error);
             }
             console.log(eventJobResult);
-            var cronJobTime = new Date(req.body.event.DateTime);
+            var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
+            var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
             var job = new CronJob(
-            	new Date(cronJobTime.setMinutes(cronJobTime.getMinutes() - 30)),
+            	jobDate,
             	function() {
             		console.log(`Cron Job For ${eventId} Started`);
                 pool.getConnection(function (err, connection) {
