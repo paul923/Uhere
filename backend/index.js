@@ -162,3 +162,5 @@ app.use('/relationship', relationshipRouter);
 server.listen(3000, () => {
  console.log('Listening on Port 3000');
 });
+
+module.exports = server;

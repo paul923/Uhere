@@ -7,8 +7,18 @@ var CronJob = require('cron').CronJob;
 
 //TODO: Apply sort filter
 router.get('/', function (req, res) {
+  if (!req.query.acceptStatus) {
+    res.status(400).send({
+      body: "Please specify acceptStatus as query parameter"
+    })
+  }
+  if (!req.query.userId) {
+    res.status(400).send({
+      body: "Please specify userId as query parameter"
+    })
+  }
   var acceptStatus = req.query.acceptStatus;
-  var history = req.query.history ? req.query.history : 'false';
+    var history = req.query.history ? req.query.history : 'false';
   var userId = req.query.userId;
   var limit = req.query.limit ? req.query.limit : 20;
   var offset = req.query.offset ? req.query.offset : 0;
@@ -106,7 +116,18 @@ router.get('/:eventId', function (req, res) {
 })
 
 router.patch('/:eventId/users/:userId', function (req, res) {
+  if (!req.body.status) {
+    res.status(400).send({
+      body: "Please specify status as body"
+    })
+  }
+  if (req.body.status !== "ACCEPTED" && req.body.status !== "DECLINED") {
+    res.status(400).send({
+      body: "Valid values for status are 'ACCEPTED' or 'DECLINED'"
+    })
+  }
   var status = req.body.status;
+
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
@@ -148,7 +169,7 @@ router.delete('/:eventId', function (req, res) {
           if (error) {
             res.status(500).send(error);
           }
-          res.status(200).send();
+          res.status(204).send();
         })
       } else {
         res.status(404).send();
