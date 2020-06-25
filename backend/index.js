@@ -156,7 +156,7 @@ app.use(bodyParser.json());
 app.use('/event', eventRouter);
 app.use('/user', userRouter);
 app.use('/relationship', relationshipRouter);
-app.use('/group', groupRouter);
+app.use('/groups', groupRouter);
 
 
 
