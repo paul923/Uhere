@@ -4,7 +4,7 @@ var pool = require('../db').pool;
 var mysql = require('../db').mysql;
 
 // GET
-router.get('/:userId', function(req, res) {
+router.get('/:userId', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     var sql = "SELECT * FROM ?? WHERE UserId = ? and IsDeleted = false";
@@ -24,7 +24,7 @@ router.get('/:userId', function(req, res) {
   });
 })
 
-router.get('/username/:username', function(req, res) {
+router.get('/username/:username', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     var sql = "SELECT * FROM ?? WHERE Username = ? and IsDeleted = false";
@@ -52,8 +52,7 @@ router.get('/:userId/groups', function (req, res) {
     connection.query(sql, user, function (error, results, fields) {
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.length > 0) {
+      } else if (results.length > 0) {
         // GET members for each group
         const promises = []
         results.forEach(result => {
@@ -97,8 +96,7 @@ router.get('/:userId/relationships', function (req, res) {
       connection.release();
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.length > 0) {
+      } else if (results.length > 0) {
         res.status(200).send(results);
       } else {
         res.status(404).send()
@@ -124,8 +122,7 @@ router.get('/:userId/relationships/:username', function (req, res) {
       connection.release();
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.length > 0) {
+      } else if (results.length > 0) {
         res.status(200).send(results);
       } else {
         res.status(404).send()
@@ -134,7 +131,6 @@ router.get('/:userId/relationships/:username', function (req, res) {
   });
 })
 
-// TODO: handle error on creating record with existing primary key
 // POST
 router.post('/', function (req, res) {
   // Connecting to the database.
@@ -148,28 +144,25 @@ router.post('/', function (req, res) {
       connection.release();
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.affectedRows > 0) {
+      } else if (results.affectedRows > 0) {
         res.status(201).send();
       }
     });
   });
 })
 
-router.post('/:userId/relationships', function (req, res) {
+router.post('/:userId1/relationships/:userId2', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var userRelationship = req.body;
-    var sql = "INSERT INTO ?? SET ?";
-    var parameters = ['UserRelationship'];
+    var sql = "INSERT INTO ?? SET UserId1 = ?, UserId2 = ?, Type = 'Friend'";
+    var parameters = ['UserRelationship', req.params.userId1, req.params.userId2];
     sql = mysql.format(sql, parameters);
-    connection.query(sql, userRelationship, function (error, results, fields) {
+    connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.affectedRows > 0) {
+      } else if (results.affectedRows > 0) {
         res.status(201).send();
       }
     });
@@ -188,8 +181,7 @@ router.patch('/:userId', function (req, res) {
       connection.release();
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.affectedRows > 0) {
+      } else if (results.affectedRows > 0) {
         res.status(200).send();
       } else {
         res.status(404).send();
@@ -197,6 +189,28 @@ router.patch('/:userId', function (req, res) {
     });
   });
 })
+
+router.patch('/:userId1/relationships/:userId2', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    console.log(req.body)
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET Type = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = false";
+    var parameters = ['UserRelationship', req.body.Type, req.params.userId1, req.params.userId2];
+    sql = mysql.format(sql, parameters);
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        res.status(500).send(error);
+      } else if (results.affectedRows > 0) {
+        res.status(200).send();
+      } else {
+        res.status(404).send();
+      }
+    });
+  });
+})
+
 
 // DELETE
 router.delete('/:userId', function (req, res) {
@@ -206,13 +220,11 @@ router.delete('/:userId', function (req, res) {
     var sql = "UPDATE ?? SET isDeleted = ? WHERE UserId = ?";
     var parameters = ['User', true, req.params.userId];
     sql = mysql.format(sql, parameters);
-    // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
         res.status(500).send(error);
-      }
-      else if (results.affectedRows > 0) {
+      } else if (results.affectedRows > 0) {
         // TODO: 200 or 204?
         res.status(204).send();
       } else {
