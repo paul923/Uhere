@@ -11,25 +11,27 @@ cache:
     - node_modules/
 
 stages:
-    # - test
-    - deploy
+#    - test
+#    - deploy
 
 # test:
 #   stage: test
 #   script:
 #     - npm install
 #     - npm test
+#   only:
+#     - master
 
-deploy:
-  stage: deploy
-  script:
-    - mkdir -p ~/.ssh
-    - echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
-    - cat ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh/id_rsa
-    - eval "$(ssh-agent -s)"
-    - ssh-add ~/.ssh/id_rsa
-    - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-    - scp  -o StrictHostKeyChecking=no -r backend ubuntu@ec2-34-212-94-48.us-west-2.compute.amazonaws.com:backend
-  only:
-    - master
+# deploy:
+#   stage: deploy
+#   script:
+#     - mkdir -p ~/.ssh
+#     - echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+#     - cat ~/.ssh/id_rsa
+#     - chmod 700 ~/.ssh/id_rsa
+#     - eval "$(ssh-agent -s)"
+#     - ssh-add ~/.ssh/id_rsa
+#     - ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+#     - scp  -o StrictHostKeyChecking=no -r backend ubuntu@ec2-34-212-94-48.us-west-2.compute.amazonaws.com:backend
+#   only:
+#     - master
