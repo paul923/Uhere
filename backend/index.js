@@ -23,7 +23,7 @@ app.set('io', io);
 
 pool.getConnection(function (err, connection) {
   if (err) throw err; // not connected!
-  var sql = "SELECT * FROM EventJob where IsProcessed = false";
+  var sql = "SELECT * FROM EventJob where IsProcessed = false and IsDeleted = false";
   // Executing the MySQL query (select all data from the 'users' table).
   connection.query(sql, function (error, results, fields) {
     connection.release();
@@ -153,8 +153,8 @@ io.on('connection', (socket) => {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use('/event', eventRouter);
-app.use('/user', userRouter);
+app.use('/events', eventRouter);
+app.use('/users', userRouter);
 app.use('/relationship', relationshipRouter);
 app.use('/groups', groupRouter);
 
@@ -164,3 +164,5 @@ app.use('/groups', groupRouter);
 server.listen(3000, () => {
  console.log('Listening on Port 3000');
 });
+
+module.exports = server;
