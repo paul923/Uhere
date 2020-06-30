@@ -190,7 +190,7 @@ router.patch('/:groupId', function(req, res, next) {
                   res.status(200).send();
                 });
               }).catch(err => {
-                console.log("Error 1 is", err);
+                console.log("Error occurred: ", err);
               })
               
             } else {
@@ -233,7 +233,7 @@ router.patch('/:groupId', function(req, res, next) {
                   res.status(200).send();
                 });
               }).catch(err => {
-                console.log("Error 2 is", err);
+                console.log("Error occurred: ", err);
               })
             }
           })
