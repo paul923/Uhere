@@ -1,4 +1,5 @@
 var express = require('express');
+const { reject } = require('lodash');
 var router = express.Router();
 var pool = require('../db').pool;
 var mysql = require('../db').mysql;
@@ -79,39 +80,38 @@ router.patch('/:groupId', function(req, res, next) {
   var groupName = req.body.groupName;
   var groupMemberArr = req.body.groupMembers;
   
-  pool.beginTransaction(function (err) {
-    if (err){
-      res.status(500).send(err);
-    }
-    // Update Group Name
-    var groupNameSql = `
-      UPDATE UserGroup
-      SET GroupName = '${groupName}'
-      WHERE 1 = 1
-        AND GroupId = ${groupId}
-    ;`;
-    connection.query(groupNameSql, function(error, results, fields){
-      if(error){
-        return conneciton.rollback(function() {
-          res.status(500).send(error);
-        })
-      } else if(results.affectedRows > 0){
-        // Switch all member's IsDeleted to 1 within that groupId
-        var isDeletedSql = `
-          UPDATE GroupMember
-          SET IsDeleted = 1
-          WHERE 1 = 1
-            AND GroupId = ${groupId}
-        ;`;
-        connection.query(isDeletedSql, function(error, results, fields) {
-          if(error){
-            return connection.rollback(function(){
-              res.status(500).send(error);
-            })
-          } else if(results.length > 0) {
-            const promises = [];
-            
-            const promise = new Promise(resolve, reject => {
+  pool.getConnection(function(error, connection){
+    connection.beginTransaction(function (err) {
+      if (err){
+        res.status(500).send(err);
+      }
+      // Update Group Name
+      var groupNameSql = `
+        UPDATE UserGroup
+        SET GroupName = '${groupName}'
+        WHERE 1 = 1
+          AND GroupId = ${groupId}
+      ;`;
+      connection.query(groupNameSql, function(error, results, fields){
+        if(error){
+          return conneciton.rollback(function() {
+            res.status(500).send(error);
+          })
+        } else if(results.affectedRows > 0){
+          // Switch all member's IsDeleted to 1 within that groupId
+          var isDeletedSql = `
+            UPDATE GroupMember
+            SET IsDeleted = 1
+            WHERE 1 = 1
+              AND GroupId = ${groupId}
+          ;`;
+          connection.query(isDeletedSql, function(error, results, fields) {
+            if(error){
+              return connection.rollback(function(){
+                res.status(500).send(error);
+              })
+            } else if(results.affectedRows > 0) {
+              const promises = [];
               groupMemberArr.forEach(member => {
                 // Returns user object if member exist in GroupMembers
                 var doesExistSql = `
@@ -120,116 +120,133 @@ router.patch('/:groupId', function(req, res, next) {
                 WHERE 1 = 1
                   AND GroupId = ${groupId}
                   AND MemberId = '${member.UserId}'
-              ;`;
-                connection.query(doesExistSql, function (error, results, fields) {
-                  if (error) {
-                    reject();
-                    // return connection.rollback(function () {
-                    //   // res.status(500).send(error);
-                    // })
-                  } else if (results.length > 0) {
-                    var userId = results.MemberId;
-                    // Updating User's IsDeleted to 0
-                    var restoreUserSql = `
-                    UPDATE GroupMember
-                    SET IsDeleted = 0
-                    WHERE 1 = 1
-                      AND GroupId = ${groupId}
-                      AND MemberId = '${userId}'
-                  ;`;
-                    connection.query(restoreUserSql, function (error, results, fields) {
-                      if (error) {
+                ;`;
+                const promise = new Promise((resolve, reject) => {
+                  connection.query(doesExistSql, function (error, results, fields) {
+                    if (error) {
+                      return connection.rollback(function () {
                         reject();
-                        // return connection.rollback(function () {
-                        //   res.status(500).send(error);
-                        // })
-                      } else if (results.affectedRows > 0) {
-                        resolve();
-                        // res.status(200).send(results);
-                      } else {
-                        reject();
-                        // res.status(404).send();
-                      }
-                    })
-                  } else {
-                    // Inserting new row to GroupMember
-                    var newRowSql = `
-                    INSERT INTO GroupMember(GroupId, MemberId, IsDeleted)
-                    VALUES(${groupId}, '${member.UserId}', 0)
-                  `;
-                    connection.query(newRowSql, function (error, results, fields) {
-                      if (error) {
-                        return connection.rollback(function () {
+                        // res.status(500).send(error);
+                      })
+                    } else if (results.length > 0) {
+                      var userId = results[0].MemberId;
+                      // Updating User's IsDeleted to 0
+                      var restoreUserSql = `
+                      UPDATE GroupMember
+                      SET IsDeleted = 0
+                      WHERE 1 = 1
+                        AND GroupId = ${groupId}
+                        AND MemberId = '${userId}'
+                    ;`;
+                      connection.query(restoreUserSql, function (error, results, fields) {
+                        if (error) {
+                          return connection.rollback(function () {
+                            reject();
+                            // res.status(500).send(error);
+                          })
+                        } else if (results.affectedRows > 0) {
+                          resolve();
+                          // res.status(200).send(results);
+                        } else {
                           reject();
-                          // res.status(500).send(error);
-                        })
-                      } else if (results.affectedRows) {
-                        resolve();
-                        res.status(200).send(results);
-                      } else {
-                        resolve();
-                        // return connection.rollback(function () {
-                        //   res.status(404).send(error);
-                        // })
-                      }
-                    })
-                  }
+                          // res.status(404).send();
+                        }
+                      })
+                    } else {
+                      // Inserting new row to GroupMember
+                      var newRowSql = `
+                      INSERT INTO GroupMember(GroupId, MemberId, IsDeleted)
+                      VALUES(${groupId}, '${member.UserId}', 0)
+                    `;
+                      connection.query(newRowSql, function (error, results, fields) {
+                        if (error) {
+                          return connection.rollback(function () {
+                            reject();
+                            // res.status(500).send(error);
+                          })
+                        } else if (results.affectedRows) {
+                          resolve();
+                          // res.status(200).send(results);
+                        } else {
+                          return connection.rollback(function () {
+                            reject();
+                            // res.status(404).send(error);
+                          })
+                        }
+                      })
+                    }
+                  })
                 })
+                promises.push(promise)
               })
-            })
-            Promise.all(promises).then(results => {
-              //Commit
-              connection.commit(function (err) {
-                if (err) {
-                  return connection.rollback(function () {
-                    res.status(500).send(error);
-                  });
-                }
-                res.status(200).send();
-              });
-            })
-            
-          } else {
-            //No member exists in the table
-            // Inserting new row to GroupMember
-            groupMemberArr.forEach(member => {
-              var newRowSql = `
-                INSERT INTO GroupMember(GroupId, MemberId, IsDeleted)
-                VALUES(${groupId}, '${member.UserId}', 0)
-              `;
-              connection.query(newRowSql, function(error, results, fields){
-                if(error){
-                  return connection.rollback(function(){
-                    res.status(500).send(error);
-                  })
-                } else if(results.affectedRows){
-                  res.status(200).send(results);
-                } else {
-                  return connection.rollback(function(){
-                    res.status(404).send(error);
-                  })
-                }
-              })
-            })
-            //commit
-            connection.commit(function(err) {
-              if (err) {
-                return connection.rollback(function() {
-                  res.status(500).send(error);
+              Promise.all(promises).then(results => {
+                //Commit
+                connection.commit(function (err) {
+                  if (err) {
+                    return connection.rollback(function () {
+                      res.status(500).send(error);
+                    });
+                  }
+                  res.status(200).send();
                 });
-              }
-              console.log('success!');
-            });
-          }
-        })
-      } else {
-        return conneciton.rollback(function() {
-          res.status(404).send(error);
-        })
-      }
+              }).catch(err => {
+                console.log("Error 1 is", err);
+              })
+              
+            } else {
+              //No member exists in the table
+              // Inserting new row to GroupMember
+              const promises = [];
+              groupMemberArr.forEach(member => {
+                var newRowSql = `
+                  INSERT INTO GroupMember(GroupId, MemberId, IsDeleted)
+                  VALUES(${groupId}, '${member.UserId}', 0)
+                `;
+                const promise = new Promise((resolve, reject) => {
+                  connection.query(newRowSql, function(error, results, fields){
+                    if(error){
+                      return connection.rollback(function(){
+                        // res.status(500).send(error);
+                        reject();
+                      })
+                    } else if(results.affectedRows){
+                      resolve();
+                      // res.status(200).send(results);
+                    } else {
+                      return connection.rollback(function(){
+                        reject();
+                        // res.status(404).send(error);
+                      })
+                    }
+                  })
+                })
+                promises.push(promise)
+              })
+              Promise.all(promises).then(results => {
+                //Commit
+                connection.commit(function (err) {
+                  if (err) {
+                    return connection.rollback(function () {
+                      res.status(500).send(error);
+                    });
+                  }
+                  res.status(200).send();
+                });
+              }).catch(err => {
+                console.log("Error 2 is", err);
+              })
+            }
+          })
+        } else {
+          return conneciton.rollback(function() {
+            res.status(404).send(error);
+          })
+        }
+      })
     })
   })
 })
+
 
 // DELETE
 // Delete Group by Id
@@ -259,76 +276,5 @@ router.delete('/:groupId', function(req, res, next) {
 })
 
 
-
-router.put('/groups/member/:groupId', function(req, res, next) {
-  pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
-    console.log("Connected!");
-    var sql = `select * from GroupMember where groupId = ${req.params.groupId}`;
-    // Executing the MySQL query (select all data from the 'users' table).
-    connection.query(sql, function (error, results, fields) {
-      if (error) {
-        throw error;
-      }
-      if (results.length > 0) {
-        //results = [{GroupId, MemberId, IsDeleted}]
-        req.body.newMembers.forEach(newMember => {
-          var index = results.indexOf(groupMember => groupMember.MemberId === newMember)
-          if (index > -1){
-            if (results[index].IsDeleted) {
-              //IsDeleted Case SQL add back to group member (change isDeleted to 0)
-              var updateSql = `UPDATE GroupMember SET IsDeleted = 0 WHERE MemberId = '${newMember.UserId}'`;
-              connection.query(updateSql, function(error,results, fields) {
-                if(error) {
-                  throw error;
-                }
-                console.log(results);
-                res.json({"status": 200, "response": "inserted"});
-              })
-            }
-          } else {
-            //brand new Member
-            var insertSql = `INSERT INTO GroupMember SET ?`;
-            let memberData = {
-              GroupId: req.params.groupId,
-              MemberId: newMember.UserId,
-              IsDeleted: 0
-            }
-            connection.query(insertSql, memberData, function(error,results, fields) {
-              if(error) {
-                throw error;
-              }
-              console.log(results);
-              res.json({"status": 200, "response": "inserted"});
-            })
-          }
-          connection.release();
-        })
-        res.json({"status": 200, "response": results});
-      } else {
-      }
-    });
-  });
-})
-
-router.delete('/groups/member/:groupId', function(req, res, next) {
-  pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
-    console.log("Connected!");
-    var sql = `update GroupMember SET IsDeleted = 1 where GroupId = ${req.params.groupId} AND MemberId = ?`;
-    let members = req.body.deleteMembers.map((m) => [m.UserId])
-    // Executing the MySQL query (select all data from the 'users' table).
-    connection.query(sql, [members], function (error, results, fields) {
-      if (error) {
-        throw error;
-        connection.release();
-      }
-      if (results.affectedRows > 0) {
-        connection.release();
-        res.json({"status": 200, "response": "deleted"});
-      }
-    });
-  });
-})
 
 module.exports = router;
