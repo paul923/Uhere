@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, StatusBar, FlatList, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import EventDetail from './EventDetail'
-import { getEventByID, getEventMembers } from '../../API/EventAPI'
+import { getEvent } from 'api/event';
 import { formatDate, formatTime } from "../../utils/date";
 import EventUser from '../../components/EventUser'
 
@@ -13,9 +13,9 @@ export default function EventHistoryDetail({ navigation, route }) {
 
     React.useEffect(() => {
         async function fetchData() {
-            let event = await getEventByID(route.params.EventId);
+            let event = await getEvent(route.params.EventId);
             setEvent(event);
-            let eventMembers = await getEventMembers(route.params.EventId)
+            let eventMembers = event.eventUsers;
             eventMembers.sort(compare);
             setEventMembers(eventMembers);
             setIsLoading(false);
