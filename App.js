@@ -147,7 +147,7 @@ export default function App(props) {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        let response = await fetch(`http://${backend}:3000/user/${data}`, {
+        let response = await fetch(`http://${backend}:3000/users/${data}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
@@ -155,8 +155,7 @@ export default function App(props) {
           },
         });
         let responseJson = await response.json();
-        console.log(responseJson);
-        if (responseJson.status === 200) {
+        if (response.status === 200) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });

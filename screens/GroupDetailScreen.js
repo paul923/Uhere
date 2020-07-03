@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import { getGroupById, deleteGroupById } from '../API/GroupAPI'
+import { getGroupById, deleteGroupById } from '../API/group'
 import firebase from 'firebase';
 
 import { GroupContext, GroupProvider, useStateValue } from 'contexts/GroupContext';

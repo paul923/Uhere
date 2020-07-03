@@ -33,22 +33,6 @@ export async function getGroupById(groupId) {
     }
 }
 
-export async function deleteGroupById(groupId) {
-    let url = `http://${backend}:3000/group/groups/${groupId}`;
-    let response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-    let responseJson = await response.json();
-    if(!responseJson)
-        return null;
-    return responseJson;
-}
-
-//TODO: Check whether sending body in this way is correct
 export async function postGroup(group, members) {
     let url = `http://${backend}:3000/user/group`;
     let response = await fetch(url, {
@@ -85,40 +69,18 @@ export async function updateGroupName(group) {
       return null;
   return responseJson;
 }
-export async function addGroupMember(group, newMembers) {
-  let url = `http://${backend}:3000/user/group/member/${group.GroupId}`;
-  let response = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        group,
-        newMembers: newMembers,
-    }),
-  });
-  let responseJson = await response.json();
-  if(!responseJson)
-      return null;
-  return responseJson;
-}
 
-export async function deleteGroupMember(group, deleteMembers) {
-  let url = `http://${backend}:3000/user/group/member/${group.GroupId}`;
-  let response = await fetch(url, {
-    method: 'DELETE',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        group,
-        deleteMembers: deleteMembers
-    }),
-  });
-  let responseJson = await response.json();
-  if(!responseJson)
-      return null;
-  return responseJson;
+export async function deleteGroupById(groupId) {
+    let url = `http://${backend}:3000/group/groups/${groupId}`;
+    let response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    let responseJson = await response.json();
+    if(!responseJson)
+        return null;
+    return responseJson;
 }

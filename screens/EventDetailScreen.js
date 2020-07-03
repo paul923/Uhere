@@ -9,7 +9,7 @@ import SideMenu from 'react-native-side-menu'
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import * as Location from 'expo-location';
 import firebase from 'firebase';
-import { getEventByID, getEventMembers } from '../API/EventAPI'
+import { getEventByID, getEventMembers } from '../API/event'
 import socket from 'config/socket';
 
 export default function EventDetailScreen({ navigation, route }) {

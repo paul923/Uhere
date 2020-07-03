@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, StatusBar, FlatList, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import EventDetail from './EventDetail'
-import { getEventByID, getEventMembers } from '../../API/EventAPI'
+import { getEventByID, getEventMembers } from '../../API/event'
 import { formatDate, formatTime } from "../../utils/date";
 import EventUser from '../../components/EventUser'
 
