@@ -1,24 +1,9 @@
 import { backend } from '../constants/Environment';
 import _ from 'lodash'
 
-export async function getUserByUsername(Username) {
+export async function getUserByUserId(UserId) {
     try {
-        let url = `http://${backend}:3000/user/username/${Username}`;
-        let response = await fetch(url);
-        let json = await response.json();
-        if(json.status !== 204){
-            let user = json.response[0];
-            return user;
-        }
-        return null;
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
-export async function getUserByUid(UserId) {
-    try {
-        let url = `http://${backend}:3000/user/${UserId}`;
+        let url = `http://${backend}:3000/users/${UserId}`;
         let response = await fetch(url);
         let json = await response.json();
         let user = json.response[0];
@@ -28,243 +13,152 @@ export async function getUserByUid(UserId) {
         return null;
     }
 }
-export async function getFriendsList(UserId) {
-    try{
-        let response = await fetch(`http://${backend}:3000/relationship/${UserId}`, {
-            method: 'GET',
+
+export async function getUserByUsername(Username) {
+    try {
+        let url = `http://${backend}:3000/users/username/${Username}`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let user = json.response[0];
+        return user;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getGroupsByUserId(UserId) {
+    try {
+        let url = `http://${backend}:3000/users/${UserId}/groups`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let groups = json.response;
+        return groups;
+    } catch (error) {
+        console.error(error)
+        return null;
+    }
+}
+
+export async function getRelationships(UserId) {
+    try {
+        let url = `http://${backend}:3000/users/${UserId}/relationships`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let relationships = json.response;
+        return relationships;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getRelationshipByUsername(UserId1, Username) {
+    try {
+        let url = `http://${backend}:3000/users/${UserId1}/relationships/${Username}`;
+        let response = await fetch(url);
+        let json = await response.json();
+        let relationship = json.response[0];
+        return relationship;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function createUser(User) {
+    try {
+        let response = await fetch(`http://${backend}:3000/users`, {
+            method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify(User)
         });
-        let json = await response.json();
-        let list = json.response;
-        return list;
-    }catch (error) {
-        console.error(error);
-        return null;
-    }
-
-  }
-
-export async function getUserGroup(UserId) {
-    try {
-        let url = `http://${backend}:3000/user/${UserId}/group`;
-        let response = await fetch(url);
-        let json = await response.json();
-        if(json.status !== 204){
-            let groups = json.response;
-            let sortedGroups = _(groups).groupBy('GroupId').map(function(items, id) {
-                return {
-                  GroupId: id,
-                  UserId: _.get(_.find(items, 'UserId'), 'UserId'),
-                  GroupName: _.get(_.find(items, 'GroupName'), 'GroupName'),
-                  Members: items.map(function(item){
-                      return {
-                          MemberId : item.MemberId,
-                          Nickname : item.Nickname,
-                          Username : item.Username
-                      }
-                  }),
-                }
-            }).value();
-            return sortedGroups;
-        } else {
-            return null;
-        }
+        let responseJson = await response.json();
+        return true;
     } catch (error) {
         console.error(error);
-        return null;
+        return false;
     }
 }
 
-export async function getGroupById(UserId, GroupId) {
+export async function createRelationship(UserId1, UserId2) {
     try {
-        let url = `http://${backend}:3000/user/${UserId}/group/${GroupId}`;
-        let response = await fetch(url);
-        let json = await response.json();
-        if(json.status !== 204){
-            let group = json.response;
-            let sortedGroups = 
-                {
-                  GroupId: _.get(_.find(group, 'GroupId'), 'GroupId'),
-                  UserId: _.get(_.find(group, 'UserId'), 'UserId'),
-                  GroupName: _.get(_.find(group, 'GroupName'), 'GroupName'),
-                  Members: _.map(group, function (obj) {
-                    let member = _.omit(obj, ["UserId","GroupId", "GroupName"]);
-                    member['UserId'] = member["MemberId"];
-                    delete member["MemberId"];
-                    return member;
-                  })
-                }
-            ;
-            console.log("sortedGroup",sortedGroups)
-            return sortedGroups;
-        } else {
-            return null;
-        }
+        let response = await fetch(`http://${backend}:3000/users/${UserId1}/relationships/${UserId2}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+        let responseJson = await response.json();
+        return true;
     } catch (error) {
         console.error(error);
-        return null;
+        return false;
     }
 }
-export async function updateGroupName(group) {
-    let url = `http://${backend}:3000/user/group/name`;
-    let response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          group
-      }),
-    });
-    let responseJson = await response.json();
-    if(!responseJson)
-        return null;
-    return responseJson;
-}
-export async function addGroupMember(group, newMembers) {
-    let url = `http://${backend}:3000/user/group/member/${group.GroupId}`;
-    let response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          group,
-          newMembers: newMembers,
-      }),
-    });
-    let responseJson = await response.json();
-    if(!responseJson)
-        return null;
-    return responseJson;
-}
-export async function deleteGroupMember(group, deleteMembers) {
-    let url = `http://${backend}:3000/user/group/member/${group.GroupId}`;
-    let response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          group,
-          deleteMembers: deleteMembers
-      }),
-    });
-    let responseJson = await response.json();
-    if(!responseJson)
-        return null;
-    return responseJson;
-}
 
-export async function deleteGroupById(userId, groupId) {
-    let url = `http://${backend}:3000/user/${userId}/group/${groupId}`;
-    let response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-    let responseJson = await response.json();
-    if(!responseJson)
-        return null;
-    return responseJson;
-}
-
-export async function getUserRelationship(UserId) {
+export async function updateUser(User) {
     try {
-        let url = `http://${backend}:3000/relationship/${UserId}`;
-        let response = await fetch(url);
-        let json = await response.json();
-        let users = json.response;
-        console.log(users)
-        return users;
+        let url = `http://${backend}:3000/users/${User.UserId}`;
+        let response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Nickname: User.Nickname,
+                AvatarURI: User.AvatarURI,
+                AvatarColor: User.AvatarColor
+            }),
+        });
+        let responseJson = await response.json();
+        return true;
     } catch (error) {
         console.error(error);
-        return null;
+        return false;
     }
 }
-
-export async function getRelationshipType(uid, userName) {
+// type : 'Friend' or 'Blocked'
+export async function updateRelationship(userId1, userId2, type) {
     try {
-        let url = `http://${backend}:3000/relationship/type/${uid}/${userName}`;
-        let response = await fetch(url);
-        let json = await response.json();
-        if(json.status !== 204){
-            let relationship = json.response[0];
-            return relationship;
-        }
-        return null;
+        let url = `http://${backend}:3000/users/${userId1}/relationships/${userId2}`;
+        let response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                Type: type,
+            }),
+        });
+        let responseJson = await response.json();
+        return true;
     } catch (error) {
         console.error(error);
-        return null;
+        return false;
     }
 }
-export async function addFriend(AddFriend) {
-    let url = `http://${backend}:3000/relationship`;
-    let response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({AddFriend}),
-    });
-    let responseJson = await response.json();
-    console.log(responseJson.response);
-    return responseJson;
-}
-export async function addFriendByFlag(AddFriend) {
-    let url = `http://${backend}:3000/relationship`;
-    let response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({AddFriend}),
-    });
-    let responseJson = await response.json();
-    console.log(responseJson)
-    return responseJson;
-}
 
-export async function deleteFriend(DeleteFriend) {
-    let url = `http://${backend}:3000/relationship`;
-    let response = await fetch(url, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({DeleteFriend}),
-    });
-    let responseJson = await response.json();
-    console.log(responseJson.response);
-    return responseJson;
-}
-
-
-export async function postGroup(group, members) {
-    let url = `http://${backend}:3000/user/group`;
-    let response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-          group,
-          members: members
-        }),
-    });
-    let responseJson = await response.json();
-    console.log(responseJson.response);
-    return responseJson;
+export async function deleteUser(userId) {
+    try {
+        let url = `http://${backend}:3000/users/${userId}`;
+        let response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        });
+        let responseJson = await response.json();
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }
