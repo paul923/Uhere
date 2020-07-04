@@ -5,7 +5,7 @@ import EventCard from '../../components/EventCard';
 import { formatEventList } from '../../utils/event';
 import Constants from "expo-constants";
 import firebase from "firebase";
-import { getEventByID, getEventMembers } from '../../API/EventAPI'
+import { getEventByID, getEventMembers } from '../../API/event'
 import { backend } from '../../constants/Environment';
 import Collapse from '../../components/Collapse';
 

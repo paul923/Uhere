@@ -32,7 +32,7 @@ export default function ProfileScreen({navigation, route}){
       AvatarColor: avatarColor
     };
 
-    let response = await fetch(`http://${backend}:3000/user`, {
+    let response = await fetch(`http://${backend}:3000/users`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
