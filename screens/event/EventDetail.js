@@ -6,9 +6,6 @@ import moment from 'moment'
 
 export default function EventDetail({ event, eventMembers, onPress }) {
     React.useEffect(() => {
-        async function fetchData() {
-        }
-        fetchData()
     }, []);
 
     return (

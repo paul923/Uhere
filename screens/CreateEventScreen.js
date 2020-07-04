@@ -17,6 +17,8 @@ import Constants from "expo-constants";
 const { manifest } = Constants;
 import { backend } from '../constants/Environment';
 
+import { createEvent } from 'api/event';
+import { fetchLocation } from 'api/misc';
 
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
@@ -96,19 +98,7 @@ export default function CreateEventScreen({navigation}) {
       }
     }
 
-    let response = await fetch(`http://${backend}:3000/event`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        event,
-        users: selectedFriends,
-        host: firebase.auth().currentUser.uid
-      }),
-    });
-    let responseJson = await response.json();
+    let responseJson = await createEvent(event, selectedFriends);
     alert(responseJson.response);
     navigation.navigate('Event')
   }
@@ -286,18 +276,9 @@ export default function CreateEventScreen({navigation}) {
     }
     let url = '';
     let location = await Location.getCurrentPositionAsync({});
-    try {
-      url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURI(locationQuery) + '.json?' + qs.stringify({
-        proximity: location.coords.longitude + ',' + location.coords.latitude,
-        access_token: 'pk.eyJ1IjoiY3Jlc2NlbnQ5NzIzIiwiYSI6ImNrOGdtbzhjZjAxZngzbHBpb3NubnRwd3gifQ.wesLzeTF2LjrYjgmrfrySQ',
-        limit: 10
-      });
-      let response = await fetch(url);
-      let responseJson = await response.json();
-      setLocationResult(responseJson.features);
-    } catch (error) {
-      console.error(error);
-    }
+    let locationResults = await fetchLocation(location);
+    setLocationResult(locationResults);
+
   }
   function LocationSearch() {
     return (

@@ -22,10 +22,11 @@ export async function getEvents(acceptStatus, history, limit, offset) {
       url += `&history=${history}`;
       url += `&userId=${firebase.auth().currentUser.uid}`;
       url += `&limit=${limit}`;
-      url += `&offset=${offset}`;
+      url += `&limit=${offset}`;
       let response = await fetch(url);
-      let events = await response.json();
-      return events;
+      let json = await response.json();
+      let event = json[0];
+      return event;
   } catch (error) {
       console.error(error);
       return null;

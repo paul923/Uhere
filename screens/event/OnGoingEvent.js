@@ -8,20 +8,15 @@ import Constants from "expo-constants";
 import firebase from "firebase";
 const { manifest } = Constants;
 import { backend } from '../../constants/Environment';
+import { getEvents } from 'api/event';
 
 export default function OnGoingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
   const [isFetching, setIsFetching] = React.useState(false);
   React.useEffect(() => {
     async function fetchData() {
-      try {
-        let url = `http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`;
-        let response = await fetch(url);
-        let responseJson = await response.json();
-        setEvents(formatEventList(responseJson))
-      } catch (error) {
-        console.error(error);
-      }
+      let events = await getEvents('ACCEPTED', false, 10, 0);
+      setEvents(formatEventList(events))
     }
     const unsubscribeFocus = navigation.addListener('focus', () => {
       fetchData();
@@ -30,16 +25,9 @@ export default function OnGoingEvent({ navigation, route }) {
   }, []);
   async function onRefresh() {
     setIsFetching(true);
-    try {
-      let url = `http://${backend}:3000/event/accepted/${firebase.auth().currentUser.uid}`;
-      let response = await fetch(url);
-      let responseJson = await response.json();
-      console.log(responseJson);
-      setEvents(formatEventList(responseJson));
-      setIsFetching(false);
-    } catch (error) {
-      console.error(error);
-    }
+    let events = await getEvents('ACCEPTED', false, 10, 0);
+    setEvents(formatEventList(events))
+    setIsFetching(false);
   }
   return (
     <View style={styles.container}>

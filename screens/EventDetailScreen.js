@@ -9,7 +9,7 @@ import SideMenu from 'react-native-side-menu'
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import * as Location from 'expo-location';
 import firebase from 'firebase';
-import { getEventByID, getEventMembers } from '../API/EventAPI'
+import { getEvent } from 'api/event'
 import socket from 'config/socket';
 
 export default function EventDetailScreen({ navigation, route }) {
@@ -24,7 +24,7 @@ export default function EventDetailScreen({ navigation, route }) {
 
     React.useEffect(() => {
         async function fetchData() {
-            let event = await getEventByID(route.params.EventId);
+            let event = await getEvent(route.params.EventId);
             setEvent(event);
             let withinReminder = 0 < (new Date(event.DateTime) - new Date()) && (new Date(event.DateTime) - new Date()) < (5000 * 60000)
             //withinReminder = true;
@@ -37,8 +37,7 @@ export default function EventDetailScreen({ navigation, route }) {
                 setScreen("EventDetail")
                 setShowSwitch(false);
             }
-            let eventMembers = await getEventMembers(route.params.EventId)
-            setEventMembers(eventMembers);
+            setEventMembers(event.eventUsers);
             setIsLoading(false);
         }
         fetchData()
