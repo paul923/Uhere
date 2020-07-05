@@ -5,7 +5,7 @@ import EventCard from '../../components/EventCard';
 import { formatEventList } from '../../utils/event';
 import Constants from "expo-constants";
 import firebase from "firebase";
-import { getEventByID, getEventMembers } from '../../API/event'
+import { getEvent } from 'api/event';
 import { backend } from '../../constants/Environment';
 import Collapse from '../../components/Collapse';
 
@@ -23,9 +23,9 @@ const { manifest } = Constants;
 
 export default function EventHistory({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
-  
+
   const [modalVisible, setModalVisible] = React.useState(false);
-  
+
   const [fromDate, setFromDate] = React.useState();
   const [isFromDatePickerVisible, setFromDatePickerVisibility] = React.useState(false);
 
@@ -36,7 +36,7 @@ export default function EventHistory({ navigation, route }) {
   const [searchFriendText, setSearchFriendText] = React.useState("");
   const [searchedFriends, setSearchedFriends] = React.useState([]);
   const [selectedFriends, setSelectedFriends] = React.useState([]);
-  
+
   let colorScheme = useColorScheme();
 
   async function filterEvents(events, fromDate, toDate, friends){
@@ -53,7 +53,7 @@ export default function EventHistory({ navigation, route }) {
 
       // friends
       let friendMatch = true;
-      let eventMembers = await getEventMembers(events[i].EventId)
+      let eventMembers = await getEvent(events[i].EventId).eventUsers
       const memberIds = [...new Set(eventMembers.map(member => member.UserId))];
       // if non of the friends were found in memberIds then filter out this event
       if (!(friends === undefined || friends.length == 0)){
@@ -80,7 +80,7 @@ export default function EventHistory({ navigation, route }) {
       let response = await fetch(url);
       let responseJson = await response.json();
       let filter = Filter.getFilter();
-      let filteredEvents = await filterEvents(responseJson, filter.fromDate, filter.toDate, filter.friends); 
+      let filteredEvents = await filterEvents(responseJson, filter.fromDate, filter.toDate, filter.friends);
       setEvents(formatEventList(filteredEvents))
     } catch (error) {
       console.error(error);
@@ -242,7 +242,7 @@ export default function EventHistory({ navigation, route }) {
               </TouchableOpacity>
             }
           />
-          {/* Date range Picker */}          
+          {/* Date range Picker */}
           <View>
             <DateTimePickerModal
               date={fromDate === undefined ? new Date() : fromDate}
@@ -279,9 +279,9 @@ export default function EventHistory({ navigation, route }) {
             </View>
 
           </View>
-          
+
           <View>
-            <SearchBar 
+            <SearchBar
               round={true}
               lightTheme={true}
               placeholder="Search..."

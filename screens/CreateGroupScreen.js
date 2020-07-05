@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
 import FriendCard from '../components/FriendCard';
 
-import { postGroup } from '../API/group'
+import { postGroup } from '../api/group'
 import firebase from 'firebase';
 import { useIsFocused } from '@react-navigation/native'
 import { GroupContext } from 'contexts/GroupContext';
@@ -59,7 +59,7 @@ export default function CreateGroupScreen({ navigation, route }) {
           />
         }
         rightComponent={
-          <TouchableOpacity 
+          <TouchableOpacity
             disabled = { groupName.length !== 0 ? false : true}
             onPress={() => createGroup()}>
             <Text style={{color:  groupName.length !== 0 ? 'white' : 'black'}}>Done</Text>
@@ -82,7 +82,7 @@ export default function CreateGroupScreen({ navigation, route }) {
           <Text style={styles.fieldText}>Add Friends</Text>
           {/**Friends FlatList */}
           <TouchableOpacity onPress={()=> {
-            navigation.navigate('Add Friend List', {selectedFriends: newSelectedFriends}); 
+            navigation.navigate('Add Friend List', {selectedFriends: newSelectedFriends});
             console.log(newSelectedFriends);
             dispatch({type: 'change group data', dataObject: []})
           }}>

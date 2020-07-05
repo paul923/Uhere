@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 
-import { getUserByUsername, getUserByUid, addFriend, addFriendByFlag, getUserRelationship, getRelationshipType } from '../API/user'
+import { getUserByUsername, getUserByUid, addFriend, addFriendByFlag, getUserRelationship, getRelationshipType } from '../api/user'
 
 import firebase from 'firebase';
 
@@ -54,12 +54,12 @@ export default function AddFriendByIdScreen({ navigation, route }) {
         UserId1 : currentUser.UserId,
         UserId2 : resultUser.UserId,
       }
-      
+
       let response = await addFriendByFlag(userRelationship);
       if(response.status === 200){
         setAddedFlag(true);
       }
-    } 
+    }
   }
 
 
@@ -97,8 +97,8 @@ export default function AddFriendByIdScreen({ navigation, route }) {
           />
           <View style={styles.searchResultContainer}>
             <Text>Search Result: </Text>
-            
-            {resultUser !== null ? 
+
+            {resultUser !== null ?
             (<View>
               <Text style={{fontSize: 20, fontWeight: 'bold'}}>{resultUser && resultUser.Nickname}</Text>
               <Button
@@ -106,7 +106,7 @@ export default function AddFriendByIdScreen({ navigation, route }) {
                 onPress={addSearchedFriend}
                 disabled={resultUser.HasRelationship || addedFlag ? true : false}
               />
-            </View>) 
+            </View>)
             : searchButtonClicked && (<View><Text style={{fontSize: 20, fontWeight: 'bold'}}>User not found</Text></View>)
             }
           </View>

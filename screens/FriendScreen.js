@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, SectionList, SafeAreaView, FlatList, TouchableW
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import FriendCard from '../components/FriendCard';
 import FriendTile from '../components/FriendTile';
-import { getFriendsList, getUserGroup, deleteFriend } from '../API/user'
+import { getFriendsList, getUserGroup, deleteFriend } from '../api/user'
 import firebase from 'firebase';
 import { backend } from '../constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
@@ -247,7 +247,7 @@ export default function FriendScreen({navigation}) {
         }
         {
          /**
-          
+
         <ScrollView>
           <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
             <Text style={{fontSize: 18, fontWeight: 'bold'}}>Group</Text>
