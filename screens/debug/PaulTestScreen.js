@@ -1,40 +1,84 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Button } from 'react-native-elements'
+import { StyleSheet, View, TextInput } from 'react-native';
+import { Button, Input } from 'react-native-elements'
 
 import AvatarScreen from '../AvatarScreen'
+import { getGroupById, postGroup, deleteGroupById } from '../../api/group';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 
 export default function PaulTestScreen({navigation}) {
+  const [groupId, setGroupId] = React.useState();
+
+
+  async function getGroup(){
+    let result = await getGroupById(groupId)
+    if(result)
+      alert(JSON.stringify(result, null, 4))
+    else
+      alert("cannot find")
+  }
+
+  async function createGroup(){
+      const group = {
+        "UserId" : "O1BDrdaufPcrbKaKt4v1w8Bz0Zl1",
+        "GroupName" : "Testing Start1"
+      }
+      const members = [
+        {
+          "UserId": "eIsb3yMPlScSy5QAtpnqfqzON8r1"
+        },
+        {
+          "UserId": "xltCuDt5quTdCTCKtJbkGOuB3Co2"
+        },
+        {
+          "UserId": "abcdefg12345"
+        }
+      ]
+    let result = await postGroup(group, members);
+    if(result){
+      alert("posted" + JSON.stringify(group, null, 4) + "Members:" + JSON.stringify(members, null, 4))
+    } else {
+      alert("Error has occurred. Please try again later")
+    }
+  }
+
+  async function deleteGroup(){
+    let result = await deleteGroupById(groupId);
+    if(result){
+      alert("Deleted")
+    } else {
+      alert("Error has occurred. Please try again later")
+    }
+  }
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} bounces={false}>
+      <View style={{flex: 1}}>
+        <TextInput
+          style={{ fontSize: 20, color: 'black',borderColor: 'gray', borderWidth: 1, width: 100 }}
+          onChangeText={text => setGroupId(text)}
+          value={groupId}
+        />
+        <Button
+          title='Get Group by Id'
+          buttonStyle={styles.button}
+          onPress={()=> getGroup()}
+        />
+      </View>
+
       <Button
-        title='Drawer Layout'
+        title='Post Group'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('Test Screen 1')}
+        onPress={()=> createGroup()}
       />
       <Button
-        title='Splash Screen'
+        title='Delete Group'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('Test Screen 2')}
+        onPress={()=> deleteGroup()}
       />
-      <Button
-        title='Log-in : Keyboard Layout (Test)'
-        buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('Test Screen 3')}
-      />
-      <Button
-        title='Edit Page(Event Detail)'
-        buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('Test Screen 4')}
-      />
-      <Button
-        title='Friends : Friends Card, Filter'
-        buttonStyle={styles.button}
-        onPress={()=> navigation.navigate('Test Screen 5')}
-      />
-    </View>
+    </ScrollView>
   )
 }
 
@@ -42,7 +86,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#F5FCFF',
-      justifyContent: 'center'
+      padding: 20,
     },
     button: {
       margin: 5,

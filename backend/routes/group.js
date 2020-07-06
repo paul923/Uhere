@@ -29,13 +29,13 @@ router.post('/', function (req,res) {
             if(error){
               res.status(500).send(error)
             }
-            res.status(201).send();
+            res.status(201).send(results);
           })
         } else {
           res.status(400).send();
         }
       } else {
-        res.status(201).send();
+        res.status(201).send(results);
       }
     });
   });

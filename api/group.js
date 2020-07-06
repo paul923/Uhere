@@ -4,11 +4,10 @@ import _ from 'lodash'
 
 export async function getGroupById(groupId) {
     try {
-        let url = `http://${backend}:3000/group/groups/${groupId}`;
+        let url = `http://${backend}:3000/groups/${groupId}`;
         let response = await fetch(url);
-        let json = await response.json();
-        if(json.status !== 200){
-            let group = json.response;
+        if(response.status === 200){
+            let group = await response.json();
             let sortedGroups = 
                 {
                   GroupId: _.get(_.find(group, 'GroupId'), 'GroupId'),
@@ -34,7 +33,8 @@ export async function getGroupById(groupId) {
 }
 
 export async function postGroup(group, members) {
-    let url = `http://${backend}:3000/user/group`;
+  try{
+    let url = `http://${backend}:3000/groups`;
     let response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -42,36 +42,46 @@ export async function postGroup(group, members) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          group,
-          members: members
-        }),
+        group,
+        members: members
+      }),
     });
-    let responseJson = await response.json();
-    console.log(responseJson.response);
-    return responseJson;
+    if(response.status === 201)
+      return true;
+    return false;
+  } catch (error) {
+    console.error(error);
+    return false
+  }
 }
 
 
-export async function updateGroupName(group) {
-  let url = `http://${backend}:3000/user/group/name`;
-  let response = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        group
-    }),
-  });
-  let responseJson = await response.json();
-  if(!responseJson)
-      return null;
-  return responseJson;
+export async function updateGroup(groupId, group, groupMembers) {
+  try{
+    let url = `http://${backend}:3000/groups/${groupId}`;
+    let response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          group,
+          groupMembers
+      }),
+    });
+    if(response.status === 200)
+      return true;
+    return false;
+  } catch(error) {
+    console.error(error);
+    return false;
+  }
 }
 
 export async function deleteGroupById(groupId) {
-    let url = `http://${backend}:3000/group/groups/${groupId}`;
+  try{
+    let url = `http://${backend}:3000/groups/${groupId}`;
     let response = await fetch(url, {
       method: 'DELETE',
       headers: {
@@ -79,8 +89,11 @@ export async function deleteGroupById(groupId) {
         'Content-Type': 'application/json',
       },
     });
-    let responseJson = await response.json();
-    if(!responseJson)
-        return null;
-    return responseJson;
+    if(response.status === 204)
+      return true;
+    return false;
+  } catch(error) {
+    console.error(error);
+    return false;
+  }
 }
