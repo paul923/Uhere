@@ -60,7 +60,6 @@ router.get('/', function (req, res) {
       GROUP BY Event.EventId
       LIMIT ${limit} OFFSET ${offset}`
     }
-
     connection.query(sql, function (error, results, fields) {
       connection.release();
       // If some error occurs, we throw an error.
@@ -104,7 +103,6 @@ router.get('/:eventId', function (req, res) {
             res.status(500).send(error);
           }
           results[0].eventUsers = eventUsers
-          console.log(results)
           res.status(200).send(results);
 
         });
@@ -141,9 +139,19 @@ router.patch('/:eventId/users/:userId', function (req, res) {
         res.status(500).send(error);
       }
       if (results.affectedRows > 0) {
-        res.status(200).send();
+        if (req.body.status === "ACCEPTED") {
+          res.status(200).send({
+            body: "Event is Accepted"
+          });
+        } else {
+          res.status(200).send({
+            body: "Event is Declined"
+          });
+        }
       } else {
-        res.status(404).send();
+        res.status(404).send({
+          body: "Event Not Found"
+        });
       }
     });
   });

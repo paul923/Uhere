@@ -7,6 +7,7 @@ export async function getEvent(eventId) {
         let response = await fetch(url);
         let json = await response.json();
         let event = json[0];
+        console.log(event);
         return event;
     } catch (error) {
         console.error(error);
@@ -24,8 +25,14 @@ export async function getEvents(acceptStatus, history, limit, offset) {
       url += `&limit=${limit}`;
       url += `&offset=${offset}`;
       let response = await fetch(url);
-      let events = await response.json();
-      return events;
+      if (response.status === 404) {
+        console.log([])
+        return [];
+      } else {
+        let events = await response.json();
+        console.log(events)
+        return events;
+      }
   } catch (error) {
       console.error(error);
       return null;
@@ -61,6 +68,7 @@ export async function acceptEvent(eventId) {
     }),
   });
   let responseJson = await response.json();
+  console.log(responseJson);
   return responseJson;
 }
 
@@ -77,6 +85,7 @@ export async function declineEvent(eventId) {
     }),
   });
   let responseJson = await response.json();
+  console.log(responseJson);
   return responseJson;
 }
 
@@ -91,5 +100,6 @@ export async function cancelEvent(eventId) {
     }
   });
   let responseJson = await response.json();
+  console.log(responseJson);
   return responseJson;
 }
