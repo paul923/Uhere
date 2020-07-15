@@ -9,12 +9,18 @@ var CronJob = require('cron').CronJob;
 router.get('/', function (req, res) {
   if (!req.query.acceptStatus) {
     res.status(400).send({
-      body: "Please specify acceptStatus as query parameter"
+      success: false,
+      error: {
+        message: "Please specify acceptStatus as query parameter"
+      }
     })
   }
   if (!req.query.userId) {
     res.status(400).send({
-      body: "Please specify userId as query parameter"
+      success: false,
+      error: {
+        message: "Please specify userId as query parameter"
+      }
     })
   }
   var acceptStatus = req.query.acceptStatus;
@@ -24,7 +30,14 @@ router.get('/', function (req, res) {
   var offset = req.query.offset ? req.query.offset : 0;
   var sort = req.query.sort;
   pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
+    if (err) {
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+    }
     if (history === 'true') {
       var sql = `SELECT Event.*, COUNT(EventUser.UserId) MemberCount
       FROM Event, EventUser
@@ -64,13 +77,28 @@ router.get('/', function (req, res) {
       connection.release();
       // If some error occurs, we throw an error.
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        })
       }
       // Getting the 'response' from the database and sending it to our route. This is were the data is.
       if (results.length > 0) {
-        res.status(200).send(results)
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        })
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Not Found"
+          }
+        })
       }
     });
   });
@@ -79,14 +107,26 @@ router.get('/', function (req, res) {
 router.get('/:eventId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
+    if (err) {
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+    }
     var sql = `select * FROM ?? WHERE EventId = ? and IsDeleted = false`;
     var parameters = ['Event', req.params.eventId];
     sql = mysql.format(sql, parameters);
     connection.query(sql, function (error, results, fields) {
       // If some error occurs, we throw an error.
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        })
       }
       // Getting the 'response' from the database and sending it to our route. This is were the data is.
       if (results.length > 0) {
@@ -100,14 +140,28 @@ router.get('/:eventId', function (req, res) {
         connection.query(sql, function (error, eventUsers, fields) {
           connection.release();
           if (error) {
-            res.status(500).send(error);
+            res.status(500).send({
+              success: false,
+              error: {
+                message: "Database Error"
+              }
+            })
           }
           results[0].eventUsers = eventUsers
-          res.status(200).send(results);
-
+          res.status(200).send({
+            success: true,
+            body: {
+              results
+            }
+          })
         });
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Not Found"
+          }
+        })
       }
     });
   });
@@ -116,19 +170,32 @@ router.get('/:eventId', function (req, res) {
 router.patch('/:eventId/users/:userId', function (req, res) {
   if (!req.body.status) {
     res.status(400).send({
-      body: "Please specify status as body"
+      success: false,
+      error: {
+        message: "Please specify status as body parameter"
+      }
     })
   }
   if (req.body.status !== "ACCEPTED" && req.body.status !== "DECLINED") {
     res.status(400).send({
-      body: "Valid values for status are 'ACCEPTED' or 'DECLINED'"
+      success: false,
+      error: {
+        message: "Valid values for status are 'ACCEPTED' or 'DECLINED'"
+      }
     })
   }
   var status = req.body.status;
 
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
+    if (err) {
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+    }
     var sql = "UPDATE ?? SET STATUS = ? WHERE UserId = ? AND EventId = ? AND IsDeleted = false";
     var parameters = ['EventUser', status, req.params.userId, req.params.eventId];
     sql = mysql.format(sql, parameters);
@@ -136,22 +203,36 @@ router.patch('/:eventId/users/:userId', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        })
       }
       if (results.affectedRows > 0) {
         if (req.body.status === "ACCEPTED") {
           res.status(200).send({
-            body: "Event is Accepted"
-          });
+            success: true,
+            body: {
+              message: "Event is Accepted"
+            }
+          })
         } else {
           res.status(200).send({
-            body: "Event is Declined"
-          });
+            success: true,
+            body: {
+              message: "Event is Declined"
+            }
+          })
         }
       } else {
         res.status(404).send({
-          body: "Event Not Found"
-        });
+          success: false,
+          error: {
+            message: "Event Not Found"
+          }
+        })
       }
     });
   });
@@ -160,27 +241,54 @@ router.patch('/:eventId/users/:userId', function (req, res) {
 router.delete('/:eventId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
+    if (err) {
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+    }
     var sql = "UPDATE ?? SET isDeleted = ? WHERE EventId = ? AND IsDeleted = false";
     var parameters = ['Event', true, req.params.eventId];
     sql = mysql.format(sql, parameters);
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
-      if (error) {
-        res.status(500).send(error);
+      if (err) {
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        })
       }
       if (results.affectedRows > 0) {
         sql = "UPDATE ?? SET isDeleted = ? WHERE EventId = ?";
         parameters = ['EventJob', true, req.params.eventId];
         sql = mysql.format(sql, parameters);
         connection.query(sql, function (error, results, fields) {
-          if (error) {
-            res.status(500).send(error);
+          if (err) {
+            res.status(500).send({
+              success: false,
+              error: {
+                message: "Database Error"
+              }
+            })
           }
-          res.status(204).send();
+          res.status(204).send({
+            success: true,
+            body: {
+              message: "Event is Deleted"
+            }
+          })
         })
       } else {
-        res.status(404).send();
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Not Found"
+          }
+        })
       }
     });
   });
@@ -189,7 +297,14 @@ router.delete('/:eventId', function (req, res) {
 router.post('/', function (req,res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    if (err) throw err; // not connected!
+    if (error) {
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+    }
     var event = {
       ...req.body.event,
       DateTime: new Date(req.body.event.DateTime)
@@ -202,7 +317,12 @@ router.post('/', function (req,res) {
       // If some error occurs, we throw an error.
       if (error) {
         connection.release();
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        })
       }
       if (results.insertId) {
         let users = [];
@@ -218,7 +338,12 @@ router.post('/', function (req,res) {
           //TODO: Handle the case that event is inserted, but eventUsers are not inserted
           if (error) {
             connection.release();
-            res.status(500).send(error);
+            res.status(500).send({
+              success: false,
+              error: {
+                message: "Database Error"
+              }
+            })
           }
           var eventJob = {
             EventId: results.insertId,
@@ -230,7 +355,13 @@ router.post('/', function (req,res) {
           eventJobSql = mysql.format(eventJobSql, parameters);
           connection.query(eventJobSql, eventJob, function (error, eventJobResult, fields) {
             if (error) {
-              res.status(500).send(error);
+              connection.release();
+              res.status(500).send({
+                success: false,
+                error: {
+                  message: "Database Error"
+                }
+              })
             }
             console.log(eventJobResult);
             var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
@@ -243,8 +374,13 @@ router.post('/', function (req,res) {
                   var sql = `select UserId FROM EventUser where EventID = '${eventId}'`
                   connection.query(sql, function (error, userResults, fields) {
                     if (error) {
-                      throw error;
                       connection.release();
+                      res.status(500).send({
+                        success: false,
+                        error: {
+                          message: "Database Error"
+                        }
+                      })
                     }
                     req.app.get('io').in('lobby').clients(function(error, clients) {
                       clients.forEach(function(socketId){
@@ -268,7 +404,12 @@ router.post('/', function (req,res) {
                     connection.query(eventJobSql, function (error, eventJobResult, fields) {
                       connection.release();
                       if (error) {
-                        throw error;
+                        res.status(500).send({
+                          success: false,
+                          error: {
+                            message: "Database Error"
+                          }
+                        })
                       }
                     })
                   });
@@ -278,11 +419,21 @@ router.post('/', function (req,res) {
             	true,
             	null
             );
-            res.status(201).send();
+            res.status(201).send({
+              success: true,
+              body: {
+                message: "Event is Created"
+              }
+            })
           })
         })
       } else {
-        res.status(400).send();
+        res.status(400).send({
+          success: false,
+          error: {
+            message: "Event Not Created"
+          }
+        })
       }
     });
   });
