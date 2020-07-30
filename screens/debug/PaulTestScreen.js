@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput, Text } from 'react-native';
 import { Button, Input } from 'react-native-elements'
 
 import AvatarScreen from '../profile/AvatarScreen'
@@ -10,14 +10,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 export default function PaulTestScreen({navigation}) {
   const [groupId, setGroupId] = React.useState();
+  const [result, setResult] = React.useState();
 
 
   async function getGroup(){
     let result = await getGroupById(groupId)
-    if(result)
-      alert(JSON.stringify(result, null, 4))
-    else
-      alert("cannot find")
+    setResult(JSON.stringify(result, null, 2))
   }
 
   async function createGroup(){
@@ -37,20 +35,12 @@ export default function PaulTestScreen({navigation}) {
         }
       ]
     let result = await postGroup(group, members);
-    if(result){
-      alert("posted" + JSON.stringify(group, null, 4) + "Members:" + JSON.stringify(members, null, 4))
-    } else {
-      alert("Error has occurred. Please try again later")
-    }
+    setResult(JSON.stringify(result, null, 2))
   }
 
   async function deleteGroup(){
     let result = await deleteGroupById(groupId);
-    if(result){
-      alert("Deleted")
-    } else {
-      alert("Error has occurred. Please try again later")
-    }
+    setResult(JSON.stringify(result, null, 2))
   }
 
   return (
@@ -78,6 +68,9 @@ export default function PaulTestScreen({navigation}) {
         buttonStyle={styles.button}
         onPress={()=> deleteGroup()}
       />
+      <View>
+        <Text>{result}</Text>
+      </View>
     </ScrollView>
   )
 }

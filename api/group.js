@@ -6,28 +6,26 @@ export async function getGroupById(groupId) {
     try {
         let url = `http://${backend}:3000/groups/${groupId}`;
         let response = await fetch(url);
-        if(response.status === 200){
-            let group = await response.json();
-            let sortedGroups = 
-                {
-                  GroupId: _.get(_.find(group, 'GroupId'), 'GroupId'),
-                  UserId: _.get(_.find(group, 'UserId'), 'UserId'),
-                  GroupName: _.get(_.find(group, 'GroupName'), 'GroupName'),
-                  Members: _.map(group, function (obj) {
-                    let member = _.omit(obj, ["UserId","GroupId", "GroupName"]);
-                    member['UserId'] = member["MemberId"];
-                    delete member["MemberId"];
-                    return member;
-                  })
-                }
-            ;
-            console.log("sortedGroup",sortedGroups)
-            return sortedGroups;
+        let group = await response.json();
+        if(group.success){
+          let results = group.body.results
+          group.body.results = {
+            GroupId: _.get(_.find(results, 'GroupId'), 'GroupId'),
+            UserId: _.get(_.find(results, 'UserId'), 'UserId'),
+            GroupName: _.get(_.find(results, 'GroupName'), 'GroupName'),
+            Members: _.map(results, function (obj) {
+              let member = _.omit(obj, ["UserId","GroupId", "GroupName"]);
+              member['UserId'] = member["MemberId"];
+              delete member["MemberId"];
+              return member;
+            })
+          }
+          return group.body.results;
         } else {
-            return null;
+          return group.error;
         }
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         return null;
     }
 }
@@ -46,12 +44,15 @@ export async function postGroup(group, members) {
         members: members
       }),
     });
-    if(response.status === 201)
-      return true;
-    return false;
+    let json = await response.json();
+    if(json.success){
+      return json.body;
+    } else {
+      return json.error;
+    }
   } catch (error) {
-    console.error(error);
-    return false
+    // console.error(error);
+    return null;
   }
 }
 
@@ -70,12 +71,15 @@ export async function updateGroup(groupId, group, groupMembers) {
           groupMembers
       }),
     });
-    if(response.status === 200)
-      return true;
-    return false;
+    let json = await response.json();
+    if(json.success){
+      return json.body;
+    } else {
+      return json.error;
+    }
   } catch(error) {
-    console.error(error);
-    return false;
+    // console.error(error);
+    return null;
   }
 }
 
@@ -89,11 +93,15 @@ export async function deleteGroupById(groupId) {
         'Content-Type': 'application/json',
       },
     });
-    if(response.status === 204)
-      return true;
-    return false;
+    //TODO: fix json returning null
+    let json = await response.json();
+    if(json.success){
+      return json.body;
+    } else {
+      return json.error;
+    }
   } catch(error) {
-    console.error(error);
-    return false;
+    alert(error)
+    return null;
   }
 }
