@@ -6,11 +6,12 @@ export async function getEvent(eventId) {
         let url = `http://${backend}:3000/events/${eventId}`;
         let response = await fetch(url);
         let json = await response.json();
-        let event = json[0];
-        console.log(event);
-        return event;
+        if (json.success) {
+          return json.body.results[0];
+        } else {
+          return json.error;
+        }
     } catch (error) {
-        console.error(error);
         return null;
     }
 }
@@ -25,13 +26,11 @@ export async function getEvents(acceptStatus, history, limit, offset) {
       url += `&limit=${limit}`;
       url += `&offset=${offset}`;
       let response = await fetch(url);
-      if (response.status === 404) {
-        console.log([])
-        return [];
+      let json = await response.json();
+      if (json.success) {
+        return json.body.results;
       } else {
-        let events = await response.json();
-        console.log(events)
-        return events;
+        return json.error;
       }
   } catch (error) {
       console.error(error);
@@ -40,66 +39,98 @@ export async function getEvents(acceptStatus, history, limit, offset) {
 }
 
 export async function createEvent(event, members) {
-  let response = await fetch(`http://${backend}:3000/events`, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      event,
-      users: members,
-      host: firebase.auth().currentUser.uid
-    }),
-  });
-  return response.json();
+  try {
+    let response = await fetch(`http://${backend}:3000/events`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        event,
+        users: members,
+        host: firebase.auth().currentUser.uid
+      }),
+    });
+    let json = response.json();
+    if (json.success) {
+      return json.body;
+    } else {
+      return json.error;
+    }
+  } catch (error) {
+    return null;
+  }
+
 }
 
 export async function acceptEvent(eventId) {
-  let url = `http://${backend}:3000/events/${eventId}/users/${firebase.auth().currentUser.uid}`;
-  let response = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        status: 'ACCEPTED'
-    }),
-  });
-  let responseJson = await response.json();
-  console.log(responseJson);
-  return responseJson;
+  try {
+    let url = `http://${backend}:3000/events/${eventId}/users/${firebase.auth().currentUser.uid}`;
+    let response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          status: 'ACCEPTED'
+      }),
+    });
+    let json = response.json();
+    if (json.success) {
+      return json.body;
+    } else {
+      return json.error;
+    }
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function declineEvent(eventId) {
-  let url = `http://${backend}:3000/events/${eventId}/users/${firebase.auth().currentUser.uid}`;
-  let response = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        status: 'DECLINED'
-    }),
-  });
-  let responseJson = await response.json();
-  console.log(responseJson);
-  return responseJson;
+  try {
+    let url = `http://${backend}:3000/events/${eventId}/users/${firebase.auth().currentUser.uid}`;
+    let response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          status: 'DECLINED'
+      }),
+    });
+    let json = response.json();
+    if (json.success) {
+      return json.body;
+    } else {
+      return json.error;
+    }
+  } catch (error) {
+    return null;
+  }
 }
 
 
 export async function cancelEvent(eventId) {
-  let url = `http://${backend}:3000/events/${eventId}`;
-  let response = await fetch(url, {
-    method: 'DELETE',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+  try {
+    let url = `http://${backend}:3000/events/${eventId}`;
+    let response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    });
+    let json = response.json();
+    if (json.success) {
+      return json.body;
+    } else {
+      return json.error;
     }
-  });
-  let responseJson = await response.json();
-  console.log(responseJson);
-  return responseJson;
+  } catch (error) {
+    return null;
+  }
+
 }
