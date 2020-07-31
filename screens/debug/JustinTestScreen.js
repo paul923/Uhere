@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, View, AsyncStorage, TextInput, ScrollView } from 'react-native';
 import { Image, Button, Text, ListItem, Icon } from 'react-native-elements';
 import AuthContext from '../../contexts/AuthContext';
-import LoadingContext from '../../contexts/LoadingContext';
+import GlobalContext from '../../contexts/GlobalContext';
 import firebase from 'firebase';
 import firebaseObject from '../../config/firebase';
 import Collpase from '../../components/Collapse';
@@ -11,7 +11,7 @@ import { getEvent, getEvents, createEvent, acceptEvent, declineEvent, cancelEven
 
 export default function JustinTestScreen({navigation}) {
   const { signIn, signOut } = React.useContext(AuthContext);
-  const { showLoadingScreen } = React.useContext(LoadingContext);
+  const { showLoadingScreen, showErrorScreen } = React.useContext(GlobalContext);
   const [eventId, setEventId] = React.useState();
   firebaseSignOut = async () => {
     firebase.auth().signOut().then(function() {
@@ -50,6 +50,11 @@ export default function JustinTestScreen({navigation}) {
         style={{flex: 1}}
         title="SHOW LOADING SCREEN"
         onPress={() => showLoadingScreen()}
+        />
+      <Button
+        style={{flex: 1}}
+        title="SHOW GLOBAL DIALOG"
+        onPress={() => showErrorScreen("This is Error Message")}
         />
       <View style={{flex: 1}}>
         <TextInput

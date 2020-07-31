@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Modal, Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
@@ -25,11 +25,12 @@ import LocationPermissionScreen from './screens/LocationPermissionScreen'
 import { AppearanceProvider } from 'react-native-appearance';
 
 
+import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
 
 const Stack = createStackNavigator();
 
 import AuthContext from 'contexts/AuthContext';
-import LoadingContext from 'contexts/LoadingContext';
+import GlobalContext from 'contexts/GlobalContext';
 
 
 
@@ -122,10 +123,24 @@ export default function App(props) {
             ...prevState,
             showLoadingScreen: false
           }
+        case 'SHOW_ERROR_SCREEN':
+          return {
+            ...prevState,
+            showErrorScreen: true,
+            errorMessage: action.message
+          }
+        case 'HIDE_ERROR_SCREEN':
+          return {
+            ...prevState,
+            showErrorScreen: false,
+            errorMessage: ''
+          }
       }
     },
     {
       fetchToken: true,
+      showErrorScreen: false,
+      errorMessage: '',
       showLoadingScreen: false,
       isLoggedIn: false,
       userToken: null,
@@ -177,10 +192,12 @@ export default function App(props) {
     []
   );
 
-  const loadingContext = React.useMemo(
+  const globalContext = React.useMemo(
     () => ({
       showLoadingScreen: () => dispatch({ type: 'SHOW_LOADING_SCREEN' }),
       hideLoadingScreen: () => dispatch({ type: 'HIDE_LOADING_SCREEN' }),
+      showErrorScreen: (message) => dispatch({ type: 'SHOW_ERROR_SCREEN', message: message}),
+      hideErrorScreen: () => dispatch({ type: 'HIDE_ERROR_SCREEN'}),
     })
   );
 
@@ -264,9 +281,29 @@ export default function App(props) {
  } else {
     return (
       <AppearanceProvider>
-      <LoadingContext.Provider value={loadingContext}>
+      <GlobalContext.Provider value={globalContext}>
       <View style={styles.container}>
         {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={state.showErrorScreen}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>{state.errorMessage}</Text>
+
+              <TouchableHighlight
+                style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                onPress={() => {
+                  globalContext.hideErrorScreen();
+                }}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
         <Spinner
           visible={state.showLoadingScreen}
           textContent={'Loading...'}
@@ -291,7 +328,7 @@ export default function App(props) {
         {Platform.OS === 'ios' && <KeyboardSpacer/>}
 
       </View>
-      </LoadingContext.Provider>
+      </GlobalContext.Provider>
       </AppearanceProvider>
     );
   }
@@ -305,6 +342,45 @@ const styles = StyleSheet.create({
   spinnerTextStyle: {
     color: '#FFF'
   },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    height: 300,
+    width: 200,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
 });
 
 
