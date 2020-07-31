@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { Modal, Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
 import * as Font from 'expo-font';
+import { useFonts,
+  OpenSans_400Regular,
+  OpenSans_600SemiBold
+} from '@expo-google-fonts/open-sans';
+
+
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -47,6 +53,14 @@ export default function App(props) {
   React.useEffect(() => {
     checkLocationPermissionAsync();
   }, []);
+
+  let [fontsLoaded] = useFonts({
+    OpenSans_400Regular,
+    OpenSans_600SemiBold
+  });
+
+
+
 
   // first time installing app gives you 'undetermined' == ask Next Time
   async function checkLocationPermissionAsync() {
@@ -245,6 +259,31 @@ export default function App(props) {
           ...Ionicons.font,
           'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         });
+        setCustomView({
+          style: {
+            fontFamily: 'OpenSans_400Regular'
+          }
+        })
+        setCustomTextInput({
+          style: {
+            fontFamily: 'OpenSans_400Regular'
+          }
+        })
+        setCustomText({
+          style: {
+            fontFamily: 'OpenSans_400Regular'
+          }
+        })
+        setCustomImage({
+          style: {
+            fontFamily: 'OpenSans_400Regular'
+          }
+        })
+        setCustomTouchableOpacity({
+          style: {
+            fontFamily: 'OpenSans_400Regular'
+          }
+        })
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);
@@ -276,7 +315,7 @@ export default function App(props) {
      updateLocationGranted={setLocationPermissionGranted}
      />
    );
- } else if (state.fetchToken) {
+ } else if (state.fetchToken || !fontsLoaded) {
    return <SplashScreen/>
  } else {
     return (
@@ -379,7 +418,8 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
+    textAlign: "center",
+    fontFamily: "OpenSans_600SemiBold"
   }
 });
 

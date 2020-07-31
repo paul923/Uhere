@@ -12,6 +12,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo-google-fonts/inter": "^0.1.0",
+    "@expo-google-fonts/open-sans": "^0.1.0",
     "@expo/vector-icons": "^10.0.0",
     "@material-ui/core": "^4.9.9",
     "@react-native-community/async-storage": "^1.8.1",
@@ -51,6 +53,7 @@
     "react-native-drawer": "^2.5.1",
     "react-native-elements": "^1.2.7",
     "react-native-gesture-handler": "~1.5.0",
+    "react-native-global-props": "^1.1.5",
     "react-native-keyboard-spacer": "^0.4.1",
     "react-native-loading-spinner-overlay": "^1.1.0",
     "react-native-maps": "0.26.1",
