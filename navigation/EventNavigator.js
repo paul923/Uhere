@@ -4,12 +4,12 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from '../components/TabBarIcon';
-import EventScreen from '../screens/EventScreen';
-import CreateEventScreen from '../screens/CreateEventScreen';
-import FilterEventScreen from '../screens/FilterEventScreen';
-import EventDetailScreen from '../screens/EventDetailScreen';
-import DetailEditPage from '../screens/DetailEditPage'
-import LocationSearchScreen from '../screens/LocationSearchScreen'
+import EventScreen from '../screens/event/EventScreen';
+import CreateEventScreen from '../screens/event/CreateEventScreen';
+import FilterEventScreen from '../screens/event/FilterEventScreen';
+import EventDetailScreen from '../screens/event/EventDetailScreen';
+import DetailEditPage from '../screens/event/DetailEditPage'
+import LocationSearchScreen from '../screens/event/LocationSearchScreen'
 import EventHistoryDetail from '../screens/event/EventHistoryDetail'
 
 const Stack = createStackNavigator();

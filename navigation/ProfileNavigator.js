@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import { createStackNavigator } from '@react-navigation/stack';
 
-import AvatarImageScreen from '../screens/AvatarImageScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import AvatarImageScreen from '../screens/profile/AvatarImageScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 const Stack = createStackNavigator();
 

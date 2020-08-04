@@ -10,7 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import TabBarIcon from '../components/TabBarIcon';
-import EventScreen from '../screens/EventScreen';
+import EventScreen from '../screens/event/EventScreen';
 import EventNavigator from './EventNavigator';
 import FriendsTabNavigator from './FriendsTabNavigator';
 import JayTestScreen from '../screens/debug/JayTestScreen';

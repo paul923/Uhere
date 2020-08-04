@@ -3,8 +3,8 @@ import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import PaulTestScreen from '../screens/debug/PaulTestScreen'
-import AvatarScreen from '../screens/AvatarScreen'
-import AvatarImageScreen from '../screens/AvatarImageScreen';
+import AvatarScreen from '../screens/profile/AvatarScreen'
+import AvatarImageScreen from '../screens/profile/AvatarImageScreen';
 
 const Stack = createStackNavigator();
 
