@@ -4,39 +4,20 @@ var router = express.Router();
 var pool = require('../db').pool;
 var mysql = require('../db').mysql;
 
-const DB_ERROR_MSG = "Database error";
-const NOT_FOUND_MSG = "Not found";
-const GROUP_CREATED_NO_MEMBER_MSG = "New group created without any member";
-const GROUP_CREATED_WITH_MEMBER_MSG = "New group created with members";
-const BAD_REQUEST_MSG = "Group not created";
-const GROUP_UPDATED_MSG = "Group updated";
-const GROUP_DELETED_MSG = "Group deleted"
-
 // '/groups'
 // POST
 // Create new group
 router.post('/', function (req,res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    if (err) {
-      res.status(500).send({
-        success: false,
-        error: {
-          message: DB_ERROR_MSG
-        }
-      })
-    }
+    if (err) throw err; // not connected!
     console.log("Connected!");
     var groupSql = "INSERT INTO UserGroup SET ?";
     var data = req.body.group
     connection.query(groupSql, data, function (error, results, fields) {
       if (error) {
-        res.status(500).send({
-          success: false,
-          error: {
-            message: DB_ERROR_MSG
-          }
-        })
+        connection.release();
+        res.status(500).send(error)
       }
       else if(req.body.members.length > 0){
         // GroupMember query is invoked if UserGroup.GroupId is created
@@ -46,35 +27,15 @@ router.post('/', function (req,res) {
           connection.query(groupMemberSql, [members], function (error, results, fields) {
             connection.release();
             if(error){
-              res.status(500).send({
-                success: false,
-                error: {
-                  message: DB_ERROR_MSG
-                }
-              })
+              res.status(500).send(error)
             }
-            res.status(201).send({
-              success: true,
-              body: {
-                message: GROUP_CREATED_WITH_MEMBER_MSG
-              }
-            })
+            res.status(201).send(results);
           })
         } else {
-          res.status(400).send({
-            success: false,
-            error: {
-              message: BAD_REQUEST_MSG
-            }
-          })
+          res.status(400).send();
         }
       } else {
-        res.status(201).send({
-          success: true,
-          body: {
-            message: GROUP_CREATED_NO_MEMBER_MSG
-          }
-        })
+        res.status(201).send(results);
       }
     });
   });
@@ -85,14 +46,7 @@ router.post('/', function (req,res) {
 // Get Group by Id
 router.get('/:groupId', function(req, res, next) {
   pool.getConnection(function (err, connection) {
-    if (err) {
-      res.status(500).send({
-        success: false,
-        error: {
-          message: DB_ERROR_MSG
-        }
-      })
-    }
+    if (err) throw err; // not connected!
     var sql = 
     `SELECT UserGroup.GroupId, UserGroup.UserId, GroupName, MemberId, Username, Nickname, AvatarURI, AvatarColor, RegisteredDate, GroupMember.IsDeleted 
     FROM UserGroup 
@@ -109,26 +63,11 @@ router.get('/:groupId', function(req, res, next) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send({
-          success: false,
-          error: {
-            message: DB_ERROR_MSG
-          }
-        })
+        res.status(500).send(error);
       } else if (results.length > 0) {
-        res.status(200).send({
-          success: true,
-          body: {
-            results
-          }
-        })
+        res.status(200).send(results);
       } else {
-        res.status(404).send({
-          success: false,
-          error: {
-            message: NOT_FOUND_MSG
-          }
-        })
+        res.status(404).send();
       }
     });
   });
@@ -143,13 +82,8 @@ router.patch('/:groupId', function(req, res, next) {
   
   pool.getConnection(function(error, connection){
     connection.beginTransaction(function (err) {
-      if (err) {
-        res.status(500).send({
-          success: false,
-          error: {
-            message: DB_ERROR_MSG
-          }
-        })
+      if (err){
+        res.status(500).send(err);
       }
       // Update Group Name
       var groupNameSql = `
@@ -161,12 +95,7 @@ router.patch('/:groupId', function(req, res, next) {
       connection.query(groupNameSql, function(error, results, fields){
         if(error){
           return conneciton.rollback(function() {
-            res.status(500).send({
-              success: false,
-              error: {
-                message: DB_ERROR_MSG
-              }
-            })
+            res.status(500).send(error);
           })
         } else if(results.affectedRows > 0){
           // Switch all member's IsDeleted to 1 within that groupId
@@ -179,12 +108,7 @@ router.patch('/:groupId', function(req, res, next) {
           connection.query(isDeletedSql, function(error, results, fields) {
             if(error){
               return connection.rollback(function(){
-                res.status(500).send({
-                  success: false,
-                  error: {
-                    message: DB_ERROR_MSG
-                  }
-                })
+                res.status(500).send(error);
               })
             } else if(results.affectedRows > 0) {
               const promises = [];
@@ -202,6 +126,7 @@ router.patch('/:groupId', function(req, res, next) {
                     if (error) {
                       return connection.rollback(function () {
                         reject();
+                        // res.status(500).send(error);
                       })
                     } else if (results.length > 0) {
                       var userId = results[0].MemberId;
@@ -217,11 +142,14 @@ router.patch('/:groupId', function(req, res, next) {
                         if (error) {
                           return connection.rollback(function () {
                             reject();
+                            // res.status(500).send(error);
                           })
                         } else if (results.affectedRows > 0) {
                           resolve();
+                          // res.status(200).send(results);
                         } else {
                           reject();
+                          // res.status(404).send();
                         }
                       })
                     } else {
@@ -234,12 +162,15 @@ router.patch('/:groupId', function(req, res, next) {
                         if (error) {
                           return connection.rollback(function () {
                             reject();
+                            // res.status(500).send(error);
                           })
                         } else if (results.affectedRows) {
                           resolve();
+                          // res.status(200).send(results);
                         } else {
                           return connection.rollback(function () {
                             reject();
+                            // res.status(404).send(error);
                           })
                         }
                       })
@@ -253,20 +184,10 @@ router.patch('/:groupId', function(req, res, next) {
                 connection.commit(function (err) {
                   if (err) {
                     return connection.rollback(function () {
-                      res.status(500).send({
-                        success: false,
-                        error: {
-                          message: DB_ERROR_MSG
-                        }
-                      })
+                      res.status(500).send(error);
                     });
                   }
-                  res.status(200).send({
-                    success: true,
-                    body: {
-                      message: GROUP_UPDATED_MSG
-                    }
-                  })
+                  res.status(200).send();
                 });
               }).catch(err => {
                 console.log("Error occurred: ", err);
@@ -285,13 +206,16 @@ router.patch('/:groupId', function(req, res, next) {
                   connection.query(newRowSql, function(error, results, fields){
                     if(error){
                       return connection.rollback(function(){
+                        // res.status(500).send(error);
                         reject();
                       })
                     } else if(results.affectedRows){
                       resolve();
+                      // res.status(200).send(results);
                     } else {
                       return connection.rollback(function(){
                         reject();
+                        // res.status(404).send(error);
                       })
                     }
                   })
@@ -303,12 +227,7 @@ router.patch('/:groupId', function(req, res, next) {
                 connection.commit(function (err) {
                   if (err) {
                     return connection.rollback(function () {
-                      res.status(500).send({
-                        success: false,
-                        error: {
-                          message: DB_ERROR_MSG
-                        }
-                      })
+                      res.status(500).send(error);
                     });
                   }
                   res.status(200).send();
@@ -320,12 +239,7 @@ router.patch('/:groupId', function(req, res, next) {
           })
         } else {
           return conneciton.rollback(function() {
-            res.status(404).send({
-              success: false,
-              error: {
-                message: NOT_FOUND_MSG
-              }
-            })
+            res.status(404).send(error);
           })
         }
       })
@@ -338,14 +252,7 @@ router.patch('/:groupId', function(req, res, next) {
 // Delete Group by Id
 router.delete('/:groupId', function(req, res, next) {
   pool.getConnection(function (err, connection) {
-    if (err) {
-      res.status(500).send({
-        success: false,
-        error: {
-          message: DB_ERROR_MSG
-        }
-      })
-    }
+    if (err) throw err; // not connected!
     console.log("Connected!");
     var sql = `update UserGroup 
     SET IsDeleted = 1 
@@ -353,28 +260,16 @@ router.delete('/:groupId', function(req, res, next) {
     AND IsDeleted = 0
     AND GroupId = ${req.params.groupId}
     `;
+    // Executing the MySQL query (select all data from the 'users' table).
     connection.query(sql, function (error, results, fields) {
       if (error) {
-        res.status(500).send({
-          success: false,
-          error: {
-            message: DB_ERROR_MSG
-          }
-        })
+        connection.release();
+        res.status(500).send();
       } else if (results.affectedRows > 0) {
-        res.status(204).send({
-          success: true,
-          body: {
-            message: GROUP_DELETED_MSG
-          }
-        })
+        connection.release();
+        res.status(204).send();
       } else {
-        res.status(404).send({
-          success: false,
-          error: {
-            message: NOT_FOUND_MSG
-          }
-        })
+        res.status(404).send();
       }
     });
   });
