@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button, Input, ListItem, Avatar } from 'react-native-elements'
 
-import AvatarScreen from '../profile/AvatarScreen'
+import AvatarScreen from '../AvatarScreen'
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
 
 

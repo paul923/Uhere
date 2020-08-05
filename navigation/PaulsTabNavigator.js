@@ -7,8 +7,8 @@ import AvatarNavigator from './AvatarNavigator'
 import TestScreen2 from '../screens/debug/TestScreen2';
 import DrawerLayoutScreen from '../screens/debug/DrawerLayoutScreen';
 import LoginTestScreen from '../screens/debug/LoginTestScreen'
-import DetailEditPage from '../screens/event/DetailEditPage'
-import AddFriendsScreen from '../screens/friend/AddFriendsScreen'
+import DetailEditPage from '../screens/DetailEditPage'
+import AddFriendsScreen from '../screens/AddFriendsScreen'
 
 
 const Stack = createStackNavigator();

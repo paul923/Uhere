@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import CreateGroupScreen from '../screens/friend/CreateGroupScreen'
-import AddFriendSelectionScreen from '../screens/friend/AddFriendSelectionScreen'
-import AddFriendByIdScreen from '../screens/friend/AddFriendByIdScreen'
-import FriendScreen from '../screens/friend/FriendScreen'
-import AddFriendsScreen from '../screens/friend/AddFriendsScreen'
-import GroupDetailScreen from '../screens/friend/GroupDetailScreen'
+import CreateGroupScreen from '../screens/CreateGroupScreen'
+import AddFriendSelectionScreen from '../screens/AddFriendSelectionScreen'
+import AddFriendByIdScreen from '../screens/AddFriendByIdScreen'
+import FriendScreen from '../screens/FriendScreen'
+import AddFriendsScreen from '../screens/AddFriendsScreen'
+import GroupDetailScreen from '../screens/GroupDetailScreen'
 import { GroupProvider } from 'contexts/GroupContext';
 
 const Stack = createStackNavigator();
