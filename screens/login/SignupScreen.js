@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import {Icon, Header} from 'react-native-elements'
+import {Icon, Header, Input} from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 
 
@@ -8,10 +8,22 @@ import firebaseObject from 'config/firebase';
 
 
 
-export default class Login extends Component {
+export default class SignUp extends Component {
+
+  handlerFocus = (input) => {
+    this.setState({
+      [input]:true
+    });
+  };
+
+  handlerBlur = (input) => {
+    this.setState({
+      [input]:false
+    });
+  };
 
   registerWithEmail = async () => {
-    if(this.state.registerPassword !== this.state.cPassword){
+    if(this.state.registerPassword !== this.state.confirmPassword){
       alert('Please confirm your password');
     } else {
       firebaseObject.auth()
@@ -36,11 +48,9 @@ export default class Login extends Component {
   }
 
   state = {
-    firstName: "",
-    lastName: "",
     registerEmail: "",
     registerPassword: "",
-    cPassword: "",
+    confirmPassword: "",
   }
   render(){
     return (
@@ -48,17 +58,15 @@ export default class Login extends Component {
         <Header
           leftComponent={
             <Icon
-              name="arrow-left"
-              type="entypo"
-              color="white"
+              name="arrowleft"
+              type="antdesign"
+              color="#4A4A4A"
               size={30}
               underlayColor= "transparent"
               onPress={()=> this.props.navigation.goBack()}
             />
           }
-          centerComponent={{text: 'Create Account', style: {color: 'white', fontSize: 25, fontWeight: 'bold'}}}
           containerStyle={{
-            marginTop: 10,
             backgroundColor: 'transparent',
             borderBottomWidth: 0
           }}
@@ -71,72 +79,89 @@ export default class Login extends Component {
             flexGrow: 1,
           }}
         >
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerText}>Let's Get Started!</Text>
+            <Text style={styles.subHeaderText}>Create an account with Uhere to get all features</Text>
+          </View>
 
           <View style={styles.bodyContainer}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputDetail}>First Name</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholderTextColor="#003f5c"
-                  onChangeText={text => this.setState({firstName: text})}/>
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputDetail}>Last Name</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholderTextColor="#003f5c"
-                  onChangeText={text => this.setState({lastName: text})}/>
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputDetail}>Email</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholderTextColor="#003f5c"
-                  onChangeText={text => this.setState({registerEmail: text})}
-                  value={this.state.registerEmail}
-                  textContentType="emailAddress"
+            <Input
+              leftIcon={
+                <Icon
+                  type="entypo"
+                  name="mail"
+                  color="#4A4A4A"
+                  size={15}
+                  iconStyle={this.state.emailInputFocus ? styles.inputFocusIcon : styles.inputIcon}
                 />
-              </View>
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputDetail}>Password (6 or more character)</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholderTextColor="#003f5c"
-                  onChangeText={text => this.setState({registerPassword: text})}
-                  value={this.state.registerPassword}
-                  textContentType="password"
+              }
+              inputStyle={this.state.emailInputFocus ? styles.inputFocusText : styles.inputText}
+              inputContainerStyle={this.state.emailInputFocus ? styles.inputFocusContainer : styles.inputContainer}
+              placeholder="Email"
+              placeholderTextColor="#c2c2c2"
+              onChangeText={text => this.setState({registerEmail: text})}
+              value={this.state.registerEmail}
+              textContentType="emailAddress"
+              keyboardType="email-address"
+              onFocus = {() => this.handlerFocus('emailInputFocus')}
+              onBlur = {() => this.handlerBlur('emailInputFocus')}
+            />
+            <Input
+              leftIcon={
+                <Icon
+                  type="entypo"
+                  name="lock"
+                  color="#4A4A4A"
+                  size={15}
+                  iconStyle={this.state.passwordInputFocus ? styles.inputFocusIcon : styles.inputIcon}
                 />
-              </View>
-            </View>
+              }
+              containerStyle={styles.inputOuterContainer}
+              inputStyle={this.state.passwordInputFocus ? styles.inputFocusText : styles.inputText}
+              inputContainerStyle={this.state.passwordInputFocus ? styles.inputFocusContainer : styles.inputContainer}
+              placeholder="Password (6 or more character)"
+              placeholderTextColor="#c2c2c2"
+              onChangeText={text => this.setState({registerPassword: text})}
+              value={this.state.registerPassword}
+              textContentType="password"
+              secureTextEntry
+              onFocus = {() => this.handlerFocus('passwordInputFocus')}
+              onBlur = {() => this.handlerBlur('passwordInputFocus')}
+            />
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputDetail}>Confirm Password</Text>
-              <View style={styles.inputView}>
-                <TextInput
-                  style={styles.inputText}
-                  placeholderTextColor="#003f5c"
-                  onChangeText={text => this.setState({cPassword:text})}/>
-              </View>
-            </View>
-
+            <Input
+              leftIcon={
+                <Icon
+                  type="entypo"
+                  name="lock"
+                  color="#4A4A4A"
+                  size={15}
+                  iconStyle={this.state.confirmPasswordInputFocus ? styles.inputFocusIcon : styles.inputIcon}
+                />
+              }
+              inputStyle={this.state.confirmPasswordInputFocus ? styles.inputFocusText : styles.inputText}
+              inputContainerStyle={this.state.confirmPasswordInputFocus ? styles.inputFocusContainer : styles.inputContainer}
+              placeholder="Confirm Password"
+              placeholderTextColor="#c2c2c2"
+              onChangeText={text => this.setState({confirmPassword:text})}
+              secureTextEntry
+              onFocus = {() => this.handlerFocus('confirmPasswordInputFocus')}
+              onBlur = {() => this.handlerBlur('confirmPasswordInputFocus')}
+            />
 
             <TouchableOpacity
               style={styles.confirmButton}
               onPress={this.registerWithEmail}
             >
-              <Text style={styles.loginText}>SIGN UP</Text>
+              <Text style={styles.signupText}>SIGN UP</Text>
             </TouchableOpacity>
 
+            <View style={{flexDirection: 'row', margin: 20}}>
+              <Text style={{color: '#5D5D5D'}}>Already have an account?</Text>
+              <TouchableOpacity onPress={()=> navigation.goBack()}>
+                <Text style={{color: '#15CDCA'}}> Login Here</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -151,7 +176,24 @@ export default class Login extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#003f5c',
+    backgroundColor: '#F5F5F5',
+  },
+
+  headerContainer: {
+    alignItems: 'center',
+    marginVertical: 30
+  },
+
+  headerText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    padding: 5
+  },
+
+  subHeaderText: {
+    fontSize: 12,
+    color: "grey",
+    padding: 5
   },
 
   bodyContainer:{
@@ -159,27 +201,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  inputView: {
-    backgroundColor: "#465881",
-    borderRadius: 15,
-    height: 45,
-    marginBottom: 10,
-    justifyContent: "center",
-    padding: 20
-  },
-
   inputText: {
-    height: 50,
-    color: 'white'
+    color: '#5D5D5D',
+    fontSize: 15
   },
 
-  forgot: {
-    color: "white",
-    fontSize: 11
+  inputFocusText: {
+    color: '#15CDCA',
+    fontSize: 15
   },
+
+  inputContainer: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 20,
+    borderBottomWidth: 0,
+  },
+
+  inputFocusContainer: {
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: "#15CDCA"
+  },
+
+  inputOuterContainer: {
+    marginVertical: 15,
+  },
+
+  inputIcon: {
+    paddingRight: 10
+  },
+
+  inputFocusIcon: {
+    color: "#15CDCA",
+    paddingRight: 10
+  },
+
   confirmButton: {
-    width: "100%",
-    backgroundColor: "#00cc66",
+    width: "95%",
+    backgroundColor: "#15CDCA",
     borderRadius: 25,
     height: 50,
     alignItems: "center",
@@ -187,30 +250,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10
   },
-  loginText: {
+
+  signupText:{
     color: "white",
     fontWeight: "bold"
-  },
-  logoU: {
-    fontSize: 50,
-    fontWeight: "bold",
-    color: "white"
-  },
-  logoHere: {
-    fontSize: 50,
-    fontWeight: "bold",
-    color: "#fb5b5a"
-  },
-  logoContainer: {
-    margin: 30,
-  },
-  inputContainer: {
-    width: "100%"
-  },
-  inputDetail: {
-    fontSize: 15,
-    color: 'white',
-    fontWeight: "bold",
-    margin: 5
   }
 });

@@ -78,6 +78,16 @@ export default function PaulTestScreen({navigation}) {
         buttonStyle={styles.button}
         onPress={()=> deleteGroup()}
       />
+      <Button
+        title='Login'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate("Test Screen 3")}
+      />
+      <Button
+        title='signup'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate("Test Screen 6")}
+      />
     </ScrollView>
   )
 }

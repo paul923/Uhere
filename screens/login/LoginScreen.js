@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput, KeyboardAvoidingView  } from 'react-native';
+import { Image, StyleSheet, View, ActivityIndicator, TouchableOpacity, TextInput, KeyboardAvoidingView  } from 'react-native';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -21,6 +21,7 @@ export default function LoginScreen({route, navigation}) {
   const [ registerEmail, setRegisterEmail] = React.useState("");
   const [ registerPassword, setRegisterPassword] = React.useState("");
   const [ forgotPasswordEmail, setForgotPasswordEmail] = React.useState("");
+  const [ inputFocus, focusToggle] = React.useState({});
   const { signIn, signOut } = React.useContext(AuthContext);
 
   let firebaseUnsubscribe;
@@ -109,6 +110,13 @@ export default function LoginScreen({route, navigation}) {
     }
   }
 
+  function handlerFocus(input) {
+    focusToggle({[input]: true})
+  }
+
+  function handlerBlur(input) {
+    focusToggle({[input]: false})
+  }
 
   return (
     <View style={styles.container}>
@@ -121,35 +129,58 @@ export default function LoginScreen({route, navigation}) {
         }}
       >
         <View style={styles.logoContainer}>
-          <Text style={styles.logoU}>u</Text>
-          <Text style={styles.logoHere}>Here</Text>
+          <Image
+            source={require('../assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+            style={styles.uhereLogo}
+            resizeMode="contain"
+          />
         </View>
 
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
+        <View style={styles.inputWrapper}>
+          <Input
+            leftIcon={
+              <Icon
+                type="entypo"
+                name="mail"
+                color="#4A4A4A"
+                size={15}
+                iconStyle={inputFocus.emailInputFocus ? styles.inputFocusIcon : styles.inputIcon}
+              />
+            }
+            inputStyle={inputFocus.emailInputFocus ? styles.inputFocusText : styles.inputText}
+            inputContainerStyle={inputFocus.emailInputFocus ? styles.inputFocusContainer : styles.inputContainer}
             placeholder="Email"
-            placeholderTextColor="#003f5c"
+            placeholderTextColor="#c2c2c2"
             onChangeText={text => setLoginEmail(text)}
             value={loginEmail}
             textContentType="emailAddress"
             keyboardType="email-address"
-            autoCapitalize= 'none'
+            onFocus = {() => handlerFocus('emailInputFocus')}
+            onBlur = {() => handlerBlur('emailInputFocus')}
           />
-        </View>
-
-        <View style={styles.inputView}>
-          <TextInput
-            style={styles.inputText}
+          <Input
+            leftIcon={
+              <Icon
+                type="entypo"
+                name="lock"
+                color="#4A4A4A"
+                size={15}
+                iconStyle={inputFocus.passwordInputFocus ? styles.inputFocusIcon : styles.inputIcon}
+              />
+            }
+            containerStyle={styles.inputOuterContainer}
+            inputStyle={inputFocus.passwordInputFocus ? styles.inputFocusText : styles.inputText}
+            inputContainerStyle={inputFocus.passwordInputFocus ? styles.inputFocusContainer : styles.inputContainer}
             placeholder="Password"
-            placeholderTextColor="#003f5c"
+            placeholderTextColor="#c2c2c2"
             onChangeText={text => setLoginPassword(text)}
             value={loginPassword}
             textContentType="password"
-            autoCapitalize= 'none'
+            secureTextEntry
+            onFocus = {() => handlerFocus('passwordInputFocus')}
+            onBlur = {() => handlerBlur('passwordInputFocus')}
           />
         </View>
-
 
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgot}>Forgot password?</Text>
@@ -164,7 +195,7 @@ export default function LoginScreen({route, navigation}) {
 
         <View style={{flexDirection: 'row', width: '80%', justifyContent: 'space-between', alignItems: 'center', }}>
           <View style={styles.horizontalLine}></View>
-          <Text style={{color: 'white'}}>Or</Text>
+          <Text style={{color: '#5D5D5D'}}>Or</Text>
           <View style={styles.horizontalLine}></View>
         </View>
 
@@ -173,7 +204,7 @@ export default function LoginScreen({route, navigation}) {
             <Icon
               name="google--with-circle"
               type="entypo"
-              color="white"
+              color="#15CDCA"
               size={40}
               iconStyle={{marginHorizontal: 10}}
             />
@@ -183,7 +214,7 @@ export default function LoginScreen({route, navigation}) {
             <Icon
               name="facebook-with-circle"
               type="entypo"
-              color="white"
+              color="#15CDCA"
               size={40}
               style={styles.loginIcon}
               iconStyle={{marginHorizontal: 10}}
@@ -193,9 +224,9 @@ export default function LoginScreen({route, navigation}) {
         </View>
 
         <View style={{flexDirection: 'row'}}>
-          <Text style={{color: 'white'}}>Don't have account?</Text>
+          <Text style={{color: '#5D5D5D'}}>Don't have account?</Text>
           <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
-            <Text style={{color: '#7f9fad'}}> Register</Text>
+            <Text style={{color: '#15CDCA'}}> Register</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -206,31 +237,58 @@ export default function LoginScreen({route, navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#003f5c',
+    backgroundColor: '#F5F5F5',
     justifyContent: 'center',
   },
-  inputView: {
-    width: "80%",
-    backgroundColor: "#465881",
-    borderRadius: 20,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: "center",
-    padding: 20
+
+  inputWrapper: {
+    width: "90%"
   },
 
   inputText: {
-    height: 50,
-    color: 'white'
+    color: '#5D5D5D',
+    fontSize: 15
+  },
+
+  inputFocusText: {
+    color: '#15CDCA',
+    fontSize: 15
+  },
+
+  inputContainer: {
+    marginVertical: 10,
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 20,
+    borderBottomWidth: 0,
+  },
+
+  inputFocusContainer: {
+    marginVertical: 10,
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: "#15CDCA"
+  },
+
+  inputIcon: {
+    paddingRight: 10
+  },
+
+  inputFocusIcon: {
+    color: "#15CDCA",
+    paddingRight: 10
   },
 
   forgot: {
-    color: "white",
+    color: "#5D5D5D",
     fontSize: 11
   },
   loginBtn: {
     width: "80%",
-    backgroundColor: "#fb5b5a",
+    backgroundColor: "#15CDCA",
     borderRadius: 25,
     height: 50,
     alignItems: "center",
@@ -242,26 +300,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold"
   },
-  logoU: {
-    fontSize: 50,
-    fontWeight: "bold",
-    color: "white"
-  },
-  logoHere: {
-    fontSize: 50,
-    fontWeight: "bold",
-    color: "#fb5b5a"
+  uhereLogo:{
+    width: 150,
+    height: 50
   },
   logoContainer: {
-    margin: 30,
-    flexDirection: 'row'
+    margin: 50,
   },
   loginIconContainer: {
     margin: 10,
     flexDirection: 'row',
   },
   horizontalLine: {
-    backgroundColor: 'white',
+    backgroundColor: '#5D5D5D',
     width: '45%',
     height: 1,
   }
