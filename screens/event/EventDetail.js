@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
-import { formatDate, formatTime } from "../../utils/date";
+import { formatDate, formatTime } from "utils/date";
 import moment from 'moment'
 
 export default function EventDetail({ event, eventMembers, onPress }) {

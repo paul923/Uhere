@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity  } from 'react-native';
 import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import EventCard from '../../components/EventCard';
-import EventFilter from '../../components/EventFilter';
-import { formatEventList } from '../../utils/event';
+import EventCard from 'components/EventCard';
+import EventFilter from 'components/EventFilter';
+import { formatEventList } from 'utils/event';
 import Constants from "expo-constants";
 import firebase from "firebase";
 
 import { getEvents } from 'api/event';
 
 const { manifest } = Constants;
-import { backend } from '../../constants/Environment';
+import { backend } from 'constants/Environment';
 
 export default function PendingEvent({ navigation, route }) {
   const [events, setEvents] = React.useState([]);

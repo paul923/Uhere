@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList, Alert } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
-import FriendCard from '../components/FriendCard';
+import FriendCard from 'components/FriendCard';
 
-import { getGroupById, deleteGroupById } from '../api/group'
+import { getGroupById, deleteGroupById } from 'api/group'
 import firebase from 'firebase';
 
 import { GroupContext, GroupProvider, useStateValue } from 'contexts/GroupContext';

@@ -2,9 +2,9 @@ import * as React from 'react';
 import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert, FlatList } from 'react-native';
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
-import { formatDate, formatTime } from "../utils/date";
-import EventDetailWithMiniMap from './event/EventDetailWithMiniMap'
-import EventMap from './event/EventMap'
+import { formatDate, formatTime } from "utils/date";
+import EventDetailWithMiniMap from 'screens/event/EventDetailWithMiniMap'
+import EventMap from 'screens/event/EventMap'
 import SideMenu from 'react-native-side-menu'
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import * as Location from 'expo-location';

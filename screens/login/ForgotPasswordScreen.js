@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import {Icon, Header} from 'react-native-elements'
 
-import firebaseObject from '../config/firebase';
+import firebaseObject from 'config/firebase';
 
 
 export default class ForgotPasswordScreen extends Component {

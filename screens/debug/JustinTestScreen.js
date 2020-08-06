@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { StyleSheet, View, AsyncStorage, TextInput, ScrollView } from 'react-native';
 import { Image, Button, Text, ListItem, Icon } from 'react-native-elements';
-import AuthContext from '../../contexts/AuthContext';
-import GlobalContext from '../../contexts/GlobalContext';
+import AuthContext from 'contexts/AuthContext';
+import GlobalContext from 'contexts/GlobalContext';
 import firebase from 'firebase';
-import firebaseObject from '../../config/firebase';
-import Collpase from '../../components/Collapse';
+import firebaseObject from 'config/firebase';
+import Collpase from 'components/Collapse';
 import { getEvent, getEvents, createEvent, acceptEvent, declineEvent, cancelEvent } from 'api/event';
 
 

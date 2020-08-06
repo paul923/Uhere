@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, SectionList, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, Alert } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
-import FriendCard from '../components/FriendCard';
-import FriendTile from '../components/FriendTile';
-import { getFriendsList, getUserGroup, deleteFriend } from '../api/user'
+import FriendCard from 'components/FriendCard';
+import FriendTile from 'components/FriendTile';
+import { getFriendsList, getUserGroup, deleteFriend } from 'api/user'
 import firebase from 'firebase';
-import { backend } from '../constants/Environment';
+import { backend } from 'constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
 import { TouchableOpacity, ScrollView} from 'react-native-gesture-handler'
 import { useIsFocused } from '@react-navigation/native'

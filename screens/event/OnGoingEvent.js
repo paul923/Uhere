@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
 import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import EventCard from '../../components/EventCard';
-import { formatEventList } from '../../utils/event';
-import { formatDate, formatTime } from '../../utils/date';
+import EventCard from 'components/EventCard';
+import { formatEventList } from 'utils/event';
+import { formatDate, formatTime } from 'utils/date';
 import Constants from "expo-constants";
 import firebase from "firebase";
 const { manifest } = Constants;
-import { backend } from '../../constants/Environment';
+import { backend } from 'constants/Environment';
 import { getEvents } from 'api/event';
 
 export default function OnGoingEvent({ navigation, route }) {

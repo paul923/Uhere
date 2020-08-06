@@ -2,8 +2,8 @@ import * as React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { Button, Input } from 'react-native-elements'
 
-import AvatarScreen from '../profile/AvatarScreen'
-import { getGroupById, postGroup, deleteGroupById } from '../../api/group';
+import AvatarScreen from 'screens/profile/AvatarScreen'
+import { getGroupById, postGroup, deleteGroupById } from 'api/group';
 import { ScrollView } from 'react-native-gesture-handler';
 
 

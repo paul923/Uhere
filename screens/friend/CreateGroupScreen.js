@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, FlatList, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements';
-import FriendCard from '../components/FriendCard';
+import FriendCard from 'components/FriendCard';
 
-import { postGroup } from '../api/group'
+import { postGroup } from 'api/group'
 import firebase from 'firebase';
 import { useIsFocused } from '@react-navigation/native'
 import { GroupContext } from 'contexts/GroupContext';

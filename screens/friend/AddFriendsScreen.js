@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, SafeAreaView, FlatList } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
-import FriendCard from '../components/FriendCard';
-import FriendTile from '../components/FriendTile';
-import Collapse from '../components/Collapse';
+import FriendCard from 'components/FriendCard';
+import FriendTile from 'components/FriendTile';
+import Collapse from 'components/Collapse';
 import firebase from 'firebase';
-import { backend } from '../constants/Environment';
+import { backend } from 'constants/Environment';
 
 import { GroupContext } from 'contexts/GroupContext';
 

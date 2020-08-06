@@ -259,31 +259,6 @@ export default function App(props) {
           ...Ionicons.font,
           'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         });
-        setCustomView({
-          style: {
-            fontFamily: 'OpenSans_400Regular'
-          }
-        })
-        setCustomTextInput({
-          style: {
-            fontFamily: 'OpenSans_400Regular'
-          }
-        })
-        setCustomText({
-          style: {
-            fontFamily: 'OpenSans_400Regular'
-          }
-        })
-        setCustomImage({
-          style: {
-            fontFamily: 'OpenSans_400Regular'
-          }
-        })
-        setCustomTouchableOpacity({
-          style: {
-            fontFamily: 'OpenSans_400Regular'
-          }
-        })
       } catch (e) {
         // We might want to provide this error information to an error reporting service
         console.warn(e);

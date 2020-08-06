@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
-import ColorPalette from '../components/react-native-color-palette/src';
+import ColorPalette from 'components/react-native-color-palette/src';
 
 
 const avatarImages = [

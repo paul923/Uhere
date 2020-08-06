@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage } from 'react-native';
 import { Overlay, Icon, Avatar, Header, Button } from 'react-native-elements';
-import ColorPalette from '../components/react-native-color-palette/src';
+import ColorPalette from 'components/react-native-color-palette/src';
 import { ScrollView } from 'react-native-gesture-handler';
-import AuthContext from '../contexts/AuthContext';
+import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
 import Constants from "expo-constants";
 
 const { manifest } = Constants;
-import { backend } from '../constants/Environment';
+import { backend } from 'constants/Environment';
 const colorList = ['#9599B3', '#D47FA6', '#8A56AC', '#241332', '#B4C55B', '#52912E', '#417623', '#253E12', '#4EBDEF', '#4666E5', '#132641', '#352641'];
 let initColor = colorList[0];
 

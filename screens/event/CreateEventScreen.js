@@ -9,24 +9,24 @@ import * as Location from 'expo-location';
 import qs from 'qs';
 import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import AuthContext from '../contexts/AuthContext';
+import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
-import firebaseObject from '../config/firebase';
+import firebaseObject from 'config/firebase';
 import Constants from "expo-constants";
 
 const { manifest } = Constants;
-import { backend } from '../constants/Environment';
+import { backend } from 'constants/Environment';
 
 import { createEvent } from 'api/event';
 import { fetchLocation } from 'api/misc';
 
-import FriendCard from '../components/FriendCard';
-import FriendTile from '../components/FriendTile';
+import FriendCard from 'components/FriendCard';
+import FriendTile from 'components/FriendTile';
 
-import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from '../utils/date';
+import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
-import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
-import penaltyImage from '../assets/images/penalty.png';
+import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
+import penaltyImage from 'assets/images/penalty.png';
 
 
 export default function CreateEventScreen({navigation}) {

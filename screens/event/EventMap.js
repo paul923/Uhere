@@ -4,7 +4,7 @@ import { Avatar, Icon } from 'react-native-elements';
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import firebase from 'firebase';
-import Timer from '../../components/Timer'
+import Timer from 'components/Timer'
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;

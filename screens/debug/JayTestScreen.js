@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, Dimensions, ScrollView, SafeAreaView } from 'react-native';
 import { Button } from 'react-native-elements'
-import { backend } from '../../constants/Environment';
+import { backend } from 'constants/Environment';
 import * as Location from 'expo-location';
 import useSocket from 'use-socket.io-client';
 import firebase from 'firebase';

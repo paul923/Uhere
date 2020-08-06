@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, StatusBar, Platform, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
 import MapView from 'react-native-maps';
-import EventDetail from './EventDetail'
+import EventDetail from 'screens/event/EventDetail'
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;

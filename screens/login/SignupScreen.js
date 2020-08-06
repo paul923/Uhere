@@ -4,7 +4,7 @@ import {Icon, Header} from 'react-native-elements'
 import { ScrollView } from 'react-native-gesture-handler';
 
 
-import firebaseObject from '../config/firebase';
+import firebaseObject from 'config/firebase';
 
 
 

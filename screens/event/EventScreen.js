@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import AuthContext from '../contexts/AuthContext';
-import firebaseObject from '../config/firebase';
+import AuthContext from 'contexts/AuthContext';
+import firebaseObject from 'config/firebase';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSafeArea } from 'react-native-safe-area-context';
-import EventCard from '../components/EventCard';
-import EventFilter from '../components/EventFilter';
-import EventHistory from './event/EventHistory';
-import OnGoingEvent from './event/OnGoingEvent';
-import PendingEvent from './event/PendingEvent';
+import EventCard from 'components/EventCard';
+import EventFilter from 'components/EventFilter';
+import EventHistory from 'screens/event/EventHistory';
+import OnGoingEvent from 'screens/event/OnGoingEvent';
+import PendingEvent from 'screens/event/PendingEvent';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -32,7 +32,7 @@ export default function EventScreen({ navigation, route }) {
       <Tab.Navigator initialRouteName="Accepted">
         <Tab.Screen name="Pending" component={PendingEvent} />
         <Tab.Screen name="Accepted" component={OnGoingEvent} />
-        <Tab.Screen name="History" component={EventHistory} /> 
+        <Tab.Screen name="History" component={EventHistory} />
       </Tab.Navigator>
     </View>
   )

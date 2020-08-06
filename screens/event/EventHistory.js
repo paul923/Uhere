@@ -1,21 +1,21 @@
 import * as React from 'react';
 import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, Alert  } from 'react-native';
 import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import EventCard from '../../components/EventCard';
-import { formatEventList } from '../../utils/event';
+import EventCard from 'components/EventCard';
+import { formatEventList } from 'utils/event';
 import Constants from "expo-constants";
 import firebase from "firebase";
 import { getEvent } from 'api/event';
-import { backend } from '../../constants/Environment';
-import Collapse from '../../components/Collapse';
+import { backend } from 'constants/Environment';
+import Collapse from 'components/Collapse';
 
 import { Appearance, useColorScheme } from 'react-native-appearance';
-import FriendCard from '../../components/FriendCard';
-import Filter from '../../contexts/Filter'
+import FriendCard from 'components/FriendCard';
+import Filter from 'contexts/Filter'
 import Modal from 'react-native-modal';
 
 import DateRange from 'react-native-date-ranges';
-import { formatDate, formatTime } from "../../utils/date";
+import { formatDate, formatTime } from "utils/date";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 

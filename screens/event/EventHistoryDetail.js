@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, StatusBar, FlatList, View, Text, ScrollView, Dimensions, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon } from 'react-native-elements';
-import EventDetail from './EventDetail'
+import EventDetail from 'screens/event/EventDetail'
 import { getEvent } from 'api/event';
-import { formatDate, formatTime } from "../../utils/date";
-import EventUser from '../../components/EventUser'
+import { formatDate, formatTime } from "utils/date";
+import EventUser from 'components/EventUser'
 
 export default function EventHistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);

@@ -7,21 +7,21 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import { Image, Button, Text, Input, Icon, CheckBox, Header, SearchBar } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import AuthContext from '../contexts/AuthContext';
+import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
-import firebaseObject from '../config/firebase';
-import { formatDate, formatTime } from '../utils/date';
-import Collapse from '../components/Collapse';
+import firebaseObject from 'config/firebase';
+import { formatDate, formatTime } from 'utils/date';
+import Collapse from 'components/Collapse';
 import { AsyncStorage, FlatList } from 'react-native';
-import { backend } from '../constants/Environment';
-import FriendCard from '../components/FriendCard';
-import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
-import penaltyImage from '../assets/images/robot-dev.png';
+import { backend } from 'constants/Environment';
+import FriendCard from 'components/FriendCard';
+import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
+import penaltyImage from 'assets/images/robot-dev.png';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Appearance, useColorScheme } from 'react-native-appearance';
 
 export default function FilterEventScreen({ navigation }) {
-  
+
   const [date, setDate] = React.useState();
   const [isDatePickerVisible, setDatePickerVisibility] = React.useState(false);
 
@@ -35,7 +35,7 @@ export default function FilterEventScreen({ navigation }) {
   const [searchedLocations, setSearchedLocations] = React.useState([]);
   const [selectedLocations, setSeletedLocations] = React.useState([]);
 
-  
+
   let colorScheme = useColorScheme();
 
 
@@ -302,11 +302,11 @@ export default function FilterEventScreen({ navigation }) {
           </View>
         }
       />
-      <Button  
+      <Button
         title="Reset Filters"
         onPress={resetFilters}
       />
-        
+
     </View>
 
   )

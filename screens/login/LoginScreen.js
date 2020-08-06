@@ -6,12 +6,12 @@ import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
-import AuthContext from '../contexts/AuthContext';
+import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
-import firebaseObject from '../config/firebase';
+import firebaseObject from 'config/firebase';
 
 
-import googleSignInImage from '../assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
+import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 
 
 
