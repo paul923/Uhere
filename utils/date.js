@@ -2,7 +2,7 @@ import { format, formatDistance, formatRelative, subDays } from 'date-fns';
 import * as Localization from 'expo-localization';
 
 export function formatDate(date) {
-  return format(date, 'MMM do, yyyy')
+  return format(date, 'dd MMM')
 }
 
 export function formatTime(date) {

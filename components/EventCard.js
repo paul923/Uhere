@@ -41,48 +41,39 @@ export default function EventCard({onPress, item, status}) {
     <View style={styles.container}>
       <View style={styles.cardContainer}>
         <TouchableOpacity style={styles.cardContentContainer} onPress = {onPress}>
-          <Text style={styles.cardTitle} h4>{item.Name}</Text>
-          <View style={styles.row}>
-            <Icon color="white" name="location-on"/>
-            <View style={styles.cardFullColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.IsOnline ? 'Online Meeting' : item.LocationName}</Text>
+          <View style={styles.cardRow}>
+            <View style={styles.cardColumn}>
+              <Text style={styles.cardColumnTitle}>Event Name</Text>
+              <Text style={styles.cardTitle}>{item.Name}</Text>
+            </View>
+            <View style={styles.cardColumn}>
+              <Text style={styles.cardColumnTitle}>Location</Text>
+              <Text style={styles.cardContent}>{item.LocationName}</Text>
             </View>
           </View>
-          <View style={styles.row}>
-            <Icon color="white" name="event"/>
-            <View style={styles.cardFullColumn}>
-              <Text h5 style={styles.cardColumnText}>{formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' / ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime)))}</Text>
+          <View style={{
+            ...styles.cardRow,
+            marginTop: 30
+          }}>
+            <View style={styles.cardColumn}>
+              <Text style={styles.cardColumnTitle}>Date</Text>
+              <Text style={styles.cardContent}>{formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' | ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime)))}</Text>
             </View>
-          </View>
-          <View style={styles.row}>
-            <Icon color="white" name="person"/>
-            <View style={styles.cardFullColumn}>
-              <Text h5 style={styles.cardColumnText}>{item.MemberCount + "/" + item.MaxMember}</Text>
+            <View style={styles.cardColumn}>
+              <View style={styles.cardRow}>
+                <View style={styles.memberAvatar}>
+                </View>
+                <View style={styles.memberAvatar}>
+                </View>
+                <View style={styles.memberAvatar}>
+                </View>
+                <View style={styles.memberAvatar}>
+                  <Text style={styles.memberCount}>+{item.MaxMember-4 < 0 ? 0 : item.MaxMember-4}</Text>
+                </View>
+              </View>
             </View>
           </View>
         </TouchableOpacity>
-        <View style={styles.cardButtonContainer}>
-          <View style={styles.cardLogo}>
-            <Image
-              source={{uri: 'https://scx1.b-cdn.net/csz/news/800/2017/gps.jpg'}}
-              style={{width: 30, height: 40}}
-              containerStyle={{justifyContent: 'center'}}
-              />
-          </View>
-          <View style={styles.cardChip}>
-            <Image
-              source={{uri: 'https://as1.ftcdn.net/jpg/01/22/06/72/500_F_122067245_li2zr9npi1aZZ6dto4SNgxAFKt302X7d.jpg'}}
-              style={{width: 40, height: 30}}
-              containerStyle={{justifyContent: 'center'}}
-              />
-          </View>
-          <View style={styles.cardLightGroup}>
-            <View style={styles.cardLightRed}>
-            </View>
-            <View style={styles.cardLightGreen}>
-            </View>
-          </View>
-        </View>
       </View>
     </View>
   )
@@ -95,78 +86,68 @@ const styles = StyleSheet.create({
   cardContainer: {
     flex: 1,
     flexDirection: 'row',
-    marginTop: 5,
-    marginBottom: 5,
-    paddingLeft: 5,
-    backgroundColor: 'black',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
   },
   cardContentContainer: {
-    flex: 4,
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingBottom: 30
-  },
-  cardButtonContainer: {
     flex: 1,
+    margin: 20,
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    alignContent: 'stretch'
   },
-  cardLogo: {
-    paddingTop: 10,
-    paddingRight: 10,
-    flex: 1,
-    borderWidth: 1,
-    alignItems: 'flex-end'
-  },
-  cardChip: {
-    paddingTop: 10,
-    flex: 5,
-    alignItems: 'center'
-  },
-  cardLightGroup: {
-    flex: 4,
-    flexDirection: 'row',
-    marginBottom: 10,
-    marginRight: 10
-  },
-  cardLightRed: {
-    flex: 1,
-    borderRadius: 40,
-    backgroundColor: 'red',
-  },
-  cardLightGreen: {
-    flex: 1,
-    marginLeft: 10,
-    borderRadius: 40,
-    backgroundColor: 'green',
-  },
-  cardButton: {
-    flex: 1,
-    justifyContent: 'center'
-  },
-  row: {
+  cardRow: {
     flex: 1,
     flexDirection: 'row',
-    flexGrow: 0,
-    alignItems: 'center',
-    paddingBottom: 5
+    alignContent: 'stretch'
   },
   cardColumn: {
-    flexBasis: '40%',
-    paddingTop: 2,
-    paddingBottom: 2,
+    flex: 1,
+    flexDirection: 'column',
+    alignContent: 'stretch'
   },
-  cardFullColumn: {
-    flexBasis: '90%',
-    paddingTop: 2,
-    paddingBottom: 2,
-  },
-  cardColumnText: {
-    paddingLeft: 2,
-    color: 'white'
+  cardColumnTitle: {
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 10,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    color: "#9b9b9b"
   },
   cardTitle: {
-    color: 'white',
-    paddingLeft: 10,
-    paddingBottom: 5
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 12,
+    fontWeight: "500",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    color: "#15cdca",
+    marginTop: 5
+  },
+  cardContent: {
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 12,
+    fontWeight: "500",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    color: "#121212",
+    marginTop: 5
+  },
+  memberAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    marginLeft: 5,
+    backgroundColor: "#15cdca",
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  memberCount: {
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 12,
+    fontWeight: "500",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    color: "#ffffff"
   }
 });
