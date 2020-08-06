@@ -117,7 +117,14 @@ export default function MainAppNavigator({ navigation, route }) {
   }, []);
 
   return (
-    <BottomTab.Navigator initialRouteName="Event" tabBarOptions={{keyboardHidesTabBar: true}}>
+    <BottomTab.Navigator initialRouteName="Event" tabBarOptions={{
+      keyboardHidesTabBar: true,
+      activeTintColor: '#15cdca',
+      inactiveTintColor: '#121212',
+      tabStyle: {
+        backgroundColor: "#f6f6f6",
+      }
+    }}>
       <BottomTab.Screen
         name="Friend"
         component={FriendsTabNavigator}
