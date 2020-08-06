@@ -73,7 +73,6 @@ export default function KeyboardTestScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF',
       borderWidth: 5,
       borderColor: 'blue',
       paddingBottom: 20

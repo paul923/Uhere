@@ -13,7 +13,7 @@ export default function DrawerLayoutScreen() {
   const [ diffView, setDiffView] = React.useState(true);
 
   React.useEffect(() => {
-    
+
   }, []);
 
 
@@ -22,7 +22,6 @@ export default function DrawerLayoutScreen() {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF',
       paddingBottom: 20
     },
     button: {

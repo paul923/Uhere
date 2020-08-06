@@ -60,7 +60,6 @@ export default function OnGoingEvent({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#F5FCFF'
     },
     listContainer: {
       marginLeft: 15,
