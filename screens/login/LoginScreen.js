@@ -5,7 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
-import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
+import { Button, Text, Input, Icon, Divider } from 'react-native-elements';
 import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from 'config/firebase';
@@ -130,7 +130,7 @@ export default function LoginScreen({route, navigation}) {
       >
         <View style={styles.logoContainer}>
           <Image
-            source={require('../assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+            source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
             style={styles.uhereLogo}
             resizeMode="contain"
           />
