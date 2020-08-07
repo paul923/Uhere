@@ -282,7 +282,7 @@ export default function App(props) {
      onDone={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
      onSkip={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
      showSkipButton
-     activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
+     activeDotStyle={{backgroundColor: 'rgba(21, 205, 202, .9)'}}
      />;
  }  else if (!isLocationPermissionGranted) {
    return (
@@ -402,39 +402,39 @@ const styles = StyleSheet.create({
 // Slider contents
 const slides = [
   {
-    key: 'Dummy1',
-    title: 'Dummy 1',
-    text: 'Please sign in to\ncontinue.',
-    image: require('./assets/images/robot-dev.png'),
+    key: 'Penalize!',
+    title: 'Penalize!',
+    text: 'Play the game if there are\nmultiple freinds who are late!',
+    image: require('./assets/images/Tutorial/uhereonboarding1.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
-      color: '#000000'
+      color: '#15CDCA'
     },
     textStyle: {
       color: '#0f0f0f',
     }
   },
   {
-    key: 'Dummy2',
-    title: 'Dummy 2',
-    text: 'Please sign in to\ncontinue.',
-    image: require('./assets/images/robot-dev.png'),
+    key: 'Check!',
+    title: 'Check!',
+    text: 'Use Uhere to find and see\nwhere your friends are!',
+    image: require('./assets/images/Tutorial/uhereonboarding2.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
-      color: '#000000'
+      color: '#15CDCA'
     },
     textStyle: {
       color: '#0f0f0f',
     }
   },
   {
-    key: 'Dummy3',
-    title: 'Dummy 3',
-    text: 'Please sign in to\ncontinue.',
-    image: require('./assets/images/robot-dev.png'),
+    key: 'Create!',
+    title: 'Create!',
+    text: 'Invite your friends and set\nup the location and penalty for the losers!',
+    image: require('./assets/images/Tutorial/uhereonboarding3.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
-      color: '#000000'
+      color: '#15CDCA'
     },
     textStyle: {
       color: '#0f0f0f'
