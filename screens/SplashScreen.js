@@ -17,9 +17,11 @@ export default function SplashScreen() {
         resizeMode="contain"
       />
       {/*Text*/}
-      <Text style={styles.text}>
-        {"Don’t be late ever again"}
-      </Text>
+      <Image
+        source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/dontbelateeveragain.png')}
+        style={styles.text}
+        resizeMode="contain"
+      />
     </View>
   )
 }
@@ -31,26 +33,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: "center",
   },
-  iconContianer: {
-
-  },
   uhereIcon: {
     width: 75,
     height: 90.6,
-  },
-  logoContainer: {
-
   },
   uhereLogo: {
     width: 125,
     height: 42,
   },
   text: {
-    fontSize: 12,
-    fontWeight: "bold",
-    fontStyle: "italic",
-    letterSpacing: 0,
-    margin: 6,
-    flexDirection: 'row'
+    width: 130,
+    height: 15,
   },
 });
