@@ -1,25 +1,35 @@
 import * as React from 'react';
-import { SectionList, FlatList, StyleSheet, View, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Image, Button, Text, ListItem, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import AuthContext from 'contexts/AuthContext';
-import firebaseObject from 'config/firebase';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
+import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
 import EventCard from 'components/EventCard';
-import EventFilter from 'components/EventFilter';
-import EventHistory from 'screens/event/EventHistory';
-import OnGoingEvent from 'screens/event/OnGoingEvent';
-import PendingEvent from 'screens/event/PendingEvent';
+import { formatEventList } from 'utils/event';
+import { formatDate, formatTime } from 'utils/date';
+import Constants from "expo-constants";
+import firebase from "firebase";
+const { manifest } = Constants;
+import { backend } from 'constants/Environment';
+import { getEvents } from 'api/event';
 
-const Tab = createMaterialTopTabNavigator();
 
 export default function EventScreen({ navigation, route }) {
-  const insets = useSafeArea();
-  const { signIn, signOut } = React.useContext(AuthContext);
-  firebaseSignOut = async () => {
-    firebaseObject.auth().signOut().then(() => {
-      signOut();
-    })
+  const [events, setEvents] = React.useState([]);
+  const [isFetching, setIsFetching] = React.useState(false);
+  React.useEffect(() => {
+    async function fetchData() {
+      let events = await getEvents('ACCEPTED', false, 10, 0);
+      setEvents(formatEventList(events))
+    }
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      fetchData();
+    });
+    return unsubscribeFocus;
+  }, []);
+
+  async function onRefresh() {
+    setIsFetching(true);
+    let events = await getEvents('ACCEPTED', false, 10, 0);
+    setEvents(formatEventList(events))
+    setIsFetching(false);
   }
   return (
     <View style={styles.container}>
@@ -29,11 +39,30 @@ export default function EventScreen({ navigation, route }) {
         rightComponent={{icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event")}}
         statusBarProps={{translucent: true}}
         />
-      <Tab.Navigator initialRouteName="Accepted">
-        <Tab.Screen name="Pending" component={PendingEvent} />
-        <Tab.Screen name="Accepted" component={OnGoingEvent} />
-        <Tab.Screen name="History" component={EventHistory} />
-      </Tab.Navigator>
+      <View style={styles.container}>
+        <SectionList
+          style={styles.listContainer}
+          sections={events}
+          onRefresh={() => onRefresh()}
+          refreshing={isFetching}
+          renderItem={({ item }) => (
+            <EventCard
+              item={item}
+              status="ON-GOING"
+              onPress={()=>navigation.navigate('Event Detail', {
+                EventId: item.EventId,
+                EventType: "ON-GOING"
+              })}
+              />
+          )}
+          keyExtractor={(item) => item.EventId.toString()}
+          renderSectionHeader={({ section }) => (
+            <Text h3 style={styles.sectionHeader}>{section.title}</Text>
+          )}
+          ItemSeparatorComponent={() => (<Divider style={{ height: 0, margin: 10, backgroundColor: 'black' }} />)}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </View>
   )
 }
@@ -47,10 +76,13 @@ const styles = StyleSheet.create({
     marginRight: 15
   },
   sectionHeader: {
-    color: 'white',
-    fontWeight: 'bold',
-    backgroundColor: 'gray',
-    paddingLeft: 5,
-    zIndex: 99
-  }
+    marginTop: 15,
+    marginBottom: 15,
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 20,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    color: "#15cdca"
+  },
 });
