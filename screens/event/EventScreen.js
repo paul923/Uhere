@@ -9,7 +9,7 @@ import firebase from "firebase";
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 import { getEvents } from 'api/event';
-
+import { FloatingAction } from "react-native-floating-action";
 
 export default function EventScreen({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
@@ -35,9 +35,7 @@ export default function EventScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Header
-        leftComponent={{ icon: 'notifications', color: '#fff' }}
         centerComponent={{ text: 'EVENT', style: { color: '#fff' } }}
-        rightComponent={{icon: "add", color: "#fff", onPress: () => navigation.navigate("Create Event")}}
         statusBarProps={{translucent: true}}
         />
       <View style={styles.container}>
@@ -64,6 +62,16 @@ export default function EventScreen({ navigation, route }) {
           showsVerticalScrollIndicator={false}
         />
       </View>
+      <FloatingAction
+        overrideWithAction
+        color="#15cdca"
+        actions={[{
+          text: "Create Event",
+          icon: <Icon name='add' color="#ffffff" />,
+          name: "bt_create_event"
+        }]}
+        onPressItem={() => navigation.navigate("Create Event")}
+      />
     </View>
   )
 }
