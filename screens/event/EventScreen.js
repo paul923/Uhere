@@ -35,7 +35,15 @@ export default function EventScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Header
-        centerComponent={{ text: 'EVENT', style: { color: '#fff' } }}
+        backgroundColor="#ffffff"
+        centerComponent={<Image
+          source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+          style={{
+            height: 40,
+            width: 100
+          }}
+          resizeMode="contain"
+        />}
         statusBarProps={{translucent: true}}
         />
       <View style={styles.container}>
