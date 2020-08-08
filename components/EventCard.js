@@ -38,43 +38,41 @@ export default function EventCard({onPress, item, status}) {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.cardContainer}>
-        <TouchableOpacity style={styles.cardContentContainer} onPress = {onPress}>
-          <View style={styles.cardRow}>
-            <View style={styles.cardColumn}>
-              <Text style={styles.cardColumnTitle}>Event Name</Text>
-              <Text style={styles.cardTitle}>{item.Name}</Text>
-            </View>
-            <View style={styles.cardColumn}>
-              <Text style={styles.cardColumnTitle}>Location</Text>
-              <Text style={styles.cardContent}>{item.LocationName}</Text>
-            </View>
+    <View style={styles.cardContainer}>
+      <TouchableOpacity style={styles.cardContentContainer} onPress = {onPress}>
+        <View style={styles.cardRow}>
+          <View style={styles.cardColumn}>
+            <Text style={styles.cardColumnTitle}>Event Name</Text>
+            <Text style={styles.cardTitle}>{item.Name}</Text>
           </View>
-          <View style={{
-            ...styles.cardRow,
-            marginTop: 30
-          }}>
-            <View style={styles.cardColumn}>
-              <Text style={styles.cardColumnTitle}>Date</Text>
-              <Text style={styles.cardContent}>{formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' | ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime)))}</Text>
-            </View>
-            <View style={styles.cardColumn}>
-              <View style={styles.cardRow}>
-                <View style={styles.memberAvatar}>
-                </View>
-                <View style={styles.memberAvatar}>
-                </View>
-                <View style={styles.memberAvatar}>
-                </View>
-                <View style={styles.memberAvatar}>
-                  <Text style={styles.memberCount}>+{item.MaxMember-4 < 0 ? 0 : item.MaxMember-4}</Text>
-                </View>
+          <View style={styles.cardColumn}>
+            <Text style={styles.cardColumnTitle}>Location</Text>
+            <Text style={styles.cardContent}>{item.LocationName}</Text>
+          </View>
+        </View>
+        <View style={{
+          ...styles.cardRow,
+          marginTop: 30
+        }}>
+          <View style={styles.cardColumn}>
+            <Text style={styles.cardColumnTitle}>Date</Text>
+            <Text style={styles.cardContent}>{formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' | ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime)))}</Text>
+          </View>
+          <View style={styles.cardColumn}>
+            <View style={styles.cardRow}>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+                <Text style={styles.memberCount}>+{item.MaxMember-4 < 0 ? 0 : item.MaxMember-4}</Text>
               </View>
             </View>
           </View>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -88,6 +86,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#ffffff',
     borderRadius: 10,
+    marginLeft: 15,
+    marginRight: 15
   },
   cardContentContainer: {
     flex: 1,

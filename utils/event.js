@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import { formatDate } from './date';
+import { formatHeaderDate } from './date';
 
 export function formatEventList(list) {
   let grouped = _.chain(list).sortBy('DateTime').reverse().groupBy(function(item){
-    return formatDate(new Date(item.DateTime))
+    return formatHeaderDate(new Date(item.DateTime))
   }).value();
 
   let result = _.reduce(grouped, function(result, value, key) {

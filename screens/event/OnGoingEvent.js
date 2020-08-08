@@ -48,9 +48,9 @@ export default function OnGoingEvent({ navigation, route }) {
         )}
         keyExtractor={(item) => item.EventId.toString()}
         renderSectionHeader={({ section }) => (
-          <Text style={styles.sectionHeader}>{section.title}</Text>
+          <Text h3 style={styles.sectionHeader}>{section.title}</Text>
         )}
-        ItemSeparatorComponent={() => (<Divider style={{ height: 0.3, margin: 5, backgroundColor: 'black' }} />)}
+        ItemSeparatorComponent={() => (<Divider style={{ height: 0, margin: 10, backgroundColor: 'black' }} />)}
         showsVerticalScrollIndicator={false}
       />
     </View>
@@ -66,10 +66,13 @@ const styles = StyleSheet.create({
       marginRight: 15
     },
     sectionHeader: {
-      color: 'white',
-      fontWeight: 'bold',
-      backgroundColor: 'gray',
-      paddingLeft: 5,
-      zIndex: 99
+      marginTop: 15,
+      marginBottom: 15,
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 20,
+      fontWeight: "bold",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#15cdca"
     },
 });
