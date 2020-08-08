@@ -64,7 +64,7 @@ export default function EventScreen({ navigation, route }) {
           )}
           keyExtractor={(item) => item.EventId.toString()}
           renderSectionHeader={({ section }) => (
-            <Text h3 style={styles.sectionHeader}>{section.title}</Text>
+            <Text h5 style={styles.sectionHeader}>{section.title}</Text>
           )}
           ItemSeparatorComponent={() => (<Divider style={{ height: 0, margin: 10, backgroundColor: 'black' }} />)}
           showsVerticalScrollIndicator={false}
