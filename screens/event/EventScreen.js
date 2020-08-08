@@ -13,6 +13,7 @@ import { getEvents } from 'api/event';
 
 export default function EventScreen({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
+  const [upcomingEvents, setUpcomingEvents] = React.useState([]);
   const [isFetching, setIsFetching] = React.useState(false);
   React.useEffect(() => {
     async function fetchData() {
@@ -41,7 +42,7 @@ export default function EventScreen({ navigation, route }) {
         />
       <View style={styles.container}>
         <SectionList
-          style={styles.listContainer}
+        style={styles.listContainer}
           sections={events}
           onRefresh={() => onRefresh()}
           refreshing={isFetching}
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContainer: {
+    flex: 1,
     marginLeft: 15,
     marginRight: 15
   },
