@@ -29,6 +29,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
 import { AppearanceProvider } from 'react-native-appearance';
+import * as userapi from 'api/user';
 
 
 import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
@@ -176,15 +177,8 @@ export default function App(props) {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        let response = await fetch(`http://${backend}:3000/users/${data}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-        let responseJson = await response.json();
-        if (response.status === 200) {
+        let user = await userapi.getUserByUserId(data);
+        if (user !== null) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
