@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontFamily: "OpenSans_400Regular",
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: "700",
     fontStyle: "normal",
     letterSpacing: 0,
     color: "#15cdca",
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   cardContent: {
     fontFamily: "OpenSans_400Regular",
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: "700",
     fontStyle: "normal",
     letterSpacing: 0,
     color: "#121212",
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   memberCount: {
     fontFamily: "OpenSans_400Regular",
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: "700",
     fontStyle: "normal",
     letterSpacing: 0,
     color: "#ffffff"
