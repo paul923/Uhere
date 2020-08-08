@@ -22,6 +22,7 @@ import { fetchLocation } from 'api/misc';
 
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
+import CustomInput from 'components/CustomInput';
 
 import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
@@ -30,7 +31,7 @@ import penaltyImage from 'assets/images/penalty.png';
 
 
 export default function CreateEventScreen({navigation}) {
-  const [ step, setStep] = React.useState("Event Detail");
+  const [ step, setStep] = React.useState("Setup");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
   const [ eventDate, setEventDate] = React.useState(new Date());
@@ -157,116 +158,65 @@ export default function CreateEventScreen({navigation}) {
   }
 
 
-  function EventDetail() {
+  function Setup() {
     return (
-      <ScrollView
-        contentContainerStyle={{
-          height: 600
-        }}>
-        <View style={styles.row}>
+        <ScrollView
+          contentContainerStyle={{
+            height: 600,
+          }}>
           <View>
-            <View style={styles.row}>
-              <Text h4>Event Name</Text>
-            </View>
-            <View style={styles.row}>
-              <Input
-                  onChangeText={text => setEventName(text)}
-                  value={eventName}
-                  inputContainerStyle={{
-                    borderWidth: 1,
-                  }}
-                />
-            </View>
+            <Image
+              source={{ uri: 'https://media-cdn.tripadvisor.com/media/photo-s/19/15/a7/68/gazzi-cafe.jpg'}}
+              style={styles.locationBanner}
+            />
           </View>
-        </View>
-        <View style={styles.row}>
-          <Text h4>Event Description</Text>
-        </View>
-        <View style={{
-          height: 150
-        }}>
-          <Input
-            multiline
-            onChangeText={text => setEventDescription(text)}
-            value={eventDescription}
-            inputContainerStyle={{
-              borderWidth: 1,
-              height: 150
-            }}
-            containerStyle={{
-              height: 150,
-            }}
-          />
-        </View>
-        <View style={styles.row}>
           <View>
-            <View style={styles.row}>
-              <Text h4>Event Date</Text>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(true); setShowTimePicker(false)}}>
-                <Text style={styles.textCenter}>{formatDate(eventDate)}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.onePicker} onPress={() => {setShowDatePicker(false); setShowTimePicker(true)}}>
-                <Text style={styles.textCenter}>{formatTime(eventTime)}</Text>
-              </TouchableOpacity>
-            </View>
-            {showDatePicker && <DateTimePicker
-              value={eventDate}
-              mode="date"
-              display="default"
-              minimumDate={new Date()}
-              onChange={(event, date) => {console.log(date); setShowDatePicker(false); date && setEventDate(date)}}
-            />}
-            {showTimePicker && <DateTimePicker
-              value={eventTime}
-              mode="time"
-              display="default"
-              onChange={(event, date) => {setShowTimePicker(false); date && setEventTime(date)}}
-            />}
+            <CustomInput
+              placeholder='Name your event title'
+              label="Event Title"
+            />
           </View>
-        </View>
-        <View style={styles.row}>
-          <View>
-            <View style={styles.row}>
-              <Text h4>Max number of members</Text>
-              </View>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.columnButton} onPress={() => {setMaximumNumberOfMembers(maximumNumberOfMembers+1); setSelectedFriends([])}}>
-                <Icon name="plus" type="antdesign" underlayColor="transparent" color="black"/>
-              </TouchableOpacity>
-              <View style={styles.column}>
-                <Text h4 style={styles.textCenter}>{maximumNumberOfMembers}</Text>
-              </View>
-              <TouchableOpacity style={styles.columnButton} onPress={() => {maximumNumberOfMembers > 1 && setMaximumNumberOfMembers(maximumNumberOfMembers-1); setSelectedFriends([])}}>
-                <Icon name="minus" type="antdesign" underlayColor="transparent" color="black"/>
-              </TouchableOpacity>
-            </View>
+          <View style={{flexDirection: 'row'}}>
+            <CustomInput
+              containerStyle={{flex: 4}}
+              placeholder='Who will be joining event?'
+              label="Participants"
+            />
+            <TouchableOpacity style={{flex: 1}}>
+              <Icon name='add' color='#ffffff'
+                containerStyle={{
+                  borderRadius: 5,
+                  backgroundColor: "#15cdca",
+                  justifyContent: 'center',
+                  flex: 1,
+                  marginTop: 25,
+                  marginRight: 20
+                }}
+              />
+            </TouchableOpacity>
           </View>
-        </View>
+          <View style={{flexDirection: 'row'}}>
+            <CustomInput
+              containerStyle={{flex: 1}}
+              placeholder='MM/DD/YYYY'
+              label="Date"
+            />
+            <CustomInput
+              containerStyle={{flex: 1}}
+              placeholder='00:00 AM/PM'
+              label="Time"
+            />
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <CustomInput
+              containerStyle={{flex: 1}}
+              placeholder='What is the bet on?'
+              label="Penalty"
+            />
+          </View>
 
-        <View style={styles.row}>
-          <View>
-            <View style={styles.row}>
-            <Text h4>Reminder</Text>
-            </View>
-            <View style={styles.row}>
-              <Picker
-                style={styles.onePicker}
-                selectedValue={reminder}
-                onValueChange={(itemValue) => setReminder(itemValue)}
-              >
-                <Picker.Item label="Before 15 min" value="15" />
-                <Picker.Item label="Before 30 min" value="30" />
-                <Picker.Item label="Before 45 min" value="45" />
-                <Picker.Item label="Before 60 min" value="60" />
-              </Picker>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+
     )
   }
 
@@ -494,29 +444,14 @@ export default function CreateEventScreen({navigation}) {
   }
 
   return (
+
     <View style={styles.container}>
       <Header
-        leftComponent={LeftComponent}
-        centerComponent={{ text: 'CREATE EVENT', style: { color: '#fff' } }}
-        rightComponent={RightComponent}
+        backgroundColor="#ffffff"
+        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
+        centerComponent={{ text: step, style: { color: '#000' } }}
         />
-
-        <View style={styles.stepContainer}>
-          <View style={styles.stepComplete}>
-            <Text style={styles.stepText}>Event Detail</Text>
-          </View>
-          <View style={step !== 'Event Detail' ? styles.stepComplete : styles.step}>
-            <Text style={styles.stepText}>Location</Text>
-          </View>
-          <View style={step === 'Members' || step === 'Penalty' ? styles.stepComplete : styles.step}>
-            <Text style={styles.stepText}>Members</Text>
-          </View>
-          <View style={step === 'Penalty' ? styles.stepComplete : styles.step}>
-            <Text style={styles.stepText}>Penalty</Text>
-          </View>
-        </View>
-
-        {step === "Event Detail" && EventDetail()}
+        {step === "Setup" && Setup()}
         {step === "Location" && LocationSearch()}
         {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
@@ -528,7 +463,7 @@ export default function CreateEventScreen({navigation}) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      alignItems: 'stretch'
+      alignItems: 'stretch',
     },
     stepContainer: {
       flexDirection: 'row',
@@ -582,4 +517,7 @@ const styles = StyleSheet.create({
     locationSearch: {
       flex: 1
     },
+    locationBanner: {
+      height: 200,
+    }
 });
