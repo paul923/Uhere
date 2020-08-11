@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker, FlatList } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker, SectionList, Dimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -13,7 +13,7 @@ import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from 'config/firebase';
 import Constants from "expo-constants";
-
+import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 
@@ -29,9 +29,14 @@ import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from 'utils
 import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from 'assets/images/penalty.png';
 
+const SCREEN = Dimensions.get('window');
+const ASPECT_RATIO = SCREEN.width / SCREEN.height;
+const LATITUDE_DELTA_MAP = 0.0922;
+const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
+
 
 export default function CreateEventScreen({navigation}) {
-  const [ step, setStep] = React.useState("Setup");
+  const [ step, setStep] = React.useState("Location");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
   const [ eventDate, setEventDate] = React.useState(new Date());
@@ -42,15 +47,49 @@ export default function CreateEventScreen({navigation}) {
   const [ reminder, setReminder] = React.useState(15);
   const [ locationQuery, setLocationQuery] = React.useState("");
   const [ location, setLocation] = React.useState(null);
+  const [ locationSearching, setLocationSearching] = React.useState(false);
   const [ isOnline, setIsOnline] = React.useState(false);
-  const [ locationResult, setLocationResult] = React.useState([]);
+  const [ locationResult, setLocationResult] = React.useState([
+    {
+      group: "This week",
+      data: [{
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }, {
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }]
+    }, {
+      group: "Recent Search",
+      data: [{
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }, {
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }, {
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }, {
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }, {
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }, {
+        name: "Hey Hi Hello Cafe",
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+      }]
+    }
+  ]);
   const [ penalty, setPenalty] = React.useState("cigarette");
   const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
   const [ searchText, setSearchText] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
-  const [ filteredData, setFilteredData] = React.useState([]);
+  const [ filteredData, setFilteredData] = React.useState();
   const [ selectedFriends, setSelectedFriends] = React.useState([]);
-
+  const [ mapRegion, setMapRegion ] = React.useState();
+  const mapRef = React.useRef();
 
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
@@ -67,7 +106,14 @@ export default function CreateEventScreen({navigation}) {
       setFriends(responseJson.response);
     }
 
-    retrieveFriend();
+    async function fetchData() {
+        let location = await Location.getCurrentPositionAsync();
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        setMapRegion(region);
+    }
+    fetchData()
+
+    // retrieveFriend();
     // Sorts friends list on initial load
 
   }, []);
@@ -233,43 +279,78 @@ export default function CreateEventScreen({navigation}) {
   function LocationSearch() {
     return (
       <View style={{flex: 1}}>
-        <CheckBox
-          containerStyle={{
-            marginBottom: 30,
-          }}
-          checkedIcon='dot-circle-o'
-          uncheckedIcon='circle-o'
-          title='Online Meeting'
-          checked={isOnline}
-          onPress={() => setIsOnline(!isOnline)}
-        />
-        <View style={{flexDirection: 'row'}}>
-          <Input
-            containerStyle={{flex: 1}}
-            value={locationQuery}
-            onChangeText={setLocationQuery}
-            placeholder="Type Address..."
-            onSubmitEditing={searchLocation}
+        {locationSearching ? (
+          <View style={{flex: 1}}>
+          <View style={styles.searchBoxAbsolute}>
+            <CustomInput
+              containerStyle={{flex: 5}}
+              placeholder='Seach Location?'
+              inputStyle={{color: '#000000'}}
             />
-          <Button
-            icon={
-              <Icon name="search" size={25} color="white" underlayColor="transparent" />
-            }
-            onPress={searchLocation}
-          />
-        </View>
-        <ScrollView contentContainerStyle={{flexGrow: 1}}>
-          {locationResult.map((item, index) => (
-            <ListItem
-              key={index}
-              title={item.text}
-              subtitle={item.properties.address}
-              onPress={() => {console.log(item); setLocation(item)}}
-              rightIcon={location && item.id === location.id ? { name: 'check' } : null}
-              bottomDivider
-            />
-          ))}
-        </ScrollView>
+            <TouchableOpacity style={{flex: 1}}>
+              <Icon name='search' color='#aeaeae'
+                containerStyle={{
+                  borderRadius: 5,
+                  justifyContent: 'center',
+                  flex: 1,
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+          <MapView
+              ref={mapRef}
+              style={styles.map}
+              initialRegion={mapRegion}
+          >
+          </MapView>
+          <View style={styles.selectedLocationBox}>
+            <View style={{flexDirection: 'row'}}>
+              <Text h4 style={styles.locationTitle}>Juilet Cafe</Text>
+              <Text h5 style={styles.locationCategory}>Cafe | Dessert</Text>
+            </View>
+            <View style={{flexDirection: 'row', marginTop: 15}}>
+              <Text style={styles.locationRowTitle}>Address: </Text>
+              <Text style={styles.locationRowContent}>V3N 4N3, North Rd, Burnaby, BC, Canada</Text>
+            </View>
+
+          </View>
+          </View>
+        ) : (
+          <View style={{flex: 1}}>
+            <View style={styles.searchBox}>
+              <CustomInput
+                containerStyle={{flex: 5}}
+                placeholder='Seach Location?'
+                inputStyle={{color: '#000000'}}
+              />
+              <TouchableOpacity style={{flex: 1}}>
+                <Icon name='search' color='#aeaeae'
+                  containerStyle={{
+                    borderRadius: 5,
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.locationSearchResultContainer}>
+              <SectionList
+                sections={locationResult}
+                keyExtractor={(item, index) => item + index}
+                renderItem={({ item }) => <ListItem
+                  title={item.name}
+                  subtitle={item.address}
+                  titleStyle={styles.locationSearchResultTitle}
+                  subtitleStyle={styles.locationSearchResultAddress}
+                  leftAvatar={{ source: { uri: 'https://f0.pngfuel.com/png/816/649/map-computer-icons-flat-design-location-logo-location-icon-png-clip-art.png' } }}
+                />}
+                renderSectionHeader={({ section: { group } }) => (
+                  <Text style={styles.locationSearchResultHeader}>{group}</Text>
+                )}
+              />
+            </View>
+          </View>
+        )}
       </View>
     )
   }
@@ -451,8 +532,8 @@ export default function CreateEventScreen({navigation}) {
         leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
         centerComponent={{ text: step, style: { color: '#000' } }}
         />
-        {step === "Setup" && Setup()}
         {step === "Location" && LocationSearch()}
+        {step === "Setup" && Setup()}
         {step === "Members" && Members()}
         {step === "Penalty" && Penalty()}
     </View>
@@ -519,5 +600,89 @@ const styles = StyleSheet.create({
     },
     locationBanner: {
       height: 200,
+    },
+    searchBoxAbsolute: {
+      marginTop: 15,
+      zIndex: 1,
+      position: 'absolute',
+      marginLeft: 20,
+      marginRight: 20,
+      backgroundColor: '#fefefe',
+      borderRadius: 5,
+      flexDirection: 'row'
+    },
+    searchBox: {
+      marginTop: 15,
+      marginLeft: 20,
+      marginRight: 20,
+      backgroundColor: '#fefefe',
+      borderRadius: 5,
+      flexDirection: 'row'
+    },
+    map: {
+      flex: 2
+    },
+    selectedLocationBox: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1,
+      borderRadius: 15,
+      padding: 23,
+      backgroundColor: "#fafafa",
+    },
+    locationTitle: {
+      textAlignVertical: 'bottom'
+    },
+    locationCategory: {
+      marginLeft: 10,
+      textAlignVertical: 'bottom'
+    },
+    locationRowTitle: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "700",
+      letterSpacing: 0,
+      color: "#000000"
+    },
+    locationRowContent: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "300",
+      letterSpacing: 0,
+      color: "#808080"
+    },
+    locationSearchResultContainer: {
+      flex: 1,
+      borderRadius: 10,
+      backgroundColor: "#fefefe",
+      marginTop: 20,
+      marginLeft: 20,
+      marginRight: 20,
+      marginBottom: 50
+    },
+    locationSearchResultHeader: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "300",
+      letterSpacing: 0,
+      color: "#15cdca",
+      marginLeft: 10,
+      marginTop: 10
+    },
+    locationSearchResultTitle: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 14,
+      fontWeight: "700",
+      letterSpacing: 0,
+      color: "#000000",
+    },
+    locationSearchResultAddress: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 12,
+      fontWeight: "300",
+      letterSpacing: 0,
+      color: "#4a4a4a",
     }
 });
