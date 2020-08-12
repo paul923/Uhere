@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     backgroundColor: 'transparent',
-    color: 'black',
+    color: 'rgba(21, 205, 202, .9)',
     fontSize: 18,
     padding: 12,
   },

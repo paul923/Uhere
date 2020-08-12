@@ -8,6 +8,7 @@ import firebase from 'firebase';
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as userapi from 'api/user';
+import SplashScreen from '../SplashScreen';
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
@@ -87,6 +88,8 @@ export default function JayTestScreen({ navigation }) {
     }
 
     return (
+        <SplashScreen/>
+        /*
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <Button
@@ -141,6 +144,7 @@ export default function JayTestScreen({ navigation }) {
                 />
             </ScrollView>
         </SafeAreaView>
+        */
     )
 }
 
