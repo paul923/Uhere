@@ -12,7 +12,6 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo-google-fonts/inter": "^0.1.0",
     "@expo-google-fonts/open-sans": "^0.1.0",
     "@expo/vector-icons": "^10.0.0",
     "@material-ui/core": "^4.9.9",
@@ -52,6 +51,7 @@
     "react-native-date-ranges": "^2.5.0",
     "react-native-drawer": "^2.5.1",
     "react-native-elements": "^1.2.7",
+    "react-native-floating-action": "^1.21.0",
     "react-native-gesture-handler": "~1.5.0",
     "react-native-global-props": "^1.1.5",
     "react-native-keyboard-spacer": "^0.4.1",

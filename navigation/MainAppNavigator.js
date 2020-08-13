@@ -6,6 +6,7 @@ import socket from 'config/socket';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Image } from 'react-native-elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -138,8 +139,8 @@ export default function MainAppNavigator({ navigation, route }) {
         name="Event"
         component={EventNavigator}
         options={({ route }) => ({
-          title: 'Event',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-calendar" />,
+          title: 'Home',
+          tabBarIcon: ({ focused, size  }) => <Image source={ require('assets/icons/home/Group11Copy.png') } style={{height:size , width:size}} resizeMode={'contain'} />,
           headerMode: 'none',
           tabBarVisible: showTab(route)
         })}
