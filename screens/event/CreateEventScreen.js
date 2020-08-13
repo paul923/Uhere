@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker, SectionList, Dimensions } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -18,7 +18,6 @@ const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 
 import { createEvent } from 'api/event';
-import { fetchLocation } from 'api/misc';
 
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
@@ -49,36 +48,53 @@ export default function CreateEventScreen({navigation}) {
   const [ location, setLocation] = React.useState(null);
   const [ locationSearching, setLocationSearching] = React.useState(false);
   const [ isOnline, setIsOnline] = React.useState(false);
-  const [ locationResult, setLocationResult] = React.useState([
+  const [ locationResult, setLocationResult] = React.useState([]);
+  const [ locationHistory, setLocationHistory] = React.useState([
     {
       group: "This week",
       data: [{
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }, {
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }]
     }, {
       group: "Recent Search",
       data: [{
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }, {
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }, {
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }, {
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }, {
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }, {
         name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada"
+        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
+        geolat: 49.2439375,
+        geolong: -122.8947596
       }]
     }
   ]);
@@ -272,23 +288,36 @@ export default function CreateEventScreen({navigation}) {
     }
     let url = '';
     let location = await Location.getCurrentPositionAsync({});
-    let locationResults = await fetchLocation(location);
-    setLocationResult(locationResults);
+    try {
+      url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURI(locationQuery) + '.json?' + qs.stringify({
+        proximity: location.coords.longitude + ',' + location.coords.latitude,
+        access_token: 'pk.eyJ1IjoiY3Jlc2NlbnQ5NzIzIiwiYSI6ImNrOGdtbzhjZjAxZngzbHBpb3NubnRwd3gifQ.wesLzeTF2LjrYjgmrfrySQ',
+        limit: 10
+      });
+      let response = await fetch(url);
+      let responseJson = await response.json();
+      let results = responseJson.features.map(feature => {
+        return {
+          name: feature.text,
+          address: feature.place_name,
+          geolat: feature.geometry.coordinates[1],
+          geolong: feature.geometry.coordinates[0],
+          category: feature.properties.category.replace(", ", " | ")
+        }
+      })
+      setLocationResult(results);
+    } catch (error) {
+      console.error(error);
+    }
 
   }
   function LocationSearch() {
     return (
       <View style={{flex: 1}}>
-        {locationSearching ? (
-          <View style={{flex: 1}}>
-          <View style={styles.searchBoxAbsolute}>
-            <CustomInput
-              containerStyle={{flex: 5}}
-              placeholder='Seach Location?'
-              inputStyle={{color: '#000000'}}
-            />
-            <TouchableOpacity style={{flex: 1}}>
-              <Icon name='search' color='#aeaeae'
+        <View style={styles.searchBoxAbsolute}>
+          {locationSearching && (
+            <TouchableOpacity onPress={() => {setLocationSearching(false); Keyboard.dismiss()}} style={{flex: 1}}>
+              <Icon name='arrow-back' color='#aeaeae'
                 containerStyle={{
                   borderRadius: 5,
                   justifyContent: 'center',
@@ -296,58 +325,87 @@ export default function CreateEventScreen({navigation}) {
                 }}
               />
             </TouchableOpacity>
-          </View>
+          )}
+          <CustomInput
+            containerStyle={{flex: 5}}
+            placeholder='Seach Location?'
+            inputStyle={{color: '#000000'}}
+            onFocus={() => setLocationSearching(true)}
+            onChangeText={(text) => setLocationQuery(text)}
+          />
+          <TouchableOpacity onPress={searchLocation} style={{flex: 1}}>
+            <Icon name='search' color='#aeaeae'
+              containerStyle={{
+                borderRadius: 5,
+                justifyContent: 'center',
+                flex: 1,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {!locationSearching ? (
+        <View style={{flex: 1}}>
           <MapView
               ref={mapRef}
               style={styles.map}
               initialRegion={mapRegion}
           >
           </MapView>
-          <View style={styles.selectedLocationBox}>
-            <View style={{flexDirection: 'row'}}>
-              <Text h4 style={styles.locationTitle}>Juilet Cafe</Text>
-              <Text h5 style={styles.locationCategory}>Cafe | Dessert</Text>
-            </View>
-            <View style={{flexDirection: 'row', marginTop: 15}}>
-              <Text style={styles.locationRowTitle}>Address: </Text>
-              <Text style={styles.locationRowContent}>V3N 4N3, North Rd, Burnaby, BC, Canada</Text>
-            </View>
+          {location && (
+            <View style={styles.selectedLocationBox}>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={styles.locationTitle}>{location.name}</Text>
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <Text h5 style={styles.locationCategory}>{location.category}</Text>
+              </View>
+              <View style={{flexDirection: 'row', marginTop: 15}}>
+                <Text style={styles.locationRowTitle}>Address: </Text>
+                <Text style={styles.locationRowContent}>{location.address}</Text>
+              </View>
+              <View style={{flexDirection: 'row', marginTop: 15}}>
+                <Text style={styles.locationRowTitle}>Coordinates: </Text>
+                <Text style={styles.locationRowContent}>{location.geolat + " " + location.geolong}</Text>
+              </View>
 
-          </View>
+            </View>
+          )}
           </View>
         ) : (
           <View style={{flex: 1}}>
-            <View style={styles.searchBox}>
-              <CustomInput
-                containerStyle={{flex: 5}}
-                placeholder='Seach Location?'
-                inputStyle={{color: '#000000'}}
-              />
-              <TouchableOpacity style={{flex: 1}}>
-                <Icon name='search' color='#aeaeae'
-                  containerStyle={{
-                    borderRadius: 5,
-                    justifyContent: 'center',
-                    flex: 1,
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
             <View style={styles.locationSearchResultContainer}>
-              <SectionList
-                sections={locationResult}
-                keyExtractor={(item, index) => item + index}
-                renderItem={({ item }) => <ListItem
-                  title={item.name}
-                  subtitle={item.address}
-                  titleStyle={styles.locationSearchResultTitle}
-                  subtitleStyle={styles.locationSearchResultAddress}
-                  leftAvatar={{ source: { uri: 'https://f0.pngfuel.com/png/816/649/map-computer-icons-flat-design-location-logo-location-icon-png-clip-art.png' } }}
-                />}
-                renderSectionHeader={({ section: { group } }) => (
-                  <Text style={styles.locationSearchResultHeader}>{group}</Text>
-                )}
-              />
+              {locationResult.length > 0 ? (
+                <FlatList
+                  data={locationResult}
+                  keyExtractor={(item, index) => item + index}
+                  renderItem={({ item }) => <ListItem
+                    onPress={() => {setLocation(item); setLocationSearching(false); Keyboard.dismiss();}}
+                    title={item.name}
+                    subtitle={item.address}
+                    titleStyle={styles.locationSearchResultTitle}
+                    subtitleStyle={styles.locationSearchResultAddress}
+                    leftAvatar={{ source: { uri: 'https://f0.pngfuel.com/png/816/649/map-computer-icons-flat-design-location-logo-location-icon-png-clip-art.png' } }}
+                  />}
+                />
+              ) : (
+                <SectionList
+                  sections={locationHistory}
+                  keyExtractor={(item, index) => item + index}
+                  renderItem={({ item }) => <ListItem
+                    onPress={() => {setLocation(item); setLocationSearching(false); Keyboard.dismiss();}}
+                    title={item.name}
+                    subtitle={item.address}
+                    titleStyle={styles.locationSearchResultTitle}
+                    subtitleStyle={styles.locationSearchResultAddress}
+                    leftAvatar={{ source: { uri: 'https://f0.pngfuel.com/png/816/649/map-computer-icons-flat-design-location-logo-location-icon-png-clip-art.png' } }}
+                  />}
+                  renderSectionHeader={({ section: { group } }) => (
+                    <Text style={styles.locationSearchResultHeader}>{group}</Text>
+                  )}
+                />
+              )}
+
             </View>
           </View>
         )}
@@ -629,15 +687,23 @@ const styles = StyleSheet.create({
       right: 0,
       zIndex: 1,
       borderRadius: 15,
-      padding: 23,
+      padding: 30,
+      paddingRight: 70,
       backgroundColor: "#fafafa",
     },
     locationTitle: {
-      textAlignVertical: 'bottom'
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 20,
+      fontWeight: "700",
+      letterSpacing: 0,
+      color: "#000000",
     },
     locationCategory: {
-      marginLeft: 10,
-      textAlignVertical: 'bottom'
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 12,
+      fontWeight: "300",
+      letterSpacing: 0,
+      color: "#000000",
     },
     locationRowTitle: {
       fontFamily: "OpenSans_400Regular",
@@ -651,13 +717,14 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: "300",
       letterSpacing: 0,
+      paddingRight: 40,
       color: "#808080"
     },
     locationSearchResultContainer: {
       flex: 1,
       borderRadius: 10,
       backgroundColor: "#fefefe",
-      marginTop: 20,
+      marginTop: 70,
       marginLeft: 20,
       marginRight: 20,
       marginBottom: 50
