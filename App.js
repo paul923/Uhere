@@ -291,7 +291,7 @@ export default function App(props) {
       <AppearanceProvider>
       <GlobalContext.Provider value={globalContext}>
       <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         <Modal
           animationType="fade"
           transparent={true}

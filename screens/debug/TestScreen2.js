@@ -2,43 +2,39 @@ import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button, Input, ListItem, Avatar } from 'react-native-elements'
 
-import AvatarScreen from 'screens/profile/AvatarScreen'
+import AvatarScreen from '../AvatarScreen'
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
+import HistoryCard from '../../components/HistoryCard';
+import UhereHeader from '../../components/UhereHeader';
 
+import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
+import UhereSideMenu from '../../components/UhereSideMenu';
 
 
 export default function TestScreen2({navigation}) {
+  // drawerRef for side menu button
+  const drawerRef = React.useRef(null);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.logoContainer}>
-          <Text style={styles.logoU}>u</Text>
-          <Text style={styles.logoHere}>Here</Text>
+    <UhereSideMenu
+      drawerRef = {drawerRef}
+      data = {"hello world"}
+    >
+      <View style={styles.container}>
+        <UhereHeader
+          showSideMenu
+          onPressSideMenu={() => drawerRef.current.openDrawer()}
+        />
+        <HistoryCard onPress={() => alert("pressed!")}/>
       </View>
-    </View>
+    </UhereSideMenu>
   )
 }
 
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#003f5c',
       justifyContent: 'center',
       alignItems: "center",
-      borderWidth: 5,
-    },
-    logoU: {
-      fontSize: 60,
-      fontWeight: "bold",
-      color: "white"
-    },
-    logoHere: {
-      fontSize: 60,
-      fontWeight: "bold",
-      color: "#fb5b5a"
-    },
-    logoContainer: {
-      margin: 30,
-      flexDirection: 'row'
     },
 });
