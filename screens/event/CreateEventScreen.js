@@ -297,13 +297,23 @@ export default function CreateEventScreen({navigation}) {
       let response = await fetch(url);
       let responseJson = await response.json();
       let results = responseJson.features.map(feature => {
-        return {
-          name: feature.text,
-          address: feature.place_name,
-          geolat: feature.geometry.coordinates[1],
-          geolong: feature.geometry.coordinates[0],
-          category: feature.properties.category.replace(", ", " | ")
+        if (feature.properties.category){
+          return {
+            name: feature.text,
+            address: feature.place_name,
+            geolat: feature.geometry.coordinates[1],
+            geolong: feature.geometry.coordinates[0],
+            category: feature.properties.category.replace(", ", " | ")
+          }
+        } else {
+          return {
+            name: feature.text,
+            address: feature.place_name,
+            geolat: feature.geometry.coordinates[1],
+            geolong: feature.geometry.coordinates[0]
+          }
         }
+
       })
       setLocationResult(results);
     } catch (error) {
@@ -351,15 +361,28 @@ export default function CreateEventScreen({navigation}) {
               style={styles.map}
               initialRegion={mapRegion}
           >
+          {location && (
+            <Marker
+              coordinate={{
+                latitude: location.geolat,
+                longitude: location.geolong
+              }}
+              title={location.name}
+            />
+          )}
           </MapView>
           {location && (
             <View style={styles.selectedLocationBox}>
               <View style={{flexDirection: 'row'}}>
                 <Text style={styles.locationTitle}>{location.name}</Text>
               </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text h5 style={styles.locationCategory}>{location.category}</Text>
-              </View>
+              {
+                location.category && (
+                  <View style={{flexDirection: 'row'}}>
+                    <Text h5 style={styles.locationCategory}>{location.category}</Text>
+                  </View>
+                )
+              }
               <View style={{flexDirection: 'row', marginTop: 15}}>
                 <Text style={styles.locationRowTitle}>Address: </Text>
                 <Text style={styles.locationRowContent}>{location.address}</Text>
