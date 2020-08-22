@@ -22,6 +22,7 @@ import { createEvent } from 'api/event';
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
 import CustomInput from 'components/CustomInput';
+import NextStep from 'components/NextStep';
 
 import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
@@ -646,44 +647,7 @@ export default function CreateEventScreen({navigation}) {
         leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
         centerComponent={{ text: step, style: { color: '#000' } }}
         />
-        <TouchableOpacity style={{
-          position: 'absolute',
-          borderRadius: 20,
-          zIndex: 999,
-          width: 250,
-          height: 80,
-          bottom: 100,
-          right: 0,
-          backgroundColor: '#15cdca',
-          flex: 1,
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-          <Text style={{
-            flex: 1,
-            color: "#ffffff",
-            fontFamily: "OpenSans_400Regular",
-            fontSize: 20,
-            fontWeight: "700",
-            letterSpacing: 0,
-            marginLeft: 20
-          }}>NEXT STEP</Text>
-          <View style={{
-            flex: 1,
-            justifyContent: "center",
-            alignitems: "center",
-          }}>
-          <Image
-            source={{ uri: 'https://img.icons8.com/carbon-copy/2x/arrow.png'}}
-            resizeMode="contain"
-            style={{
-              height: 40,
-            }}
-          />
-          </View>
-
-
-        </TouchableOpacity>
+        <NextStep />
 
         {step === "Location" && LocationSearch()}
         {step === "Setup" && Setup()}
