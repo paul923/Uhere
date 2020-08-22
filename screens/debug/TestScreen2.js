@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Button, Input, ListItem, Avatar } from 'react-native-elements'
 
-import AvatarScreen from '../AvatarScreen'
+//import AvatarScreen from '../AvatarScreen'
 import { ScrollView, FlatList } from 'react-native-gesture-handler';
 import HistoryCard from '../../components/HistoryCard';
 import UhereHeader from '../../components/UhereHeader';
@@ -23,6 +23,7 @@ export default function TestScreen2({navigation}) {
       <View style={styles.container}>
         <UhereHeader
           showSideMenu
+          showBackButton
           onPressSideMenu={() => drawerRef.current.openDrawer()}
         />
         <HistoryCard onPress={() => alert("pressed!")}/>
