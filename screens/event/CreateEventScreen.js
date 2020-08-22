@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, TouchableHighlight, Picker, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, TouchableOpacity, AsyncStorage, TouchableHighlight, Picker, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -51,20 +51,7 @@ export default function CreateEventScreen({navigation}) {
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ locationHistory, setLocationHistory] = React.useState([
     {
-      group: "This week",
-      data: [{
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }, {
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }]
-    }, {
-      group: "Recent Search",
+      group: "Recent Location",
       data: [{
         name: "Hey Hi Hello Cafe",
         address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
@@ -127,7 +114,27 @@ export default function CreateEventScreen({navigation}) {
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         setMapRegion(region);
     }
+
+    async function fetchRecentLocation() {
+      let locations = await AsyncStorage.getItem("recentLocation");
+      if (locations) {
+        locations = JSON.parse(locations);
+        console.log(locations);
+        setLocationHistory([{
+          group: "Recent Location",
+          data: locations
+        }])
+      } else {
+        setLocationHistory([{
+          group: "Recent Location",
+          data: []
+        }])
+      }
+
+
+    }
     fetchData()
+    fetchRecentLocation()
 
     // retrieveFriend();
     // Sorts friends list on initial load
@@ -341,7 +348,12 @@ export default function CreateEventScreen({navigation}) {
             placeholder='Seach Location?'
             inputStyle={{color: '#000000'}}
             onFocus={() => setLocationSearching(true)}
-            onChangeText={(text) => setLocationQuery(text)}
+            onChangeText={(text) => {
+              if (text === "") {
+                setLocationResult([]);
+              }
+              setLocationQuery(text)
+            }}
           />
           <TouchableOpacity onPress={searchLocation} style={{flex: 1}}>
             <Icon name='search' color='#aeaeae'
@@ -403,7 +415,7 @@ export default function CreateEventScreen({navigation}) {
                   data={locationResult}
                   keyExtractor={(item, index) => item + index}
                   renderItem={({ item }) => <ListItem
-                    onPress={() => {setLocation(item); setLocationSearching(false); Keyboard.dismiss();}}
+                    onPress={() => {setLocation(item); setLocationSearching(false); addRecentLocation(item); Keyboard.dismiss();}}
                     title={item.name}
                     subtitle={item.address}
                     titleStyle={styles.locationSearchResultTitle}
@@ -416,7 +428,7 @@ export default function CreateEventScreen({navigation}) {
                   sections={locationHistory}
                   keyExtractor={(item, index) => item + index}
                   renderItem={({ item }) => <ListItem
-                    onPress={() => {setLocation(item); setLocationSearching(false); Keyboard.dismiss();}}
+                    onPress={() => {setLocation(item); setLocationSearching(false); addRecentLocation(item); Keyboard.dismiss();}}
                     title={item.name}
                     subtitle={item.address}
                     titleStyle={styles.locationSearchResultTitle}
@@ -434,6 +446,27 @@ export default function CreateEventScreen({navigation}) {
         )}
       </View>
     )
+  }
+
+  async function addRecentLocation(item) {
+    let locations = await AsyncStorage.getItem("recentLocation");
+    locationHistory[0].data.unshift(item);
+    if (locations) {
+      locations = JSON.parse(locations);
+      if (locations.length < 10) {
+        locations.unshift(item);
+      } else {
+        locationHistory[0].data.pop();
+        locations.unshift(item);
+        locations.pop();
+      }
+      return await AsyncStorage.setItem("recentLocation", JSON.stringify(locations));
+
+    } else {
+      return await AsyncStorage.setItem("recentLocation", JSON.stringify([item]));
+    }
+    setLocationHistory(locationHistory)
+
   }
 
   function Members() {
