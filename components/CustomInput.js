@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
   inputStyle: {
     paddingLeft: 10,
     fontFamily: "OpenSans_400Regular",
-    fontSize: 14,
-    fontWeight: "normal",
+    fontSize: 16,
+    fontWeight: "700",
     fontStyle: "normal",
     letterSpacing: 0,
     color: "#d8d8d8"

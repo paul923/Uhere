@@ -39,6 +39,17 @@ export default function CreateEventScreen({navigation}) {
   const [ step, setStep] = React.useState("Location");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
+  const [ eventMembers, setEventMembers] = React.useState([
+    {
+      "AvatarColor": "#D47FA6",
+      "AvatarURI": "https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg",
+      "IsDeleted": 0,
+      "Nickname": "Crescent9723",
+      "RegisteredDate": "2020-04-19T04:04:08.000Z",
+      "UserId": "eIsb3yMPlScSy5QAtpnqfqzON8r1",
+      "Username": "Crescent9723",
+    }
+  ]);
   const [ eventDate, setEventDate] = React.useState(new Date());
   const [ eventTime, setEventTime] = React.useState(new Date());
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
@@ -256,16 +267,19 @@ export default function CreateEventScreen({navigation}) {
               marginTop: 20,
               marginLeft: 20
             }}>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-                <Text style={styles.memberCount}>+4</Text>
+              {eventMembers.map((member, index) => {
+                if (index < 3) {
+                  return (
+                      <Image
+                        source={{uri: member.AvatarURI}}
+                        style={styles.memberAvatar}
+                        resizeMode='contain'
+                      />
+                  )
+                }
+              })}
+              <View style={styles.memberAvatarPlaceholder}>
+                <Text style={styles.memberCount}>+{eventMembers.length-4 < 0 ? 0 : eventMembers.length-4}</Text>
               </View>
             </View>
             <TouchableOpacity style={{flex: 1}}>
@@ -287,20 +301,53 @@ export default function CreateEventScreen({navigation}) {
               containerStyle={{flex: 1}}
               placeholder='MM/DD/YYYY'
               label="Date"
+              value={eventDate ? formatDate(eventDate) : ''}
+              onFocus={() => setShowDatePicker(true)}
+              onBlur={() => setShowDatePicker(false)}
             />
             <CustomInput
               containerStyle={{flex: 1}}
               placeholder='00:00 AM/PM'
               label="Time"
+              value={eventTime ? formatTime(eventTime) : ''}
+              onFocus={() => setShowTimePicker(true)}
+              onBlur={() => setShowTimePicker(false)}
             />
           </View>
+          {showDatePicker && (
+            <DateTimePicker
+              value={eventDate}
+              mode={"date"}
+              is24Hour={true}
+              display="default"
+              onChange={(event, date) => {
+                setShowDatePicker(false);
+                setEventDate(date);
+                Keyboard.dismiss();
+              }}
+            />
+          )}
+          {showTimePicker && (
+            <DateTimePicker
+              value={eventTime}
+              mode={"time"}
+              is24Hour={true}
+              display="default"
+              onChange={(event, date) => {
+                setShowTimePicker(false);
+                setEventTime(date);
+                Keyboard.dismiss();
+              }}
+            />
+          )}
           <View style={{flexDirection: 'row'}}>
             <CustomInput
               containerStyle={{flex: 1}}
               placeholder='What is the bet on?'
               label="Penalty"
-            />
+              />
           </View>
+
 
         </ScrollView>
 
@@ -835,16 +882,27 @@ const styles = StyleSheet.create({
       letterSpacing: 0,
       color: "#4a4a4a",
     },
-    memberAvatar: {
-      flex: 1,
-      margin: 10,
+    memberAvatarPlaceholder: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      marginLeft: 5,
       backgroundColor: "#15cdca",
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    memberAvatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      borderColor: '#15cdca',
+      borderWidth: 2,
       justifyContent: 'center',
       alignItems: 'center'
     },
     memberCount: {
       fontFamily: "OpenSans_400Regular",
-      fontSize: 12,
+      fontSize: 14,
       fontWeight: "700",
       fontStyle: "normal",
       letterSpacing: 0,
