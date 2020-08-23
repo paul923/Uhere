@@ -18,6 +18,7 @@ export default function EventScreen({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       let events = await getEvents('ACCEPTED', false, 10, 0);
+      console.log(events);
       setEvents(formatEventList(events))
     }
     const unsubscribeFocus = navigation.addListener('focus', () => {

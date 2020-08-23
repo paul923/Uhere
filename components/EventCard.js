@@ -60,14 +60,19 @@ export default function EventCard({onPress, item, status}) {
           </View>
           <View style={styles.cardColumn}>
             <View style={styles.cardRow}>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-              </View>
-              <View style={styles.memberAvatar}>
-                <Text style={styles.memberCount}>+{item.MaxMember-4 < 0 ? 0 : item.MaxMember-4}</Text>
+              {item.Members.map((member, index) => {
+                if (index < 3) {
+                  return (
+                      <Image
+                        source={{uri: member.AvatarURI}}
+                        style={styles.memberAvatar}
+                        resizeMode='contain'
+                      />
+                  )
+                }
+              })}
+              <View style={styles.memberAvatarPlaceholder}>
+                <Text style={styles.memberCount}>+{item.MemberCount-4 < 0 ? 0 : item.MemberCount-4}</Text>
               </View>
             </View>
           </View>
@@ -133,18 +138,27 @@ const styles = StyleSheet.create({
     color: "#121212",
     marginTop: 5
   },
-  memberAvatar: {
-    width: 30,
-    height: 30,
+  memberAvatarPlaceholder: {
+    width: 40,
+    height: 40,
     borderRadius: 10,
     marginLeft: 5,
     backgroundColor: "#15cdca",
     justifyContent: 'center',
     alignItems: 'center'
   },
+  memberAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    borderColor: '#15cdca',
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   memberCount: {
     fontFamily: "OpenSans_400Regular",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "700",
     fontStyle: "normal",
     letterSpacing: 0,
