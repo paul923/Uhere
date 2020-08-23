@@ -3,7 +3,6 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Input, Button, Image } from 'react-native-elements';
 
 export default function NextStep(props) {
-  console.log(props);
   return (
     <TouchableOpacity style={props.disabled ? styles.disabledStyle : styles.activeStyle}
     {...props}

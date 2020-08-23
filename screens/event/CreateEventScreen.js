@@ -241,14 +241,33 @@ export default function CreateEventScreen({navigation}) {
             <CustomInput
               placeholder='Name your event title'
               label="Event Title"
+              value={eventName}
+              onChangeText={(text) => setEventName(text)}
             />
           </View>
           <View style={{flexDirection: 'row'}}>
-            <CustomInput
-              containerStyle={{flex: 4}}
-              placeholder='Who will be joining event?'
-              label="Participants"
-            />
+            <View style={{
+              height: 40,
+              flex: 3,
+              flexDirection: 'row',
+              alignContent: 'stretch',
+              borderRadius: 5,
+              backgroundColor: "#ffffff",
+              marginTop: 20,
+              marginLeft: 20
+            }}>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+              </View>
+              <View style={styles.memberAvatar}>
+                <Text style={styles.memberCount}>+4</Text>
+              </View>
+            </View>
             <TouchableOpacity style={{flex: 1}}>
               <Icon name='add' color='#ffffff'
                 containerStyle={{
@@ -256,8 +275,9 @@ export default function CreateEventScreen({navigation}) {
                   backgroundColor: "#15cdca",
                   justifyContent: 'center',
                   flex: 1,
-                  marginTop: 25,
-                  marginRight: 20
+                  marginLeft: 20,
+                  marginRight: 20,
+                  marginTop: 20
                 }}
               />
             </TouchableOpacity>
@@ -814,5 +834,20 @@ const styles = StyleSheet.create({
       fontWeight: "300",
       letterSpacing: 0,
       color: "#4a4a4a",
+    },
+    memberAvatar: {
+      flex: 1,
+      margin: 10,
+      backgroundColor: "#15cdca",
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    memberCount: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 12,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#ffffff"
     }
 });
