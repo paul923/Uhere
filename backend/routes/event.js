@@ -74,7 +74,6 @@ router.get('/', function (req, res) {
       LIMIT ${limit} OFFSET ${offset}`
     }
     connection.query(sql, function (error, results, fields) {
-      connection.release();
       // If some error occurs, we throw an error.
       if (error) {
         res.status(500).send({
@@ -86,12 +85,34 @@ router.get('/', function (req, res) {
       }
       // Getting the 'response' from the database and sending it to our route. This is were the data is.
       if (results.length > 0) {
-        res.status(200).send({
-          success: true,
-          body: {
-            results
-          }
+        const promises = []
+        results.forEach(result => {
+          var sql = `select User.* from User, EventUser where EventId = '${result.EventId}'
+          AND User.UserId = EventUser.UserId
+          AND EventUser.Status = 'ACCEPTED';`;
+          console.log(sql);
+          const promise = new Promise((resolve, reject) => {
+            connection.query(sql, function (error, results, fields) {
+              if (error) {
+                res.status(500).send(error);
+              } else {
+                result.Members = results;
+                resolve()
+              }
+            });
+          })
+          promises.push(promise)
+        });
+        Promise.all(promises).then(() => {
+          connection.release();
+          res.status(200).send({
+            success: true,
+            body: {
+              results
+            }
+          })
         })
+
       } else {
         res.status(404).send({
           success: false,
