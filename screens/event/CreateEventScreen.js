@@ -120,7 +120,6 @@ export default function CreateEventScreen({navigation}) {
       let locations = await AsyncStorage.getItem("recentLocation");
       if (locations) {
         locations = JSON.parse(locations);
-        console.log(locations);
         setLocationHistory([{
           group: "Recent Location",
           data: locations
@@ -216,7 +215,6 @@ export default function CreateEventScreen({navigation}) {
   )}
 
   function selectFriend (item) {
-    console.log(item);
     if(!selectedFriends.includes(item)){
       if (selectedFriends.length < maximumNumberOfMembers) {
         setSelectedFriends([...selectedFriends, item])
@@ -224,7 +222,6 @@ export default function CreateEventScreen({navigation}) {
     } else {
       setSelectedFriends(selectedFriends.filter(a => a !== item));
     }
-    console.log(selectedFriends)
   }
 
 
@@ -639,6 +636,14 @@ export default function CreateEventScreen({navigation}) {
     }
   }
 
+  function returnNextStep() {
+    if (step === "Location") {
+      return <NextStep disabled={location ? false : true} onPress={() => setStep("Setup")} />
+    } else if (step === "Setup") {
+      return <NextStep disabled={false} onPress={() => setStep("Review")} />
+    }
+  }
+
   return (
 
     <View style={styles.container}>
@@ -647,8 +652,7 @@ export default function CreateEventScreen({navigation}) {
         leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
         centerComponent={{ text: step, style: { color: '#000' } }}
         />
-        <NextStep />
-
+        {returnNextStep()}
         {step === "Location" && LocationSearch()}
         {step === "Setup" && Setup()}
         {step === "Members" && Members()}

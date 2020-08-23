@@ -3,20 +3,9 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Input, Button, Image } from 'react-native-elements';
 
 export default function NextStep(props) {
+  console.log(props);
   return (
-    <TouchableOpacity style={{
-      position: 'absolute',
-      borderRadius: 20,
-      zIndex: 999,
-      width: 250,
-      height: 80,
-      bottom: 100,
-      right: 0,
-      backgroundColor: '#15cdca',
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-    }}
+    <TouchableOpacity style={props.disabled ? styles.disabledStyle : styles.activeStyle}
     {...props}
     >
       <Text style={{
@@ -46,5 +35,30 @@ export default function NextStep(props) {
 }
 
 const styles = StyleSheet.create({
-
+  activeStyle: {
+    position: 'absolute',
+    borderRadius: 20,
+    zIndex: 999,
+    width: 250,
+    height: 80,
+    bottom: 100,
+    right: 0,
+    backgroundColor: '#15cdca',
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  disabledStyle: {
+    position: 'absolute',
+    borderRadius: 20,
+    zIndex: 999,
+    width: 250,
+    height: 80,
+    bottom: 100,
+    right: 0,
+    backgroundColor: '#15cdca30',
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  }
 });
