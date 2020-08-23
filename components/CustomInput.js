@@ -25,10 +25,10 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     fontFamily: "OpenSans_400Regular",
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "500",
     fontStyle: "normal",
     letterSpacing: 0,
-    color: "#d8d8d8"
+    color: "#000000"
   },
   labelStyle: {
     marginLeft: 10,

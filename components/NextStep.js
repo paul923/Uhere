@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     width: 250,
     height: 80,
-    bottom: 100,
+    bottom: 40,
     right: 0,
     backgroundColor: '#15cdca',
     flex: 1,

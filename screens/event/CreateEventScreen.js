@@ -9,6 +9,7 @@ import * as Location from 'expo-location';
 import qs from 'qs';
 import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import RNPickerSelect from 'react-native-picker-select';
 import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
 import firebaseObject from 'config/firebase';
@@ -248,13 +249,18 @@ export default function CreateEventScreen({navigation}) {
               style={styles.locationBanner}
             />
           </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.label}>Event Title</Text>
+          </View>
           <View>
             <CustomInput
               placeholder='Name your event title'
-              label="Event Title"
               value={eventName}
               onChangeText={(text) => setEventName(text)}
             />
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.label}>Participants</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <View style={{
@@ -264,7 +270,6 @@ export default function CreateEventScreen({navigation}) {
               alignContent: 'stretch',
               borderRadius: 5,
               backgroundColor: "#ffffff",
-              marginTop: 20,
               marginLeft: 20
             }}>
               {eventMembers.map((member, index) => {
@@ -291,28 +296,29 @@ export default function CreateEventScreen({navigation}) {
                   flex: 1,
                   marginLeft: 20,
                   marginRight: 20,
-                  marginTop: 20
                 }}
               />
             </TouchableOpacity>
           </View>
           <View style={{flexDirection: 'row'}}>
-            <CustomInput
-              containerStyle={{flex: 1}}
-              placeholder='MM/DD/YYYY'
-              label="Date"
-              value={eventDate ? formatDate(eventDate) : ''}
-              onFocus={() => setShowDatePicker(true)}
-              onBlur={() => setShowDatePicker(false)}
-            />
-            <CustomInput
-              containerStyle={{flex: 1}}
-              placeholder='00:00 AM/PM'
-              label="Time"
-              value={eventTime ? formatTime(eventTime) : ''}
-              onFocus={() => setShowTimePicker(true)}
-              onBlur={() => setShowTimePicker(false)}
-            />
+            <View style={{flex: 1}}>
+              <Text style={styles.label}>Date</Text>
+              <CustomInput
+                placeholder='MM/DD/YYYY'
+                value={eventDate ? formatDate(eventDate) : ''}
+                onFocus={() => setShowDatePicker(true)}
+                onBlur={() => setShowDatePicker(false)}
+              />
+            </View>
+            <View style={{flex: 1}}>
+              <Text style={styles.label}>Time</Text>
+              <CustomInput
+                placeholder='00:00 AM/PM'
+                value={eventTime ? formatTime(eventTime) : ''}
+                onFocus={() => setShowTimePicker(true)}
+                onBlur={() => setShowTimePicker(false)}
+              />
+            </View>
           </View>
           {showDatePicker && (
             <DateTimePicker
@@ -341,11 +347,20 @@ export default function CreateEventScreen({navigation}) {
             />
           )}
           <View style={{flexDirection: 'row'}}>
-            <CustomInput
-              containerStyle={{flex: 1}}
-              placeholder='What is the bet on?'
-              label="Penalty"
-              />
+            <Text style={styles.label}>Penalty</Text>
+          </View>
+          <View style={{alignItems: 'stretch'}}>
+            <RNPickerSelect
+              style={pickerSelectStyles}
+              useNativeAndroidPickerStyle={false}
+              onValueChange={(value) => console.log(value)}
+              items={[
+                  { label: 'Football', value: 'football' },
+                  { label: 'Baseball', value: 'baseball' },
+                  { label: 'Hockey', value: 'hockey' },
+              ]}
+            />
+
           </View>
 
 
@@ -729,6 +744,32 @@ export default function CreateEventScreen({navigation}) {
   )
 }
 
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+  },
+  inputAndroid: {
+    paddingLeft: 10,
+    height: 40,
+    borderRadius: 5,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: "#ffffff",
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 16,
+    fontWeight: "500",
+    letterSpacing: 0,
+    color: "#000000",
+  },
+});
+
+
 const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -907,5 +948,17 @@ const styles = StyleSheet.create({
       fontStyle: "normal",
       letterSpacing: 0,
       color: "#ffffff"
+    },
+    label: {
+      marginLeft: 20,
+      marginRight: 10,
+      paddingTop: 10,
+      paddingBottom: 10,
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 14,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#5d5d5d"
     }
 });
