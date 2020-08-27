@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { formatDate, formatTime, convertDateToLocalTimezone } from "../utils/date";
+import { formatHeaderDate, convertDateToLocalTimezone } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button, Image, Avatar } from 'react-native-elements';
 import { backend } from '../constants/Environment';
@@ -14,7 +14,7 @@ export default function HistoryCard({ event, onPress,}) {
       <View style={styles.cardContainer}>
         <View style={styles.cardRow}>
           <View>
-            <Text style={styles.subTitleText}>{event.DateTime}</Text>
+            <Text style={styles.subTitleText}>{formatHeaderDate(convertDateToLocalTimezone(new Date(event.DateTime)))}</Text>
             <Text style={styles.titleText}>{event.Name}</Text>
           </View>
         </View>
@@ -97,7 +97,8 @@ const styles = StyleSheet.create({
   },
   memberTile: {
     borderWidth: 1,
-    marginHorizontal: 2
+    marginHorizontal: 2,
+    borderRadius: 10,
   },
   memberList: {
     flexDirection: "row"

@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList, TextInput } from 'react-native';
-import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-// history card
+import { StyleSheet, View, FlatList } from 'react-native';
+import { Image, Text, SearchBar, Header } from 'react-native-elements';
 import HistoryCard from 'components/HistoryCard';
-import { formatEventList } from 'utils/event';
+import HistoryDetail from './HistoryDetail'
 import { getEvents, getEvent } from 'api/event';
+import Modal from 'react-native-modal';
 
 export default function HistoryScreen({ navigation, route }) {
-    const [events, setEvents] = React.useState([]);
-    const [isFetching, setIsFetching] = React.useState(false);
+		const [isFetching, setIsFetching] = React.useState(false);
+		const [events, setEvents] = React.useState([]);
+		const [serchText, setserchText] = React.useState();
+		const [modalVisible, setModalVisible] = React.useState(false);
+
     React.useEffect(() => {
       async function fetchData() {
         let events = await getEvents('ACCEPTED', true, 10, 0);
@@ -25,7 +28,8 @@ export default function HistoryScreen({ navigation, route }) {
       let events = await getEvents('ACCEPTED', true, 10, 0);
       setEvents(events)
       setIsFetching(false);
-    }
+		}
+		
     return (
       <View style={styles.container}>
 				{/* Header */}
@@ -47,9 +51,10 @@ export default function HistoryScreen({ navigation, route }) {
 					</Text>
 					{/* Search Bar */}
 					<SearchBar
-						placeholder="Type Here..."
-						//onChangeText={}
-						//value={search}
+						placeholder="Search for your past events here"
+						onChangeText={(searchText) => setserchText(searchText)}
+						value={serchText}
+						lightTheme={true}
 					/>
 
 					{/* History List */}
@@ -60,15 +65,25 @@ export default function HistoryScreen({ navigation, route }) {
             onRefresh={() => onRefresh()}
             refreshing={isFetching}
             renderItem={({ item }) => (
-              <HistoryCard
-								event={item}
-                // onPress={()=>navigation.navigate('HistoryDetail', {
-                //   EventId: item.EventId,
-                //   EventType: "ON-GOING"
-                // })}
-                />
+							<View>
+								<HistoryCard
+									event={item}
+									onPress={() => setModalVisible(true)}
+								/>
+								<Modal
+									isVisible={modalVisible}
+									swipeDirection={['down']}
+									onSwipeComplete={() => setModalVisible(false)}
+									onBackdropPress={() => setModalVisible(false)}
+									propagateSwipe={true}
+								>
+									<HistoryDetail
+										event={item}
+									/>
+								</Modal>
+							</View>
             )}
-            keyExtractor={(item) => item.EventId}
+            keyExtractor={(item, index) => item.EventId.toString() }
           />
         </View>
       </View>
@@ -85,7 +100,6 @@ export default function HistoryScreen({ navigation, route }) {
 			fontSize: 25,
 			marginVertical: 10,
 			color: "#15cdca",
-			fontFamily: "OpenSans",
 		},
 		searchBar: {
 			flex: 1,
