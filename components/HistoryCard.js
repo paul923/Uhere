@@ -6,15 +6,16 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import FriendTile from '../components/FriendTile'
+import { getEvents, getEvent } from 'api/event';
 
-export default function HistoryCard({onPress, item, status}) {
+export default function HistoryCard({ event, onPress,}) {
   return (
     <TouchableOpacity onPress = {onPress}>
       <View style={styles.cardContainer}>
         <View style={styles.cardRow}>
           <View>
-            <Text style={styles.subTitleText}>15 June 2020</Text>
-            <Text style={styles.titleText}>Title goes here</Text>
+            <Text style={styles.subTitleText}>{event.DateTime}</Text>
+            <Text style={styles.titleText}>{event.Name}</Text>
           </View>
         </View>
         <View style={styles.spacer}></View>
@@ -22,7 +23,7 @@ export default function HistoryCard({onPress, item, status}) {
         <View style={styles.cardRow}>
           <View>
             <Text style={styles.subTitleText}>Location</Text>
-            <Text style={styles.titleText}>Ham ji Bak</Text>
+            <Text style={styles.titleText}>{event.LocationName}</Text>
           </View>
           <View style={styles.memberList}>
             {data.map((member, i) => {
@@ -64,7 +65,7 @@ const data = [
 
 const styles = StyleSheet.create({
   cardContainer: {
-    width: 342,
+    width: 380,
     height: 122,
     backgroundColor: "#ffffff",
     shadowColor: "rgba(0, 0, 0, 0.15)",
@@ -74,7 +75,8 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 10,
     shadowOpacity: 1,
-    padding: 18
+    padding: 18,
+    marginVertical: 10,
   },
   cardRow:{
     flexDirection: "row",

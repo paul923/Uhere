@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/event/EventScreen';
 import EventNavigator from './EventNavigator';
+import HistoryNavigator from './HistoryNavigator'
 import FriendsTabNavigator from './FriendsTabNavigator';
 import JayTestScreen from '../screens/debug/JayTestScreen';
 import JustinTestScreen from '../screens/debug/JustinTestScreen';
@@ -145,6 +146,18 @@ export default function MainAppNavigator({ navigation, route }) {
           tabBarVisible: showTab(route)
         })}
       />
+      {/* Event History Screen */}
+      <BottomTab.Screen
+        name="History"
+        component={HistoryNavigator}
+        options={({ route }) => ({
+          title: 'History',
+          tabBarIcon: ({ focused, size  }) => <Image source={ require('assets/icons/history/HistoryIcon.png') } style={{height:size , width:size}} resizeMode={'contain'} />,
+          headerMode: 'none',
+          tabBarVisible: showTab(route)
+        })}
+      />
+      {/* Test Screens */}
       <BottomTab.Screen
         name="Justin"
         component={JustinTabNavigator}
