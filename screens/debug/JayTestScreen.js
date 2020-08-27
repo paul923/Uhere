@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, Dimensions, ScrollView, SafeAreaView } from 'react-native';
-import { Button } from 'react-native-elements'
+import { StyleSheet, View, Dimensions, Text, SafeAreaView } from 'react-native';
+import { Avatar, Button } from 'react-native-elements';
 import { backend } from 'constants/Environment';
 import * as Location from 'expo-location';
 import useSocket from 'use-socket.io-client';
@@ -9,6 +9,8 @@ import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Constants from 'expo-constants';
 import * as userapi from 'api/user';
 import SplashScreen from '../SplashScreen';
+import { ScrollView } from 'react-native-gesture-handler';
+import HistoryResult from  '../history/HistoryResult'
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
@@ -88,7 +90,8 @@ export default function JayTestScreen({ navigation }) {
     }
 
     return (
-        <SplashScreen/>
+        <HistoryResult/>
+        //<SplashScreen/>
         /*
         <SafeAreaView style={styles.container}>
             <ScrollView>
