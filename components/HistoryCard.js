@@ -46,8 +46,7 @@ export default function HistoryCard({onPress, item, status}) {
 function MemberTile(props){
   return (
     <Avatar
-      containerStyle={styles.memberTile}
-      rounded
+      style={styles.memberAvatar}
       {...props}
     />
   );
@@ -74,7 +73,10 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 10,
     shadowOpacity: 1,
-    padding: 18
+    padding: 18,
+    borderStyle: "dashed",
+    borderColor: "black",
+    borderWidth: 2
   },
   cardRow:{
     flexDirection: "row",
@@ -93,14 +95,18 @@ const styles = StyleSheet.create({
   spacer: {
     height: 31
   },
-  memberTile: {
-    borderWidth: 1,
-    marginHorizontal: 2
-  },
   memberList: {
     flexDirection: "row"
   },
   avatarTitle: {
     fontSize: 10
+  },
+  memberAvatar: {
+    width: 30,
+    height: 30,
+    borderWidth: 1,
+    borderRadius: 10,
+    overflow:'hidden',
+    marginHorizontal: 3
   }
 });
