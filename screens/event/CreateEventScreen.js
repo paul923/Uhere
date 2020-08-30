@@ -450,6 +450,19 @@ export default function CreateEventScreen({navigation}) {
     }
 
   }
+
+  function selectLocation(item) {
+    setLocation(item);
+    setLocationSearching(false);
+    addRecentLocation(item);
+    setMapRegion({
+      latitude: item.geolat,
+      longitude: item.geolong,
+      latitudeDelta: LATITUDE_DELTA_MAP,
+      longitudeDelta: LONGITUDE_DELTA_MAP,
+    })
+    Keyboard.dismiss();
+  }
   function LocationSearch() {
     return (
       <View style={{flex: 1}}>
@@ -500,7 +513,7 @@ export default function CreateEventScreen({navigation}) {
           <MapView
               ref={mapRef}
               style={styles.map}
-              initialRegion={mapRegion}
+              region={mapRegion}
           >
           {location && (
             <Marker
@@ -544,7 +557,7 @@ export default function CreateEventScreen({navigation}) {
                   data={locationResult}
                   keyExtractor={(item, index) => item + index}
                   renderItem={({ item }) => <ListItem
-                    onPress={() => {setLocation(item); setLocationSearching(false); addRecentLocation(item); Keyboard.dismiss();}}
+                    onPress={() => {selectLocation(item);}}
                     title={item.name}
                     subtitle={item.address}
                     titleStyle={styles.locationSearchResultTitle}
@@ -557,7 +570,7 @@ export default function CreateEventScreen({navigation}) {
                   sections={locationHistory}
                   keyExtractor={(item, index) => item + index}
                   renderItem={({ item }) => <ListItem
-                    onPress={() => {setLocation(item); setLocationSearching(false); addRecentLocation(item); Keyboard.dismiss();}}
+                    onPress={() => {selectLocation(item);}}
                     title={item.name}
                     subtitle={item.address}
                     titleStyle={styles.locationSearchResultTitle}
@@ -794,12 +807,7 @@ const styles = StyleSheet.create({
       flex: 2
     },
     selectedLocationBox: {
-      position: 'absolute',
-      bottom: 0,
-      paddingBottom: 150,
-      left: 0,
-      right: 0,
-      zIndex: 1,
+      flex: 2,
       borderRadius: 15,
       padding: 30,
       paddingRight: 70,
@@ -841,7 +849,7 @@ const styles = StyleSheet.create({
       marginTop: 70,
       marginLeft: 20,
       marginRight: 20,
-      marginBottom: 50
+      marginBottom: 10
     },
     locationSearchResultHeader: {
       fontFamily: "OpenSans_400Regular",
