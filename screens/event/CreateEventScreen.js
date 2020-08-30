@@ -35,22 +35,16 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA_MAP = 0.0922;
 const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const SetupStack = createStackNavigator();
 
 export default function CreateEventScreen({navigation}) {
   const [ step, setStep] = React.useState("Location");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
-  const [ eventMembers, setEventMembers] = React.useState([
-    {
-      "AvatarColor": "#D47FA6",
-      "AvatarURI": "https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg",
-      "IsDeleted": 0,
-      "Nickname": "Crescent9723",
-      "RegisteredDate": "2020-04-19T04:04:08.000Z",
-      "UserId": "eIsb3yMPlScSy5QAtpnqfqzON8r1",
-      "Username": "Crescent9723",
-    }
-  ]);
+  const [ eventMembers, setEventMembers] = React.useState([]);
   const [ eventDate, setEventDate] = React.useState(new Date());
   const [ eventTime, setEventTime] = React.useState(new Date());
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
@@ -62,48 +56,33 @@ export default function CreateEventScreen({navigation}) {
   const [ locationSearching, setLocationSearching] = React.useState(false);
   const [ isOnline, setIsOnline] = React.useState(false);
   const [ locationResult, setLocationResult] = React.useState([]);
-  const [ locationHistory, setLocationHistory] = React.useState([
+  const [ locationHistory, setLocationHistory] = React.useState([]);
+  const [ penalty, setPenalty] = React.useState("cigarette");
+  const [ friends, setFriends] = React.useState([
     {
-      group: "Recent Location",
+      title: "Group",
+      data: []
+    },
+    {
+      title: "All Contacts",
       data: [{
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }, {
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }, {
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }, {
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }, {
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
-      }, {
-        name: "Hey Hi Hello Cafe",
-        address: "4501 North Rd #101a, Burnaby, BC V3N 4J5, Canada",
-        geolat: 49.2439375,
-        geolong: -122.8947596
+        UserId: "eIsb3yMPlScSy5QAtpnqfqzON8r1",
+        Username: "Crescent9723",
+        Nickname: "Crescent9723",
+        AvatarURI: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
+        AvatarColor: "#D47FA6"
+      },
+      {
+        UserId: "dKnJbXjjXwg13Bfkb4jBUcwKzGU2",
+        Username: "chiyy1231",
+        Nickname: "chiyy1231",
+        AvatarURI: "https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg",
+        AvatarColor: "#D47FA6"
       }]
     }
   ]);
-  const [ penalty, setPenalty] = React.useState("cigarette");
-  const [ penaltyGame, setPenaltyGame] = React.useState("roulette");
-  const [ searchText, setSearchText] = React.useState("");
-  const [ friends, setFriends] = React.useState([]);
+  const [ friendQuery, setFriendQuery] = React.useState("");
   const [ filteredData, setFilteredData] = React.useState();
-  const [ selectedFriends, setSelectedFriends] = React.useState([]);
   const [ mapRegion, setMapRegion ] = React.useState();
   const mapRef = React.useRef();
 
@@ -199,16 +178,16 @@ export default function CreateEventScreen({navigation}) {
     return (
     <FriendCard
       avatarUrl= {item.AvatarURI}
-      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
+      avatarTitle= {item.Nickname.substr(0, 2).toUpperCase()}
       displayName = {item.Nickname}
       userId = {item.Username}
       checkBox={{
-        size: 35,
+        size: 20,
         checkedIcon: 'dot-circle-o',
         uncheckedIcon: 'circle-o',
-        checkedColor:'#ff8a8a',
-        uncheckedColor: '#ff8a8a',
-        checked: selectedFriends.includes(item),
+        checkedColor:'#d3d3d3',
+        uncheckedColor: '#d3d3d3',
+        checked: eventMembers.includes(item),
         onPress: () => selectFriend(item)
       }}
     />
@@ -227,18 +206,81 @@ export default function CreateEventScreen({navigation}) {
   )}
 
   function selectFriend (item) {
-    if(!selectedFriends.includes(item)){
-      if (selectedFriends.length < maximumNumberOfMembers) {
-        setSelectedFriends([...selectedFriends, item])
+    if(!eventMembers.includes(item)){
+      if (eventMembers.length < maximumNumberOfMembers) {
+        setEventMembers([...eventMembers, item])
       }
     } else {
-      setSelectedFriends(selectedFriends.filter(a => a !== item));
+      setEventMembers(eventMembers.filter(a => a !== item));
     }
   }
 
 
   function Setup() {
     return (
+      <SetupStack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}
+        initialRouteName="Main">
+        <SetupStack.Screen name="Main" component={SetupMain} />
+        <SetupStack.Screen name="Member" component={SetupMember} />
+      </SetupStack.Navigator>
+    )
+  }
+  function SetupMember({ navigation }) {
+    return (
+      <View style={{flex: 1}}>
+      <Header
+        backgroundColor="#ffffff"
+        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Main")} />}
+        centerComponent={{ text: "Add Members", style: { color: '#000' } }}
+        />
+      <View style={{flex: 1}}>
+        <View style={styles.searchBoxAbsolute}>
+          <CustomInput
+            containerStyle={{flex: 5}}
+            placeholder='Seach by name or phone number'
+            inputStyle={{color: '#000000'}}
+            onChangeText={(text) => {
+              setFriendQuery(text)
+            }}
+          />
+          <TouchableOpacity onPress={() => setFriendQuery("")} style={{flex: 1}}>
+            <Icon name='close' color='#aeaeae'
+              containerStyle={{
+                borderRadius: 5,
+                justifyContent: 'center',
+                flex: 1,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={{flex: 1}}>
+          <View style={styles.searchResultContainer}>
+            <SectionList
+              sections={friends}
+              keyExtractor={(item, index) => item + index}
+              renderItem={renderFriendsCard}
+              renderSectionHeader={({ section: { title } }) => (
+                <Text style={styles.locationSearchResultHeader}>{title}</Text>
+              )}
+            />
+          </View>
+        </View>
+      </View>
+      </View>
+    )
+  }
+
+  function SetupMain({ navigation }) {
+    return (
+      <View style={{flex: 1}}>
+      <Header
+        backgroundColor="#ffffff"
+        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => setStep("Location")} />}
+        centerComponent={{ text: "Setup", style: { color: '#000' } }}
+        />
         <ScrollView
           contentContainerStyle={{
             height: 600,
@@ -276,6 +318,7 @@ export default function CreateEventScreen({navigation}) {
                 if (index < 3) {
                   return (
                       <Image
+                        key={index}
                         source={{uri: member.AvatarURI}}
                         style={styles.memberAvatar}
                         resizeMode='contain'
@@ -287,7 +330,7 @@ export default function CreateEventScreen({navigation}) {
                 <Text style={styles.memberCount}>+{eventMembers.length-4 < 0 ? 0 : eventMembers.length-4}</Text>
               </View>
             </View>
-            <TouchableOpacity style={{flex: 1}}>
+            <TouchableOpacity onPress={() => navigation.navigate('Member')} style={{flex: 1}}>
               <Icon name='add' color='#ffffff'
                 containerStyle={{
                   borderRadius: 5,
@@ -353,11 +396,10 @@ export default function CreateEventScreen({navigation}) {
             <RNPickerSelect
               style={pickerSelectStyles}
               useNativeAndroidPickerStyle={false}
-              onValueChange={(value) => console.log(value)}
+              onValueChange={(value) => setPenalty(value)}
               items={[
-                  { label: 'Football', value: 'football' },
-                  { label: 'Baseball', value: 'baseball' },
-                  { label: 'Hockey', value: 'hockey' },
+                  { label: 'Cigarette', value: 'cigarette' },
+                  { label: 'Americano', value: 'americano' },
               ]}
             />
 
@@ -365,7 +407,7 @@ export default function CreateEventScreen({navigation}) {
 
 
         </ScrollView>
-
+        </View>
     )
   }
 
@@ -411,6 +453,13 @@ export default function CreateEventScreen({navigation}) {
   function LocationSearch() {
     return (
       <View style={{flex: 1}}>
+      <Header
+        backgroundColor="#ffffff"
+        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
+        centerComponent={{ text: "Location", style: { color: '#000' } }}
+        />
+      <View style={{flex: 1}}>
+
         <View style={styles.searchBoxAbsolute}>
           {locationSearching && (
             <TouchableOpacity onPress={() => {setLocationSearching(false); Keyboard.dismiss()}} style={{flex: 1}}>
@@ -489,7 +538,7 @@ export default function CreateEventScreen({navigation}) {
           </View>
         ) : (
           <View style={{flex: 1}}>
-            <View style={styles.locationSearchResultContainer}>
+            <View style={styles.searchResultContainer}>
               {locationResult.length > 0 ? (
                 <FlatList
                   data={locationResult}
@@ -525,6 +574,7 @@ export default function CreateEventScreen({navigation}) {
           </View>
         )}
       </View>
+      </View>
     )
   }
 
@@ -548,108 +598,6 @@ export default function CreateEventScreen({navigation}) {
     setLocationHistory(locationHistory)
 
   }
-
-  function Members() {
-    return (
-        <View style={{flex: 1, justifyContent: "center", backgroundColor: "white"}}>
-          <View style={{
-            minHeight: 90,
-            backgroundColor: "#E1E1E1",
-          }}>
-            <FlatList
-              data={selectedFriends}
-              renderItem={renderFriendsTile}
-              contentContainerStyle={{
-                padding: 10,
-              }}
-              keyExtractor={(item) => item.userId}
-              horizontal
-              bounces = {false}
-            />
-          </View>
-
-
-          <SearchBar
-            round={true}
-            lightTheme={true}
-            placeholder="Search..."
-            autoCapitalize='none'
-            autoCorrect={false}
-            onChangeText={friendSearch}
-            value={searchText}
-            containerStyle={{
-              backgroundColor:"white",
-              margin: 10,
-              borderColor: "#C4C4C4",
-              borderWidth: 1,
-              borderRadius: 10,
-              padding: 3
-            }}
-            inputContainerStyle={{
-              backgroundColor:"white"
-            }}
-            inputStyle={{
-              backgroundColor:"white"
-            }}
-            leftIconContainerStyle={{
-              backgroundColor:"white"
-            }}
-            rightIconContainerStyle={{
-              backgroundColor:"white"
-            }}
-          />
-
-          <FlatList
-            data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
-            renderItem={renderFriendsCard}
-            keyExtractor={(item) => item.userId}
-            contentContainerStyle={{
-              paddingLeft: 20,
-              paddingRight: 20,
-              backgroundColor: "white"
-            }}
-            bounces={false}
-          />
-        </View>
-    )
-  }
-
-  function Penalty() {
-    return (
-      <View style={styles.formContainer}>
-        <View style={styles.row}>
-          <Text h4>Choose the penalty</Text>
-        </View>
-        <View style={styles.row}>
-          <Image
-            source={penaltyImage}
-            style={{ width: 200, height: 200 }}
-          />
-        </View>
-        <View style={styles.row}>
-          <Picker
-            style={styles.onePicker}
-            selectedValue={penalty}
-            onValueChange={(itemValue) => setPenalty(itemValue)}
-          >
-            <Picker.Item label="Buys cig" value="cigarette" />
-            <Picker.Item label="Buys americano" value="americano" />
-            <Picker.Item label="Money" value="money" />
-          </Picker>
-        </View>
-        <View style={styles.row}>
-          <Picker
-            style={styles.onePicker}
-            selectedValue={penaltyGame}
-            onValueChange={(itemValue) => setPenaltyGame(itemValue)}
-          >
-            <Picker.Item label="ROULETTE" value="roulette" />
-          </Picker>
-        </View>
-      </View>
-    )
-  }
-
 
   function LeftComponent() {
     let name = (step === 'Event Detail') ? 'close' : 'chevron-left';
@@ -729,16 +677,10 @@ export default function CreateEventScreen({navigation}) {
   return (
 
     <View style={styles.container}>
-      <Header
-        backgroundColor="#ffffff"
-        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
-        centerComponent={{ text: step, style: { color: '#000' } }}
-        />
+
         {returnNextStep()}
         {step === "Location" && LocationSearch()}
         {step === "Setup" && Setup()}
-        {step === "Members" && Members()}
-        {step === "Penalty" && Penalty()}
     </View>
 
   )
@@ -854,6 +796,7 @@ const styles = StyleSheet.create({
     selectedLocationBox: {
       position: 'absolute',
       bottom: 0,
+      paddingBottom: 150,
       left: 0,
       right: 0,
       zIndex: 1,
@@ -891,7 +834,7 @@ const styles = StyleSheet.create({
       paddingRight: 40,
       color: "#808080"
     },
-    locationSearchResultContainer: {
+    searchResultContainer: {
       flex: 1,
       borderRadius: 10,
       backgroundColor: "#fefefe",

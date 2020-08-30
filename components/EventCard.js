@@ -64,6 +64,7 @@ export default function EventCard({onPress, item, status}) {
                 if (index < 3) {
                   return (
                       <Image
+                        key={index}
                         source={{uri: member.AvatarURI}}
                         style={styles.memberAvatar}
                         resizeMode='contain'
