@@ -281,6 +281,7 @@ export default function CreateEventScreen({navigation}) {
         leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => setStep("Location")} />}
         centerComponent={{ text: "Setup", style: { color: '#000' } }}
         />
+        {returnNextStep()}
         <ScrollView
           contentContainerStyle={{
             height: 600,
@@ -471,6 +472,7 @@ export default function CreateEventScreen({navigation}) {
         leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Event")} />}
         centerComponent={{ text: "Location", style: { color: '#000' } }}
         />
+
       <View style={{flex: 1}}>
 
         <View style={styles.searchBoxAbsolute}>
@@ -510,6 +512,7 @@ export default function CreateEventScreen({navigation}) {
 
         {!locationSearching ? (
         <View style={{flex: 1}}>
+          {returnNextStep()}
           <MapView
               ref={mapRef}
               style={styles.map}
@@ -691,7 +694,6 @@ export default function CreateEventScreen({navigation}) {
 
     <View style={styles.container}>
 
-        {returnNextStep()}
         {step === "Location" && LocationSearch()}
         {step === "Setup" && Setup()}
     </View>
