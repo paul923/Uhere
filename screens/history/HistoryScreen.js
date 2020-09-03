@@ -90,7 +90,7 @@ export default function HistoryScreen({ navigation, route }) {
 						<HistoryCard
 							event={item}
 							onPress={() => navigation.navigate('HistoryDetail', {
-								EventId: item.EventId
+								Event: item
 							})}
 						/>
 					)}

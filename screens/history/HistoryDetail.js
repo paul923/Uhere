@@ -4,7 +4,7 @@ import UhereHeader from '../../components/UhereHeader';
 import Timeline from 'react-native-timeline-flatlist'
 import ResultTimeLine from '../../components/ResultTimeLine'
 
-export default function HistoryDetail({navigation}) {
+export default function HistoryDetail({navigation, props}) {
     return (
         <View style={styles.container}>
             <UhereHeader
