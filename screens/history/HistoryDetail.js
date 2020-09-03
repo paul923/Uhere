@@ -1,117 +1,89 @@
 import * as React from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Image, Text, SearchBar, Header } from 'react-native-elements';
-import ResultCard from '../../components/ResultCard'
+import { StyleSheet, View, Image, Text, ScrollView } from 'react-native';
+import UhereHeader from '../../components/UhereHeader';
+import Timeline from 'react-native-timeline-flatlist'
+import ResultTimeLine from '../../components/ResultTimeLine'
 
-
-export default function HistoryDetail(event) {
+export default function HistoryDetail({navigation}) {
     return (
-      <View style={styles.container}>
-        
-        <View style={styles.dateNameStyle}>
-          <Text style={styles.dateStyle}>25 June 2020</Text>
-          <Text style={styles.eventNameStyle}>Event Title Goes Here</Text>
+        <View style={styles.container}>
+            <UhereHeader
+                showBackButton={true}
+                onPressBackButton={() => navigation.navigate('HistoryScreen')}
+            />
+            <Image  
+                style={styles.avatarStyle}
+                source={{
+                    uri:
+                        'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+                }}
+            />
+            <View style={styles.textContainer}>
+                <Text style={styles.titleText}>
+                    You arrived second!
+                </Text>
+                <Text style={styles.descriptionText}>
+                    Congratulate Jay for having the honors to buy everyone!
+                </Text>
+            </View>
+            <View style={styles.timeline}>
+            <Timeline
+                data={data}
+                columnFormat='two-column'
+                circleSize={35}
+                circleColor='rgba(0,0,0,0)'
+                lineColor='#15cdca'
+                timeContainerStyle={{minWidth:52}}
+                timeStyle={{textAlign: 'center', backgroundColor:'#15cdca', color:'white', padding:5, borderRadius:13}}
+                options={{
+                  style:{paddingTop:10}
+                }}
+                innerCircle={'icon'}                 
+                separator={false}
+                detailContainerStyle={{marginBottom: 50,alignItems:"center", backgroundColor: "#15cdca", borderRadius: 15}}
+            />
+            </View>
         </View>
-        
-        <View style={{
-          borderBottomWidth: 1,
-          borderBottomColor: "#a9a8aa",
-          width: 340,
-          alignSelf: "center"
-        }}
-        />
-        
-        <View style={styles.locationtimepenalty}>
-          <View style={styles.item}>
-            <Text style={styles.subTitleText}>Location</Text>
-            <Text style={styles.titleText}>Ham Ji Bak</Text>
-          </View>
-          <View style={styles.item}>
-            <Text style={styles.subTitleText}>Time</Text>
-            <Text style={styles.titleText}>5:30 PM</Text>
-          </View>
-          <View style={styles.item}>
-            <Text style={styles.subTitleText}>Penalty</Text>
-            <Text style={styles.titleText}>Bingsoo</Text>
-          </View>
-        </View>
-
-
-        <Text style={{
-          fontSize: 15,
-          color: "#a9a8aa",
-          marginLeft: 10,
-          marginTop: 10,
-        }}>Result</Text>
-        <View style={styles.resultList}>
-          <ScrollView
-            horizontal
-          >
-            <TouchableOpacity
-            activeOpacity={1}>
-            <ResultCard></ResultCard>
-            </TouchableOpacity>
-            <TouchableOpacity
-            activeOpacity={1}>
-            <ResultCard></ResultCard>
-            </TouchableOpacity>
-            <TouchableOpacity
-            activeOpacity={1}>
-            <ResultCard></ResultCard>
-            </TouchableOpacity>
-            <TouchableOpacity
-            activeOpacity={1}>
-            <ResultCard></ResultCard>
-            </TouchableOpacity>
-            
-          </ScrollView>
-        </View>
-        
-      </View>
     )
 }
 
+const data = [
+    { time: '09:00', title: 'First Doe', lineColor:'#15cdca', icon: require('../../assets/images/robot-dev.png') },
+    { time: '10:45', title: 'Second Doe', lineColor:'#15cdca', icon: require('../../assets/images/robot-dev.png') },
+    { time: '12:00', title: 'Third Doe', lineColor:'#15cdca',  icon: require('../../assets/images/robot-dev.png') },
+    { time: '14:00', title: 'Fourth Doe', lineColor:'#15cdca',  icon: require('../../assets/images/robot-dev.png') },
+    { time: '16:30', title: 'Fifth Doe', lineColor:'#15cdca',  icon: require('../../assets/images/robot-dev.png') }
+];
+
 const styles = StyleSheet.create({
     container: {
-      width: 374,
-      height: 380,
-      backgroundColor: "white",
-      alignSelf: "center"
+        flex: 1,
+        alignItems:"center",
     },
-    dateNameStyle:{
-      marginHorizontal:10,
-      marginVertical:10
+    timeline: {
+        marginTop:50,
+        width:362,
+        height:380,
+        backgroundColor:'white'
     },
-    dateStyle:{
-      fontSize: 15 ,
-      color: "#a9a8aa"
+    avatarStyle: {
+        width:90,
+        height:90,
+        borderRadius: 45,
+        margin:15
     },
-    eventNameStyle:{
-      fontSize: 25,
-      color: "#15cdca"
-    },
-    locationtimepenalty: {
-      flexDirection: 'row',
-      alignContent: 'stretch',
-      justifyContent: "space-between",
-      marginTop: 20
-    },
-    item: {
-      marginHorizontal:10,
-    },
-    subTitleText:{
-      fontSize: 15,
-      color: "#a9a8aa"
+    textContainer: {
+        alignItems:"center",
     },
     titleText:{
-      fontSize: 20,
-      color: "#15cdca",
+        fontSize:25,
+        color: "#15cdca"
     },
-    resultList:{
-      marginHorizontal:10,
-      marginTop:20,
-      flexDirection: 'row',
-      alignContent: 'stretch',
-      justifyContent: "space-between",
+    descriptionText:{
+        fontSize:12,
+        color: "#4A4A4A"
     },
-  });
+    scrollViewStyle:{
+        margin:25
+    }
+});

@@ -10,7 +10,7 @@ import Constants from 'expo-constants';
 import * as userapi from 'api/user';
 import SplashScreen from '../SplashScreen';
 import { ScrollView } from 'react-native-gesture-handler';
-import HistoryResult from  '../history/HistoryResult'
+//import HistoryResult from  '../history/HistoryDetail'
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
@@ -90,8 +90,8 @@ export default function JayTestScreen({ navigation }) {
     }
 
     return (
-        <HistoryResult/>
-        //<SplashScreen/>
+        //<HistoryResult/>
+        <SplashScreen/>
         /*
         <SafeAreaView style={styles.container}>
             <ScrollView>
