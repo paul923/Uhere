@@ -3,8 +3,17 @@ import { StyleSheet, View, Image, Text, ScrollView } from 'react-native';
 import UhereHeader from '../../components/UhereHeader';
 import Timeline from 'react-native-timeline-flatlist'
 import ResultTimeLine from '../../components/ResultTimeLine'
+import getEvent from '../../api/event'
+import getUser from '../../api/user'
 
-export default function HistoryDetail({navigation, props}) {
+export default function HistoryDetail({navigation, route}) {
+    React.useEffect(() => {
+		async function fetchData() {
+			let event = await getEvent(route.params.Event.EventId);
+			console.log(event)
+		}
+	}, []);
+    
     return (
         <View style={styles.container}>
             <UhereHeader
