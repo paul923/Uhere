@@ -9,8 +9,8 @@ import Modal from 'react-native-modal';
 export default function HistoryScreen({ navigation, route }) {
 	const [isFetching, setIsFetching] = React.useState(false);
 	const [events, setEvents] = React.useState([]);
-	const [serchText, setserchText] = React.useState();
-	const [modalVisible, setModalVisible] = React.useState(false);
+	const [searchText, setserchText] = React.useState();
+	
 
 	React.useEffect(() => {
 		async function fetchData() {
@@ -51,12 +51,34 @@ export default function HistoryScreen({ navigation, route }) {
 					</Text>
 				{/* Search Bar */}
 				<SearchBar
-					placeholder="Search for your past events here"
-					onChangeText={(searchText) => setserchText(searchText)}
-					value={serchText}
+					round={true}
 					lightTheme={true}
+					placeholder="Search..."
+					autoCapitalize='none'
+					autoCorrect={false}
+					onChangeText={(searchText) => setserchText(searchText)}
+					value={searchText}
+					containerStyle={{
+						backgroundColor: "white",
+						margin: 10,
+						borderColor: "#C4C4C4",
+						borderWidth: 1,
+						borderRadius: 10,
+						padding: 3
+					}}
+					inputContainerStyle={{
+						backgroundColor: "white"
+					}}
+					inputStyle={{
+						backgroundColor: "white"
+					}}
+					leftIconContainerStyle={{
+						backgroundColor: "white"
+					}}
+					rightIconContainerStyle={{
+						backgroundColor: "white"
+					}}
 				/>
-
 				{/* History List */}
 				<FlatList
 					style={styles.listContainer}
