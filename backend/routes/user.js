@@ -13,12 +13,26 @@ router.get('/:userId', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
-      }
-      else if (results.length > 0) {
-        res.status(200).send(results);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
+      } else if (results.length > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        });
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "User Not Found with UserId: " + req.params.userId
+          }
+        })
       }
     });
   });
@@ -33,12 +47,26 @@ router.get('/username/:username', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
-      }
-      else if (results.length > 0) {
-        res.status(200).send(results);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
+      } else if (results.length > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        });
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "User Not Found with Username: " + req.params.username
+          }
+        })
       }
     });
   });
@@ -66,7 +94,12 @@ router.get('/:userId/groups', function (req, res) {
           const promise = new Promise((resolve, reject) => {
             connection.query(sql, result.GroupId, function (error, results, fields) {
               if (error) {
-                res.status(500).send(error);
+                res.status(500).send({
+                  success: false,
+                  error: {
+                    message: "Database Error"
+                  }
+                });
               } else {
                 result.Members = results;
                 resolve()
@@ -77,10 +110,20 @@ router.get('/:userId/groups', function (req, res) {
         });
         Promise.all(promises).then(() => {
           connection.release();
-          res.status(200).send(results);
+          res.status(200).send({
+            success: true,
+            body: {
+              results
+            }
+          });
         })
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Groups Not Found with UserId: " + req.params.userId
+          }
+        })
       }
     });
   });
@@ -95,11 +138,26 @@ router.get('/:userId/relationships', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
       } else if (results.length > 0) {
-        res.status(200).send(results);
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        });
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Relationship Not Found with UserId: " + req.params.userId
+          }
+        })
       }
     });
   });
@@ -121,11 +179,26 @@ router.get('/:userId/relationships/:username', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
       } else if (results.length > 0) {
-        res.status(200).send(results);
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        });
       } else {
-        res.status(404).send()
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Relationship Not Found between UserId: " + req.params.userId + " and Username: " + req.params.username
+          }
+        })
       }
     });
   });
@@ -143,9 +216,28 @@ router.post('/', function (req, res) {
     connection.query(sql, user, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        if(error.code == "ER_DUP_ENTRY"){
+          res.status(400).send({
+            success: false,
+            error: {
+              message: error.sqlMessage
+            }
+          });
+        } else {
+          res.status(500).send({
+            success: false,
+            error: {
+              message: "User Not Created"
+            }
+          })
+        }
       } else if (results.affectedRows > 0) {
-        res.status(201).send();
+        res.status(201).send({
+          success: true,
+          body: {
+            message: "User Created with UserId: " + user.UserId + " and Username: " + user.Username
+          }
+        });
       }
     });
   });
@@ -161,9 +253,28 @@ router.post('/:userId1/relationships/:userId2', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        if(error.code == "ER_DUP_ENTRY"){
+          res.status(400).send({
+            success: false,
+            error: {
+              message: error.sqlMessage
+            }
+          });
+        } else {
+          res.status(500).send({
+            success: false,
+            error: {
+              message: "Database Error"
+            }
+          })
+        }
       } else if (results.affectedRows > 0) {
-        res.status(201).send();
+        res.status(201).send({
+          success: true,
+          error: {
+            message: "Relationship Created between UserId1: " + req.params.userId1 + " and UserId2: " + req.params.userId2
+          }
+        });
       }
     });
   });
@@ -180,11 +291,26 @@ router.patch('/:userId', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
       } else if (results.affectedRows > 0) {
-        res.status(200).send();
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "User Updated"
+          }
+        });
       } else {
-        res.status(404).send();
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "User Not Found with UserId: " + req.params.userId
+          }
+        });
       }
     });
   });
@@ -193,7 +319,6 @@ router.patch('/:userId', function (req, res) {
 router.patch('/:userId1/relationships/:userId2', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
-    console.log(req.body)
     if (err) throw err; // not connected!
     var sql = "UPDATE ?? SET Type = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = false";
     var parameters = ['UserRelationship', req.body.Type, req.params.userId1, req.params.userId2];
@@ -201,11 +326,26 @@ router.patch('/:userId1/relationships/:userId2', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: error
+          }
+        });
       } else if (results.affectedRows > 0) {
-        res.status(200).send();
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "Relationship Updated to " + req.body.Type
+          }
+        });
       } else {
-        res.status(404).send();
+        res.status(404).send({
+          success: false,
+          body: {
+            message: "Relationship Not Found between UserId1: " + req.params.userId1 + " and UserId2: " + req.params.userId2
+          }
+        });
       }
     });
   });
@@ -223,12 +363,26 @@ router.delete('/:userId', function (req, res) {
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        res.status(500).send(error);
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
       } else if (results.affectedRows > 0) {
-        // TODO: 200 or 204?
-        res.status(204).send();
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "User Deleted"
+          }
+        });
       } else {
-        res.status(404).send();
+        res.status(404).send({
+          success: false,
+          body: {
+            message: "User Not Found with UserId: " + req.params.userId
+          }
+        });
       }
     });
   });

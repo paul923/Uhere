@@ -29,6 +29,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
 import { AppearanceProvider } from 'react-native-appearance';
+import * as userapi from 'api/user';
 
 
 import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
@@ -176,15 +177,8 @@ export default function App(props) {
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
-        let response = await fetch(`http://${backend}:3000/users/${data}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-        let responseJson = await response.json();
-        if (response.status === 200) {
+        let user = await userapi.getUserByUserId(data);
+        if (user !== null) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
@@ -282,7 +276,7 @@ export default function App(props) {
      onDone={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
      onSkip={() => {setshowRealApp(true); storeIsFirstLaunch(false)}}
      showSkipButton
-     activeDotStyle={{backgroundColor: 'rgba(0, 0, 0, .9)'}}
+     activeDotStyle={{backgroundColor: 'rgba(21, 205, 202, .9)'}}
      />;
  }  else if (!isLocationPermissionGranted) {
    return (
@@ -297,7 +291,7 @@ export default function App(props) {
       <AppearanceProvider>
       <GlobalContext.Provider value={globalContext}>
       <View style={styles.container}>
-        {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+        {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
         <Modal
           animationType="fade"
           transparent={true}
@@ -402,39 +396,39 @@ const styles = StyleSheet.create({
 // Slider contents
 const slides = [
   {
-    key: 'Dummy1',
-    title: 'Dummy 1',
-    text: 'Please sign in to\ncontinue.',
-    image: require('./assets/images/robot-dev.png'),
+    key: 'Penalize!',
+    title: 'Penalize!',
+    text: 'Play the game if there are\nmultiple freinds who are late!',
+    image: require('./assets/images/Tutorial/uhereonboarding1.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
-      color: '#000000'
+      color: '#15CDCA'
     },
     textStyle: {
       color: '#0f0f0f',
     }
   },
   {
-    key: 'Dummy2',
-    title: 'Dummy 2',
-    text: 'Please sign in to\ncontinue.',
-    image: require('./assets/images/robot-dev.png'),
+    key: 'Check!',
+    title: 'Check!',
+    text: 'Use Uhere to find and see\nwhere your friends are!',
+    image: require('./assets/images/Tutorial/uhereonboarding2.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
-      color: '#000000'
+      color: '#15CDCA'
     },
     textStyle: {
       color: '#0f0f0f',
     }
   },
   {
-    key: 'Dummy3',
-    title: 'Dummy 3',
-    text: 'Please sign in to\ncontinue.',
-    image: require('./assets/images/robot-dev.png'),
+    key: 'Create!',
+    title: 'Create!',
+    text: 'Invite your friends and set\nup the location and penalty for the losers!',
+    image: require('./assets/images/Tutorial/uhereonboarding3.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
-      color: '#000000'
+      color: '#15CDCA'
     },
     textStyle: {
       color: '#0f0f0f'

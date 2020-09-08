@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, View, TextInput, Text } from 'react-native';
+import { StyleSheet, View, TextInput } from 'react-native';
 import { Button, Input } from 'react-native-elements'
 
-import AvatarScreen from '../profile/AvatarScreen'
+//import AvatarScreen from '../AvatarScreen'
 import { getGroupById, postGroup, deleteGroupById } from '../../api/group';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -10,12 +10,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 export default function PaulTestScreen({ navigation }) {
   const [groupId, setGroupId] = React.useState();
-  const [result, setResult] = React.useState();
 
 
   async function getGroup() {
     let result = await getGroupById(groupId)
-    setResult(JSON.stringify(result, null, 2))
+    if(result)
+      alert(JSON.stringify(result, null, 4))
+    else
+      alert("cannot find")
   }
 
   async function createGroup() {
@@ -35,12 +37,20 @@ export default function PaulTestScreen({ navigation }) {
       }
     ]
     let result = await postGroup(group, members);
-    setResult(JSON.stringify(result, null, 2))
+    if(result){
+      alert("posted" + JSON.stringify(group, null, 4) + "Members:" + JSON.stringify(members, null, 4))
+    } else {
+      alert("Error has occurred. Please try again later")
+    }
   }
 
   async function deleteGroup() {
     let result = await deleteGroupById(groupId);
-    setResult(JSON.stringify(result, null, 2))
+    if(result){
+      alert("Deleted")
+    } else {
+      alert("Error has occurred. Please try again later")
+    }
   }
 
   return (
@@ -68,9 +78,16 @@ export default function PaulTestScreen({ navigation }) {
         buttonStyle={styles.button}
         onPress={() => deleteGroup()}
       />
-      <View>
-        <Text>{result}</Text>
-      </View>
+      <Button
+        title='history card'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate("Test Screen 2")}
+      />
+      <Button
+        title='signup'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate("Test Screen 6")}
+      />
     </ScrollView>
   )
 }

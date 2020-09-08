@@ -6,11 +6,12 @@ export async function getUserByUserId(UserId) {
         let url = `http://${backend}:3000/users/${UserId}`;
         let response = await fetch(url);
         let json = await response.json();
-        let user = json[0];
-        //console.log(response.status);
-        return user;
+        if (json.success) {
+            return json.body.results[0];
+        } else {
+            return null;
+        }
     } catch (error) {
-        //console.error(error);
         return null;
     }
 }
@@ -20,10 +21,12 @@ export async function getUserByUsername(Username) {
         let url = `http://${backend}:3000/users/username/${Username}`;
         let response = await fetch(url);
         let json = await response.json();
-        let user = json[0];
-        return user;
+        if (json.success) {
+            return json.body.results[0];
+        } else {
+            return null;
+        }
     } catch (error) {
-        //console.error(error);
         return null;
     }
 }
@@ -33,10 +36,12 @@ export async function getGroupsByUserId(UserId) {
         let url = `http://${backend}:3000/users/${UserId}/groups`;
         let response = await fetch(url);
         let json = await response.json();
-        let groups = json;
-        return groups;
+        if (json.success) {
+            return json.body.results[0];
+        } else {
+            return null;
+        }
     } catch (error) {
-        //console.error(error)
         return null;
     }
 }
@@ -46,10 +51,12 @@ export async function getRelationships(UserId) {
         let url = `http://${backend}:3000/users/${UserId}/relationships`;
         let response = await fetch(url);
         let json = await response.json();
-        let relationships = json;
-        return relationships;
+        if (json.success) {
+            return json.body.results;
+        } else {
+            return null;
+        }
     } catch (error) {
-        //console.error(error);
         return null;
     }
 }
@@ -59,10 +66,12 @@ export async function getRelationshipByUsername(UserId1, Username) {
         let url = `http://${backend}:3000/users/${UserId1}/relationships/${Username}`;
         let response = await fetch(url);
         let json = await response.json();
-        let relationship = json;
-        return relationship;
+        if (json.success) {
+            return json.body.results[0];
+        } else {
+            return null;
+        }
     } catch (error) {
-        //console.error(error);
         return null;
     }
 }
@@ -77,11 +86,13 @@ export async function createUser(User) {
             },
             body: JSON.stringify(User)
         });
-        let responseJson = await response.json();
-        // TODO:when do we check if username exists?
-        return true;
+        let json = await response.json();
+        if (json.success) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
-        //console.error(error);
         return false;
     }
 }
@@ -95,16 +106,13 @@ export async function createRelationship(UserId1, UserId2) {
                 'Content-Type': 'application/json',
             }
         });
-        //let responseJson = await response.json();
-        // TODO: status 500 check?
-        console.log(response.status);
-        if (response.status != 201) {
+        let json = await response.json();
+        if (json.success) {
+            return true;
+        } else {
             return false;
         }
-        //console.log(responseJson);
-        return true;
     } catch (error) {
-        console.error(error);
         return false;
     }
 }
@@ -124,10 +132,13 @@ export async function updateUser(User) {
                 AvatarColor: User.AvatarColor
             }),
         });
-        //let responseJson = await response.json();
-        return true;
+        let json = await response.json();
+        if (json.success) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
-        //console.error(error);
         return false;
     }
 }
@@ -145,10 +156,13 @@ export async function updateRelationship(userId1, userId2, type) {
                 Type: type,
             }),
         });
-        //let responseJson = await response.json();
-        return true;
+        let json = await response.json();
+        if (json.success) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
-        //console.error(error);
         return false;
     }
 }
@@ -163,10 +177,13 @@ export async function deleteUser(userId) {
                 'Content-Type': 'application/json',
             }
         });
-        //let responseJson = await response.json();
-        return true;
+        let json = await response.json();
+        if (json.success) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
-        //console.error(error);
         return false;
     }
 }
