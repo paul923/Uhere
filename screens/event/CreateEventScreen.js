@@ -7,7 +7,7 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import * as Location from 'expo-location';
 import qs from 'qs';
-import { ListItem, Image, Button, Text, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
+import { ListItem, Image, Button, Text, Slider, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import AuthContext from 'contexts/AuthContext';
@@ -25,7 +25,7 @@ import FriendTile from 'components/FriendTile';
 import CustomInput from 'components/CustomInput';
 import NextStep from 'components/NextStep';
 
-import {formatDate, formatTime, combineDateAndTime, createDateAsUTC} from 'utils/date';
+import {formatDate, formatTime, formatDateFormat, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
 import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from 'assets/images/penalty.png';
@@ -45,12 +45,12 @@ export default function CreateEventScreen({navigation}) {
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
   const [ eventMembers, setEventMembers] = React.useState([]);
+  const [ selectedMembers, setSelectedMembers] = React.useState([]);
   const [ eventDate, setEventDate] = React.useState(new Date());
   const [ eventTime, setEventTime] = React.useState(new Date());
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
   const [ showTimePicker, setShowTimePicker] = React.useState(false);
   const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(1);
-  const [ reminder, setReminder] = React.useState(15);
   const [ locationQuery, setLocationQuery] = React.useState("");
   const [ location, setLocation] = React.useState(null);
   const [ locationSearching, setLocationSearching] = React.useState(false);
@@ -139,9 +139,7 @@ export default function CreateEventScreen({navigation}) {
       Description: eventDescription,
       DateTime: date,
       MaxMember: maximumNumberOfMembers + 1,
-      Reminder: reminder,
       Penalty: penalty,
-      Status: "PENDING",
     };
     if (isOnline){
       event = {
@@ -150,17 +148,16 @@ export default function CreateEventScreen({navigation}) {
       }
     } else {
       event = {
-        IsOnline: false,
-        LocationName: location.place_name.split(',')[0],
-        LocationAddress: location.place_name.split(',')[1],
-        LocationGeolat: location.geometry.coordinates[1],
-        LocationGeolong: location.geometry.coordinates[0],
+        LocationName: location.name,
+        LocationAddress: location.address.split(',')[1],
+        LocationGeolat: location.geolat,
+        LocationGeolong: location.geolong,
         ...event
       }
     }
 
-    let responseJson = await createEvent(event, selectedFriends);
-    alert(responseJson.response);
+    let responseJson = await createEvent(event, eventMembers);
+    console.log(responseJson);
     navigation.navigate('Event')
   }
 
@@ -187,54 +184,92 @@ export default function CreateEventScreen({navigation}) {
         uncheckedIcon: 'circle-o',
         checkedColor:'#d3d3d3',
         uncheckedColor: '#d3d3d3',
-        checked: eventMembers.includes(item),
+        checked: selectedMembers.includes(item),
         onPress: () => selectFriend(item)
       }}
     />
     )
   }
 
-  function renderFriendsTile({ item }){
-    return (
-    <FriendTile
-      avatarUrl= {item.AvatarURI}
-      avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
-      displayName = {item.Nickname}
-      userId = {item.Username}
-      pressMinus = {() => selectFriend(item)}
-    />
-  )}
-
   function selectFriend (item) {
-    if(!eventMembers.includes(item)){
-      if (eventMembers.length < maximumNumberOfMembers) {
-        setEventMembers([...eventMembers, item])
+    if(!selectedMembers.includes(item)){
+      if (selectedMembers.length < maximumNumberOfMembers) {
+        setSelectedMembers([...selectedMembers, item])
       }
     } else {
-      setEventMembers(eventMembers.filter(a => a !== item));
+      setSelectedMembers(selectedMembers.filter(a => a !== item));
     }
   }
 
-
-  function Setup() {
-    return (
-      <SetupStack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-        initialRouteName="Main">
-        <SetupStack.Screen name="Main" component={SetupMain} />
-        <SetupStack.Screen name="Member" component={SetupMember} />
-      </SetupStack.Navigator>
-    )
-  }
-  function SetupMember({ navigation }) {
+  function FinalReview() {
     return (
       <View style={{flex: 1}}>
       <Header
         backgroundColor="#ffffff"
-        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => navigation.navigate("Main")} />}
+        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => setStep("Setup")} />}
+        centerComponent={{ text: "Final Review", style: { color: '#000' } }}
+        />
+        <View style={{flex: 2}}>
+          <Text style={styles.reviewHeader}>Do we have a go?</Text>
+          <Text style={styles.reviewDescription}>Please make sure you have the correct information.{"\n"}You can also edit after inviting.</Text>
+        </View>
+        <View style={styles.reviewInformationContainer}>
+          <Text style={styles.reviewLocationTitle}>{location.name}</Text>
+          <Text style={styles.reviewLocationAddress}>{location.address}</Text>
+          <View style={styles.reviewDateSectionContainer}>
+            <View style={styles.reviewDateIconContainer}>
+              <Image source={ require('assets/icons/create/calendar.png') }
+              style={styles.reviewDateIcon} resizeMode={'contain'} />
+            </View>
+            <View style={styles.reviewDateInformationContainer}>
+              <Text style={styles.reviewDateInformationTime}>Arrive by {formatTime(eventTime)}</Text>
+              <Text style={styles.reviewDateInformationDate}>{formatDateFormat(eventDate, 'iiii, LLLL d')}</Text>
+            </View>
+          </View>
+          <View style={styles.reviewPenaltySectionContainer}>
+            <View style={styles.reviewPenaltyIconContainer}>
+            </View>
+            <View style={styles.reviewPenaltyInformationContainer}>
+              <Text style={styles.reviewPenaltyInformationPenalty}>{penalty}</Text>
+              <Text style={styles.reviewPenaltyInformationDescription}>Loser's penalty</Text>
+            </View>
+          </View>
+          <View style={styles.reviewParticipantSectionContainer}>
+            <Text style={styles.reviewParticipantHeader}>Participants</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.reviewParticipantList}>
+                {eventMembers.map((member, index) => {
+                    return (
+                      <View style={styles.reviewParticipantContainer}>
+                        <Image
+                          key={index}
+                          source={{uri: member.AvatarURI}}
+                          style={styles.reviewParticipantAvatar}
+                          containerStyle={styles.reviewParticipantAvatarContainer}
+                          placeholderStyle={styles.reviewParticipantAvatar}
+                          overlayContainerStyle={styles.reviewParticipantAvatarContainer}
+                          resizeMode='contain'
+                        />
+                        <Text style={styles.reviewParticipantName}>{member.Nickname}</Text>
+                      </View>
+                    )
+                })}
+            </ScrollView>
+          </View>
+          {returnNextStep()}
+        </View>
+
+      </View>
+    )
+  }
+
+  function SetupMember() {
+    return (
+      <View style={{flex: 1}}>
+      <Header
+        backgroundColor="#ffffff"
+        leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => setStep("Setup")} />}
         centerComponent={{ text: "Add Members", style: { color: '#000' } }}
+        rightComponent={() => <Icon name="check" color='#000' underlayColor="transparent" onPress={() => {setEventMembers(selectedMembers); setStep("Setup")}} />}
         />
       <View style={{flex: 1}}>
         <View style={styles.searchBoxAbsolute}>
@@ -273,7 +308,7 @@ export default function CreateEventScreen({navigation}) {
     )
   }
 
-  function SetupMain({ navigation }) {
+  function SetupMain() {
     return (
       <View style={{flex: 1}}>
       <Header
@@ -281,17 +316,19 @@ export default function CreateEventScreen({navigation}) {
         leftComponent={() => <Icon name="chevron-left" color='#000' underlayColor="transparent" onPress={() => setStep("Location")} />}
         centerComponent={{ text: "Setup", style: { color: '#000' } }}
         />
-        {returnNextStep()}
+
         <ScrollView
           contentContainerStyle={{
-            height: 600,
+            height: 700,
           }}>
+
           <View>
             <Image
               source={{ uri: 'https://media-cdn.tripadvisor.com/media/photo-s/19/15/a7/68/gazzi-cafe.jpg'}}
               style={styles.locationBanner}
             />
           </View>
+
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.label}>Event Title</Text>
           </View>
@@ -303,11 +340,22 @@ export default function CreateEventScreen({navigation}) {
             />
           </View>
           <View style={{flexDirection: 'row'}}>
+            <Text style={styles.label}>Maximum Number of Participants (excluding host): {maximumNumberOfMembers}</Text>
+          </View>
+          <View style={{ marginLeft: 20, marginRight: 20, flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
+            <Slider
+              value={maximumNumberOfMembers}
+              onValueChange={(value) => { setEventMembers([]); setMaximumNumberOfMembers(value);}}
+              step={1}
+              minimumValue={0}
+              maximumValue={9}
+            />
+          </View>
+          <View style={{flexDirection: 'row'}}>
             <Text style={styles.label}>Participants</Text>
           </View>
           <View style={{flexDirection: 'row'}}>
             <View style={{
-              height: 40,
               flex: 3,
               flexDirection: 'row',
               alignContent: 'stretch',
@@ -322,6 +370,9 @@ export default function CreateEventScreen({navigation}) {
                         key={index}
                         source={{uri: member.AvatarURI}}
                         style={styles.memberAvatar}
+                        containerStyle={styles.memberAvatarContainer}
+                        placeholderStyle={styles.memberAvatar}
+                        overlayContainerStyle={styles.memberAvatarContainer}
                         resizeMode='contain'
                       />
                   )
@@ -331,7 +382,7 @@ export default function CreateEventScreen({navigation}) {
                 <Text style={styles.memberCount}>+{eventMembers.length-4 < 0 ? 0 : eventMembers.length-4}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('Member')} style={{flex: 1}}>
+            <TouchableOpacity onPress={() => { setSelectedMembers(eventMembers); setStep("SetupMember")}} style={{flex: 1}}>
               <Icon name='add' color='#ffffff'
                 containerStyle={{
                   borderRadius: 5,
@@ -390,6 +441,7 @@ export default function CreateEventScreen({navigation}) {
               }}
             />
           )}
+
           <View style={{flexDirection: 'row'}}>
             <Text style={styles.label}>Penalty</Text>
           </View>
@@ -403,11 +455,10 @@ export default function CreateEventScreen({navigation}) {
                   { label: 'Americano', value: 'americano' },
               ]}
             />
-
           </View>
-
-
+          {returnNextStep()}
         </ScrollView>
+
         </View>
     )
   }
@@ -511,8 +562,7 @@ export default function CreateEventScreen({navigation}) {
         </View>
 
         {!locationSearching ? (
-        <View style={{flex: 1}}>
-          {returnNextStep()}
+        <View style={{flex: 1, backgroundColor: '#fafafa'}}>
           <MapView
               ref={mapRef}
               style={styles.map}
@@ -548,9 +598,9 @@ export default function CreateEventScreen({navigation}) {
                 <Text style={styles.locationRowTitle}>Coordinates: </Text>
                 <Text style={styles.locationRowContent}>{location.geolat + " " + location.geolong}</Text>
               </View>
-
             </View>
           )}
+          {returnNextStep()}
           </View>
         ) : (
           <View style={{flex: 1}}>
@@ -615,30 +665,13 @@ export default function CreateEventScreen({navigation}) {
 
   }
 
-  function LeftComponent() {
-    let name = (step === 'Event Detail') ? 'close' : 'chevron-left';
-    let onPress;
-    if (step === 'Event Detail') {
-      onPress = () => navigation.navigate("Event");
-    } else if (step === 'Location') {
-      onPress = () => setStep('Event Detail');
-    } else if (step === 'Members') {
-      onPress = () => setStep('Location');
-    } else {
-      onPress = () => setStep('Members');
-    }
-    return (
-      <Icon name={name} color='#fff' underlayColor="transparent" onPress={onPress}/>
-    )
-  }
-
   function RightComponent() {
     let name = (step !== 'Penalty') && 'chevron-right';
     let text = (step === 'Penalty') && 'PUBLISH';
     let onPress;
     let condition;
     if (step === 'Event Detail') {
-      condition = (eventName && eventDate && eventTime && reminder && maximumNumberOfMembers) ? true : false
+      condition = (eventName && eventDate && eventTime && maximumNumberOfMembers) ? true : false
       return (
         <Text style={{color: !condition ? 'black' : '#fff' }}
           disabled={!condition}
@@ -687,6 +720,8 @@ export default function CreateEventScreen({navigation}) {
       return <NextStep disabled={location ? false : true} onPress={() => setStep("Setup")} />
     } else if (step === "Setup") {
       return <NextStep disabled={false} onPress={() => setStep("Review")} />
+    } else if (step === "Review") {
+      return <NextStep confirm onPress={() => publish()} />
     }
   }
 
@@ -695,7 +730,9 @@ export default function CreateEventScreen({navigation}) {
     <View style={styles.container}>
 
         {step === "Location" && LocationSearch()}
-        {step === "Setup" && Setup()}
+        {step === "Setup" && SetupMain()}
+        {step === "SetupMember" && SetupMember()}
+        {step === "Review" && FinalReview()}
     </View>
 
   )
@@ -731,6 +768,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'stretch',
+      backgroundColor: '#f1f1f1'
     },
     stepContainer: {
       flexDirection: 'row',
@@ -813,7 +851,6 @@ const styles = StyleSheet.create({
       borderRadius: 15,
       padding: 30,
       paddingRight: 70,
-      backgroundColor: "#fafafa",
     },
     locationTitle: {
       fontFamily: "OpenSans_400Regular",
@@ -877,22 +914,28 @@ const styles = StyleSheet.create({
       color: "#4a4a4a",
     },
     memberAvatarPlaceholder: {
-      width: 40,
-      height: 40,
+      width: 45,
+      height: 45,
       borderRadius: 10,
-      marginLeft: 5,
-      backgroundColor: "#15cdca",
+      borderColor: '#15cdca',
+      borderWidth: 2,
+      margin: 5,
+      backgroundColor: "#d8d8d8",
       justifyContent: 'center',
       alignItems: 'center'
     },
     memberAvatar: {
       width: 40,
       height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    memberAvatarContainer: {
       borderRadius: 10,
+      margin: 5,
+      overflow: 'hidden',
       borderColor: '#15cdca',
       borderWidth: 2,
-      justifyContent: 'center',
-      alignItems: 'center'
     },
     memberCount: {
       fontFamily: "OpenSans_400Regular",
@@ -900,7 +943,7 @@ const styles = StyleSheet.create({
       fontWeight: "700",
       fontStyle: "normal",
       letterSpacing: 0,
-      color: "#ffffff"
+      color: "#000000"
     },
     label: {
       marginLeft: 20,
@@ -913,5 +956,162 @@ const styles = StyleSheet.create({
       fontStyle: "normal",
       letterSpacing: 0,
       color: "#5d5d5d"
+    },
+    reviewHeader: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 24,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#15cdca",
+      marginLeft: 40,
+      marginTop: 40
+    },
+    reviewDescription: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "500",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#9b9b9b",
+      marginLeft: 40,
+      marginTop: 20
+    },
+    reviewInformationContainer: {
+      flex: 5,
+      borderRadius: 42,
+      backgroundColor: '#fafafa'
+    },
+    reviewLocationTitle: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 20,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#000000",
+      marginLeft: 30,
+      marginTop: 30
+    },
+    reviewLocationAddress: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 14,
+      fontWeight: "500",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#aeaeae",
+      marginLeft: 30,
+      marginTop: 10
+    },
+    reviewDateSectionContainer: {
+      flexDirection: 'row',
+      marginTop: 20,
+    },
+    reviewPenaltySectionContainer: {
+      flexDirection: 'row',
+      marginTop: 15,
+    },
+    reviewParticipantSectionContainer: {
+      marginTop: 15,
+    },
+    reviewDateIconContainer: {
+      backgroundColor: '#15cdca',
+      height: 50,
+      width: 50,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 30,
+    },
+    reviewPenaltyIconContainer: {
+      backgroundColor: '#d8d8d8',
+      height: 50,
+      width: 50,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 30,
+    },
+    reviewDateIcon: {
+      height: 24,
+      width: 24
+    },
+    reviewDateInformationContainer: {
+      marginLeft: 30
+    },
+    reviewPenaltyInformationContainer: {
+      marginLeft: 30
+    },
+    reviewDateInformationTime: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#000000",
+    },
+    reviewPenaltyInformationPenalty: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#000000",
+    },
+    reviewDateInformationDate: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 14,
+      fontWeight: "500",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#aeaeae",
+    },
+    reviewPenaltyInformationDescription: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 14,
+      fontWeight: "500",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#aeaeae",
+    },
+    reviewParticipantHeader: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 16,
+      fontWeight: "700",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#000000",
+      marginLeft: 30
+    },
+    reviewParticipantList: {
+      marginTop: 10,
+      marginLeft: 30,
+      flexDirection: 'row'
+    },
+    reviewParticipantContainer: {
+      flexDirection: 'row',
+      marginRight: 15,
+      borderRadius: 8,
+      backgroundColor: "#ffffff",
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    reviewParticipantAvatar: {
+      height: 50,
+      width: 50,
+    },
+    reviewParticipantAvatarContainer: {
+      margin: 15,
+      overflow: 'hidden',
+      borderRadius: 15,
+    },
+    reviewParticipantName: {
+      fontFamily: "OpenSans_400Regular",
+      fontSize: 14,
+      fontWeight: "600",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      color: "#000000",
+      marginLeft: 15,
+      marginRight: 15,
     }
 });
