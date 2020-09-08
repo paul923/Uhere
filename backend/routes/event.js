@@ -74,7 +74,6 @@ router.get('/', function (req, res) {
       LIMIT ${limit} OFFSET ${offset}`
     }
     connection.query(sql, function (error, results, fields) {
-      connection.release();
       // If some error occurs, we throw an error.
       if (error) {
         res.status(500).send({
@@ -86,12 +85,34 @@ router.get('/', function (req, res) {
       }
       // Getting the 'response' from the database and sending it to our route. This is were the data is.
       if (results.length > 0) {
-        res.status(200).send({
-          success: true,
-          body: {
-            results
-          }
+        const promises = []
+        results.forEach(result => {
+          var sql = `select User.* from User, EventUser where EventId = '${result.EventId}'
+          AND User.UserId = EventUser.UserId
+          AND EventUser.Status = 'ACCEPTED';`;
+          console.log(sql);
+          const promise = new Promise((resolve, reject) => {
+            connection.query(sql, function (error, results, fields) {
+              if (error) {
+                res.status(500).send(error);
+              } else {
+                result.Members = results;
+                resolve()
+              }
+            });
+          })
+          promises.push(promise)
+        });
+        Promise.all(promises).then(() => {
+          connection.release();
+          res.status(200).send({
+            success: true,
+            body: {
+              results
+            }
+          })
         })
+
       } else {
         res.status(404).send({
           success: false,
@@ -296,7 +317,7 @@ router.delete('/:eventId', function (req, res) {
 
 router.post('/', function (req,res) {
   // Connecting to the database.
-  pool.getConnection(function (err, connection) {
+  pool.getConnection(function (error, connection) {
     if (error) {
       res.status(500).send({
         success: false,
@@ -307,11 +328,10 @@ router.post('/', function (req,res) {
     }
     var event = {
       ...req.body.event,
-      DateTime: new Date(req.body.event.DateTime)
+      DateTime: new Date(req.body.event.DateTime),
+      isDeleted: 0
     }
-    var eventSql = "INSERT INTO ?? SET ?";
-    var parameters = ['Event'];
-    eventSql = mysql.format(eventSql, parameters);
+    var eventSql = "INSERT INTO Event SET ?";
     // Executing the MySQL query (select all data from the 'users' table).
     connection.query(eventSql, event, function (error, results, fields) {
       // If some error occurs, we throw an error.
@@ -323,6 +343,7 @@ router.post('/', function (req,res) {
             message: "Database Error"
           }
         })
+        throw error;
       }
       if (results.insertId) {
         let users = [];
@@ -344,6 +365,7 @@ router.post('/', function (req,res) {
                 message: "Database Error"
               }
             })
+            throw error;
           }
           var eventJob = {
             EventId: results.insertId,
@@ -362,8 +384,8 @@ router.post('/', function (req,res) {
                   message: "Database Error"
                 }
               })
+              throw error;
             }
-            console.log(eventJobResult);
             var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
             var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
             var job = new CronJob(

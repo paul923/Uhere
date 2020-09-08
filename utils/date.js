@@ -9,6 +9,10 @@ export function formatHeaderDate(date) {
   return format(date, 'dd MMM yyyy')
 }
 
+export function formatDateFormat(date, dateFormat) {
+  return format(date, dateFormat)
+}
+
 export function formatTime(date) {
   return format(date, 'hh:mm a')
 }
