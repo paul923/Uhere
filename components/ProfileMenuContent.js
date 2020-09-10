@@ -5,7 +5,7 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 
 export default function ProfileMenuContent(props) {
-
+//TODO: retrieve current user data and populate
   return (
     <View style={styles.container}>
       <View style={styles.userContainer}>

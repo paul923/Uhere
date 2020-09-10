@@ -47,6 +47,8 @@ function showTab(route) {
       return false;
     case 'LoginTestScreen':
       return false;
+    case 'Profile Screen':
+      return false;
   }
 
 }
