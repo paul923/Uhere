@@ -11,7 +11,6 @@ export default function HistoryScreen({ navigation, route }) {
 	const [events, setEvents] = React.useState([]);
 	const [searchText, setserchText] = React.useState();
 	
-
 	React.useEffect(() => {
 		async function fetchData() {
 			let events = await getEvents('ACCEPTED', true, 10, 0);
@@ -28,6 +27,17 @@ export default function HistoryScreen({ navigation, route }) {
 		let events = await getEvents('ACCEPTED', true, 10, 0);
 		setEvents(events)
 		setIsFetching(false);
+	}
+
+	function renderHistoryCard({ item }) {
+		return (
+			<HistoryCard
+				event={item}
+				onPress={() => navigation.navigate('HistoryDetail', {
+					Event: item
+				})}
+			/>
+		)
 	}
 
 	return (
@@ -53,7 +63,7 @@ export default function HistoryScreen({ navigation, route }) {
 				<SearchBar
 					round={true}
 					lightTheme={true}
-					placeholder="Search..."
+					placeholder="search for your past events here"
 					autoCapitalize='none'
 					autoCorrect={false}
 					onChangeText={(searchText) => setserchText(searchText)}
@@ -86,14 +96,7 @@ export default function HistoryScreen({ navigation, route }) {
 					data={events}
 					onRefresh={() => onRefresh()}
 					refreshing={isFetching}
-					renderItem={({ item }) => (
-						<HistoryCard
-							event={item}
-							onPress={() => navigation.navigate('HistoryDetail', {
-								Event: item
-							})}
-						/>
-					)}
+					renderItem={renderHistoryCard}
 					keyExtractor={(item) => item.EventId}
 				/>
 			</View>

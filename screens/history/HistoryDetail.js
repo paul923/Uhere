@@ -1,98 +1,112 @@
 import * as React from 'react';
-import { StyleSheet, View, Image, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+import { Avatar } from 'react-native-elements';
 import UhereHeader from '../../components/UhereHeader';
-import Timeline from 'react-native-timeline-flatlist'
-import ResultTimeLine from '../../components/ResultTimeLine'
-import getEvent from '../../api/event'
-import getUser from '../../api/user'
+import Timeline from 'react-native-timeline-flatlist';
+import firebase from 'firebase';
+import { formatTime, convertDateToLocalTimezone } from "../../utils/date";
+import { stringifyNumber } from "../../utils/event"; 
+import { getEvents, getEvent } from 'api/event';
 
-export default function HistoryDetail({navigation, route}) {
+export default function HistoryDetail({ navigation, route }) {
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [event, setEvent] = React.useState();
+    const [user, setUser] = React.useState();
+    const [results, setResults] = React.useState();
+    const [myRank, setMyRank] = React.useState();
+
     React.useEffect(() => {
-		async function fetchData() {
-			let event = await getEvent(route.params.Event.EventId);
-			console.log(event)
-		}
-	}, []);
-    
+        async function fetchData() {
+            let event = await getEvent(route.params.Event.EventId);
+            setEvent(event)
+            let results = [];
+            event.eventUsers.forEach(eventUser => {
+                if (eventUser.UserId === firebase.auth().currentUser.uid) {
+                    setUser(eventUser);
+                }
+                let result = { id:eventUser.UserId, time: formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))), title: eventUser.Nickname, lineColor: '#15cdca', icon: require('../../assets/images/robot-dev.png') }
+                results.push(result);
+            });
+            results.sort((a, b) => (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0));
+            setResults(results);
+            let index = results.findIndex(x => x.id === firebase.auth().currentUser.uid);
+            setMyRank(stringifyNumber(index + 1));
+            setIsLoading(false);
+        }
+        fetchData();
+    }, []);
+
     return (
         <View style={styles.container}>
             <UhereHeader
                 showBackButton={true}
                 onPressBackButton={() => navigation.navigate('HistoryScreen')}
             />
-            <Image  
-                style={styles.avatarStyle}
-                source={{
-                    uri:
-                        'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-                }}
-            />
-            <View style={styles.textContainer}>
-                <Text style={styles.titleText}>
-                    You arrived second!
-                </Text>
-                <Text style={styles.descriptionText}>
-                    Congratulate Jay for having the honors to buy everyone!
-                </Text>
-            </View>
-            <View style={styles.timeline}>
-            <Timeline
-                data={data}
-                columnFormat='two-column'
-                circleSize={35}
-                circleColor='rgba(0,0,0,0)'
-                lineColor='#15cdca'
-                timeContainerStyle={{minWidth:52}}
-                timeStyle={{textAlign: 'center', backgroundColor:'#15cdca', color:'white', padding:5, borderRadius:13}}
-                options={{
-                  style:{paddingTop:10}
-                }}
-                innerCircle={'icon'}                 
-                separator={false}
-                detailContainerStyle={{marginBottom: 50,alignItems:"center", backgroundColor: "#15cdca", borderRadius: 15}}
-            />
-            </View>
+            {isLoading !== true && (
+                <View style={styles.container}>
+                    <Avatar
+                        containerStyle={styles.avatarStyle}
+                        size="large"
+                        rounded
+                        source={{
+                            uri: user.AvatarURI,
+                        }}
+                    />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.titleText}>
+                            You arrived {myRank}!
+                        </Text>
+                        <Text style={styles.descriptionText}>
+                            Congratulate {results[results.length - 1].title} for having the honors to buy everyone!
+                        </Text>
+                    </View>
+                    <View style={styles.timeline}>
+                        <Timeline
+                            data={results}
+                            columnFormat='two-column'
+                            circleSize={35}
+                            circleColor='rgba(0,0,0,0)'
+                            lineColor='#15cdca'
+                            timeContainerStyle={{ minWidth: 52 }}
+                            timeStyle={{ textAlign: 'center', backgroundColor: '#15cdca', color: 'white', padding: 5, borderRadius: 13 }}
+                            options={{
+                                style: { paddingTop: 10 }
+                            }}
+                            innerCircle={'icon'}
+                            separator={false}
+                            detailContainerStyle={{ marginBottom: 50, alignItems: "center", backgroundColor: "#15cdca", borderRadius: 15 }}
+                        />
+                    </View>
+                </View>
+            )}
         </View>
     )
 }
 
-const data = [
-    { time: '09:00', title: 'First Doe', lineColor:'#15cdca', icon: require('../../assets/images/robot-dev.png') },
-    { time: '10:45', title: 'Second Doe', lineColor:'#15cdca', icon: require('../../assets/images/robot-dev.png') },
-    { time: '12:00', title: 'Third Doe', lineColor:'#15cdca',  icon: require('../../assets/images/robot-dev.png') },
-    { time: '14:00', title: 'Fourth Doe', lineColor:'#15cdca',  icon: require('../../assets/images/robot-dev.png') },
-    { time: '16:30', title: 'Fifth Doe', lineColor:'#15cdca',  icon: require('../../assets/images/robot-dev.png') }
-];
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems:"center",
-    },
-    timeline: {
-        marginTop:50,
-        width:362,
-        height:380,
-        backgroundColor:'white'
+        alignItems: "center",
     },
     avatarStyle: {
-        width:90,
-        height:90,
-        borderRadius: 45,
-        margin:15
+        margin: 15
     },
     textContainer: {
-        alignItems:"center",
+        alignItems: "center",
     },
-    titleText:{
-        fontSize:25,
+    titleText: {
+        fontSize: 25,
         color: "#15cdca"
     },
-    descriptionText:{
-        fontSize:12,
+    descriptionText: {
+        margin:15,
+        fontSize: 12,
         color: "#4A4A4A"
     },
-    scrollViewStyle:{
-        margin:25
+    timeline: {
+        marginTop: 15,
+        width: 362,
+        height: 380,
+        backgroundColor: 'white'
     }
 });
