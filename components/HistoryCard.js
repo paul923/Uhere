@@ -30,6 +30,7 @@ export default function HistoryCard({ event, onPress}) {
               if(i < 3)
                 return(
                   <MemberTile
+                    key={i}
                     source={{uri:member.AvatarURI}}
                   />
                 )

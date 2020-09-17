@@ -97,7 +97,7 @@ export default function HistoryScreen({ navigation, route }) {
 					onRefresh={() => onRefresh()}
 					refreshing={isFetching}
 					renderItem={renderHistoryCard}
-					keyExtractor={(item) => item.EventId}
+					keyExtractor={(item) => item.EventId.toString()}
 				/>
 			</View>
 		</View>
