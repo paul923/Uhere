@@ -51,6 +51,7 @@ export default class FriendCard extends Component {
           }}
 
           containerStyle={{
+            backgroundColor: 'transparent'
           }}
           {...this.props}
         />
