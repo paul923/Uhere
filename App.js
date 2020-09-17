@@ -172,6 +172,12 @@ export default function App(props) {
         // In the example, we'll use a dummy token
         dispatch({ type: 'RESTORE_TOKEN', token: userToken });
       },
+      getUserInfo: async data => {
+        let user = await userapi.getUserByUserId(data);
+        if (user !== null) {
+          return user;
+        }
+      },
       signIn: async data => {
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
