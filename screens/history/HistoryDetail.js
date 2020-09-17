@@ -36,6 +36,10 @@ export default function HistoryDetail({ navigation, route }) {
         fetchData();
     }, []);
 
+    function renderDetail(rowData, SectionID, rowID){
+
+    }
+
     return (
         <View style={styles.container}>
             <UhereHeader
@@ -63,18 +67,17 @@ export default function HistoryDetail({ navigation, route }) {
                     <View style={styles.timeline}>
                         <Timeline
                             data={results}
-                            columnFormat='two-column'
+                            showTime={false}
                             circleSize={35}
                             circleColor='rgba(0,0,0,0)'
                             lineColor='#15cdca'
-                            timeContainerStyle={{ minWidth: 52 }}
-                            timeStyle={{ textAlign: 'center', backgroundColor: '#15cdca', color: 'white', padding: 5, borderRadius: 13 }}
                             options={{
-                                style: { paddingTop: 10 }
+                                style: { paddingTop: 25 }
                             }}
                             innerCircle={'icon'}
                             separator={false}
-                            detailContainerStyle={{ marginBottom: 50, alignItems: "center", backgroundColor: "#15cdca", borderRadius: 15 }}
+                            detailContainerStyle={{ marginBottom: 50, alignItems: "center", backgroundColor: "white", borderRadius: 15 }}
+                            //renderDetail={renderDetail}
                         />
                     </View>
                 </View>

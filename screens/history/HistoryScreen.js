@@ -9,12 +9,14 @@ import Modal from 'react-native-modal';
 export default function HistoryScreen({ navigation, route }) {
 	const [isFetching, setIsFetching] = React.useState(false);
 	const [events, setEvents] = React.useState([]);
+	const [filteredEvents, setFilteredEvents] = React.useState([]);
 	const [searchText, setserchText] = React.useState();
 	
 	React.useEffect(() => {
 		async function fetchData() {
 			let events = await getEvents('ACCEPTED', true, 10, 0);
 			setEvents(events)
+			setFilteredEvents(events);
 		}
 		const unsubscribeFocus = navigation.addListener('focus', () => {
 			fetchData();
@@ -22,10 +24,27 @@ export default function HistoryScreen({ navigation, route }) {
 		return unsubscribeFocus;
 	}, []);
 
+	async function filterEvents(searchText) {
+		setserchText(searchText);
+		console.log(searchText.length)
+		if (searchText.length > 0) {
+			let filtered = events.filter(
+				(event) => {
+					return event.Name.toLowerCase().indexOf(searchText.toLowerCase()) > -1 || event.LocationName.toLowerCase().indexOf(searchText.toLowerCase()) > -1;
+				}
+			);
+			setFilteredEvents(filtered);
+		} else {
+			setFilteredEvents(events);
+		}
+	}
+
 	async function onRefresh() {
 		setIsFetching(true);
 		let events = await getEvents('ACCEPTED', true, 10, 0);
 		setEvents(events)
+		setFilteredEvents(events);
+		setserchText();
 		setIsFetching(false);
 	}
 
@@ -56,9 +75,7 @@ export default function HistoryScreen({ navigation, route }) {
 				statusBarProps={{ translucent: true }}
 			/>
 			<View style={styles.searchBar}>
-				<Text style={styles.historyText}>
-					History
-					</Text>
+				<Text style={styles.historyText}>History</Text>
 				{/* Search Bar */}
 				<SearchBar
 					round={true}
@@ -66,7 +83,7 @@ export default function HistoryScreen({ navigation, route }) {
 					placeholder="search for your past events here"
 					autoCapitalize='none'
 					autoCorrect={false}
-					onChangeText={(searchText) => setserchText(searchText)}
+					onChangeText={(searchText) => filterEvents(searchText)}
 					value={searchText}
 					containerStyle={{
 						backgroundColor: "white",
@@ -93,7 +110,7 @@ export default function HistoryScreen({ navigation, route }) {
 				<FlatList
 					style={styles.listContainer}
 					contentContainerStyle={{ paddingTop: 10 }}
-					data={events}
+					data={filteredEvents}
 					onRefresh={() => onRefresh()}
 					refreshing={isFetching}
 					renderItem={renderHistoryCard}
@@ -117,6 +134,7 @@ const styles = StyleSheet.create({
 	},
 	searchBar: {
 		flex: 1,
+		width: 380
 	},
 	listContainer: {
 		flex: 1,
