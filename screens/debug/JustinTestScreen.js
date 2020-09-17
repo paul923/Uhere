@@ -10,9 +10,10 @@ import { getEvent, getEvents, createEvent, acceptEvent, declineEvent, cancelEven
 
 
 export default function JustinTestScreen({navigation}) {
-  const { signIn, signOut } = React.useContext(AuthContext);
+  const { signIn, signOut, getUserInfo } = React.useContext(AuthContext);
   const { showLoadingScreen, showErrorScreen } = React.useContext(GlobalContext);
   const [eventId, setEventId] = React.useState();
+
   firebaseSignOut = async () => {
     firebase.auth().signOut().then(function() {
       signOut();
@@ -33,9 +34,12 @@ export default function JustinTestScreen({navigation}) {
     <ScrollView style={styles.container} containerStyle={{alignItems: 'center'}}>
       <Button
         style={{flex: 1}}
-        title="SIGN OUT"
-        onPress={() => firebaseSignOut()}
+        title="GET USER INFO"
+        onPress={() => {
+          getUserInfo(firebase.auth().currentUser.uid).then(user => console.log(user));
+        }}
         />
+
       <Button
         style={{flex: 1}}
         title="CLEAR TUTORIAL COMPLETION"
