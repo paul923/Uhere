@@ -84,7 +84,7 @@ export default function PaulTestScreen({ navigation }) {
         onPress={()=> navigation.navigate("Test Screen 2")}
       />
       <Button
-        title='signup'
+        title='location screen'
         buttonStyle={styles.button}
         onPress={()=> navigation.navigate("Test Screen 6")}
       />

@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     margin: 8
   },
   tabView: {
-    height: 300,
+    height: 260,
     marginTop: 10,
     backgroundColor: "#f6f6f6",
     borderRadius: 10
@@ -264,12 +264,23 @@ const styles = StyleSheet.create({
     width: 300,
   },
   avatarsContainer: {
+    flex: 1,
     width: 300,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+  },
+  colorsContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   avatarImage: {
     width: 80
