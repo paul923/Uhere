@@ -1,12 +1,7 @@
 import * as React from 'react';
 import { formatHeaderDate, convertDateToLocalTimezone } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Text, Divider, Icon, Button, Image, Avatar } from 'react-native-elements';
-import { backend } from '../constants/Environment';
-import firebase from 'firebase';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import FriendTile from '../components/FriendTile'
-import { getEvents, getEvent } from 'api/event';
+import { Text, Avatar } from 'react-native-elements';
 
 export default function HistoryCard({ event, onPress}) {
   return (

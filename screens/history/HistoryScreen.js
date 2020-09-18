@@ -2,9 +2,7 @@ import * as React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { Image, Text, SearchBar, Header } from 'react-native-elements';
 import HistoryCard from 'components/HistoryCard';
-import HistoryDetail from './HistoryDetail'
 import { getEvents, getEvent } from 'api/event';
-import Modal from 'react-native-modal';
 
 export default function HistoryScreen({ navigation, route }) {
 	const [isFetching, setIsFetching] = React.useState(false);

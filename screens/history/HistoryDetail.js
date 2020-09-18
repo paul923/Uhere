@@ -6,7 +6,7 @@ import Timeline from 'react-native-timeline-flatlist';
 import firebase from 'firebase';
 import { formatTime, convertDateToLocalTimezone } from "../../utils/date";
 import { stringifyNumber } from "../../utils/event"; 
-import { getEvents, getEvent } from 'api/event';
+import { getEvent } from 'api/event';
 
 export default function HistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -24,7 +24,15 @@ export default function HistoryDetail({ navigation, route }) {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
                     setUser(eventUser);
                 }
-                let result = { id:eventUser.UserId, time: formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))), title: eventUser.Nickname, lineColor: '#15cdca', icon: require('../../assets/images/robot-dev.png') }
+                let result = { 
+                    id: eventUser.UserId, 
+                    time: formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))), 
+                    title: eventUser.Nickname,
+                    timeColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
+                    late: eventUser.ArrivedTime < event.DateTime ? false : true,
+                    icon: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+                    me: eventUser.UserId === firebase.auth().currentUser.uid ? true : false,
+                }
                 results.push(result);
             });
             results.sort((a, b) => (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0));
@@ -38,6 +46,33 @@ export default function HistoryDetail({ navigation, route }) {
 
     function renderDetail(rowData, SectionID, rowID){
 
+
+        return (
+            <View style={styles.timelinedetailContainerStyle}>
+                <View style={styles.cardRow}>
+                    <View style={styles.nametime}>
+                        <Text>{rowData.title}</Text>
+                        <Text style={{color: rowData.timeColor}}>{rowData.time}</Text>
+                    </View>
+                    <Avatar
+                        size="small"
+                        rounded
+                        source={{
+                            uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+                        }}
+                    />
+                    {rowData.me == true && (
+                        <View>
+                            <Text>ME</Text>
+                        </View>
+                    ) || (
+                        <View>
+                            <Text>NOT ME</Text>
+                        </View>
+                    )}
+                </View>
+            </View>
+        )
     }
 
     return (
@@ -57,27 +92,27 @@ export default function HistoryDetail({ navigation, route }) {
                         }}
                     />
                     <View style={styles.textContainer}>
-                        <Text style={styles.titleText}>
-                            You arrived {myRank}!
-                        </Text>
                         <Text style={styles.descriptionText}>
                             Congratulate {results[results.length - 1].title} for having the honors to buy everyone!
+                        </Text>
+                        <Text style={styles.titleText}>
+                            You arrived {myRank}!
                         </Text>
                     </View>
                     <View style={styles.timeline}>
                         <Timeline
                             data={results}
                             showTime={false}
-                            circleSize={35}
-                            circleColor='rgba(0,0,0,0)'
+                            circleSize={25}
+                            circleColor='#15cdca'
                             lineColor='#15cdca'
                             options={{
                                 style: { paddingTop: 25 }
                             }}
-                            innerCircle={'icon'}
+                            innerCircle={'dot'}
                             separator={false}
-                            detailContainerStyle={{ marginBottom: 50, alignItems: "center", backgroundColor: "white", borderRadius: 15 }}
-                            //renderDetail={renderDetail}
+                            //detailContainerStyle={{ marginBottom: 50, alignItems: "center", backgroundColor: "white", borderRadius: 15 }}
+                            renderDetail={renderDetail}
                         />
                     </View>
                 </View>
@@ -111,5 +146,19 @@ const styles = StyleSheet.create({
         width: 362,
         height: 380,
         backgroundColor: 'white'
+    },
+    timelinedetailContainerStyle: {
+        backgroundColor: "white",
+        height: 60,
+        width: 310,
+        justifyContent: "center",
+        marginBottom: 30
+    },
+    cardRow: {
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+    },
+    nametime: {
+        alignSelf: "auto"
     }
 });
