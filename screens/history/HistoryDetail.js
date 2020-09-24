@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Image } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import UhereHeader from '../../components/UhereHeader';
 import Timeline from 'react-native-timeline-flatlist';
@@ -26,8 +26,10 @@ export default function HistoryDetail({ navigation, route }) {
                 }
                 let result = { 
                     id: eventUser.UserId, 
-                    time: formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))), 
+                    time: eventUser.ArrivedTime === null ? "LATE" : formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))), 
                     title: eventUser.Nickname,
+                    lineColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
+                    circleColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     timeColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     late: eventUser.ArrivedTime < event.DateTime ? false : true,
                     icon: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
@@ -49,9 +51,9 @@ export default function HistoryDetail({ navigation, route }) {
 
         return (
             <View style={styles.timelinedetailContainerStyle}>
-                <View style={styles.cardRow}>
+                <View style={styles.resultCard}>
                     <View style={styles.nametime}>
-                        <Text>{rowData.title}</Text>
+                        <Text style={{color: '#15cdca'}}>{rowData.title}</Text>
                         <Text style={{color: rowData.timeColor}}>{rowData.time}</Text>
                     </View>
                     <Avatar
@@ -62,13 +64,32 @@ export default function HistoryDetail({ navigation, route }) {
                         }}
                     />
                     {rowData.me == true && (
-                        <View>
-                            <Text>ME</Text>
-                        </View>
+                        <Avatar
+                            size="small"
+                            rounded
+                            title="ME"
+                            overlayContainerStyle={{backgroundColor: '#15cdca'}}
+                        />
                     ) || (
-                        <View>
-                            <Text>NOT ME</Text>
-                        </View>
+                        <Avatar
+                            size="small"
+                            rounded
+                            title=""
+                            overlayContainerStyle={{backgroundColor: 'white'}}
+                        />
+                    )}
+                    {rowData.late == true && (
+                        <Image
+                            style={styles.penalty}
+                            source={require('../../assets/images/penalty.png')}
+                        />
+                    ) || (
+                        <Avatar
+                            size="small"
+                            rounded
+                            title=""
+                            overlayContainerStyle={{backgroundColor: 'white'}}
+                        />
                     )}
                 </View>
             </View>
@@ -104,14 +125,11 @@ export default function HistoryDetail({ navigation, route }) {
                             data={results}
                             showTime={false}
                             circleSize={25}
-                            circleColor='#15cdca'
-                            lineColor='#15cdca'
                             options={{
                                 style: { paddingTop: 25 }
                             }}
                             innerCircle={'dot'}
                             separator={false}
-                            //detailContainerStyle={{ marginBottom: 50, alignItems: "center", backgroundColor: "white", borderRadius: 15 }}
                             renderDetail={renderDetail}
                         />
                     </View>
@@ -144,21 +162,24 @@ const styles = StyleSheet.create({
     timeline: {
         marginTop: 15,
         width: 362,
-        height: 380,
+        height: 400,
         backgroundColor: 'white'
     },
     timelinedetailContainerStyle: {
         backgroundColor: "white",
         height: 60,
         width: 310,
-        justifyContent: "center",
         marginBottom: 30
     },
-    cardRow: {
+    resultCard: {
         flexDirection: "row",
         justifyContent: "space-evenly",
     },
     nametime: {
         alignSelf: "auto"
-    }
+    },
+    penalty: {
+        width: 30,
+        height: 30,
+      },
 });
