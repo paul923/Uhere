@@ -51,21 +51,17 @@ function MemberTile(props){
 
 const styles = StyleSheet.create({
   cardContainer: {
-    width: 380,
-    height: 122,
     backgroundColor: "#ffffff",
     shadowColor: "rgba(0, 0, 0, 0.15)",
     shadowOffset: {
       width: 0,
       height: 10
     },
+    elevation: 5,
     shadowRadius: 10,
     shadowOpacity: 1,
     padding: 18,
-    borderStyle: "dashed",
-    borderColor: "black",
-    borderWidth: 2,
-    marginBottom: 10,
+    margin: 10,
   },
   cardRow:{
     flexDirection: "row",

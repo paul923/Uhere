@@ -5,7 +5,7 @@ import UhereHeader from '../../components/UhereHeader';
 import Timeline from 'react-native-timeline-flatlist';
 import firebase from 'firebase';
 import { formatTime, convertDateToLocalTimezone } from "../../utils/date";
-import { stringifyNumber } from "../../utils/event"; 
+import { stringifyNumber } from "../../utils/event";
 import { getEvent } from 'api/event';
 
 export default function HistoryDetail({ navigation, route }) {
@@ -24,9 +24,9 @@ export default function HistoryDetail({ navigation, route }) {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
                     setUser(eventUser);
                 }
-                let result = { 
-                    id: eventUser.UserId, 
-                    time: eventUser.ArrivedTime === null ? "LATE" : formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))), 
+                let result = {
+                    id: eventUser.UserId,
+                    time: eventUser.ArrivedTime === null ? "LATE" : formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))),
                     title: eventUser.Nickname,
                     lineColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     circleColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
@@ -56,6 +56,7 @@ export default function HistoryDetail({ navigation, route }) {
                         <Text style={{color: '#15cdca'}}>{rowData.title}</Text>
                         <Text style={{color: rowData.timeColor}}>{rowData.time}</Text>
                     </View>
+                    <View style={styles.avatar}>
                     <Avatar
                         size="small"
                         rounded
@@ -63,21 +64,25 @@ export default function HistoryDetail({ navigation, route }) {
                             uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
                         }}
                     />
+                    </View>
+                    <View style={styles.avatar}>
                     {rowData.me == true && (
                         <Avatar
-                            size="small"
+                            size={25}
                             rounded
                             title="ME"
                             overlayContainerStyle={{backgroundColor: '#15cdca'}}
                         />
                     ) || (
                         <Avatar
-                            size="small"
+                            size={25}
                             rounded
                             title=""
                             overlayContainerStyle={{backgroundColor: 'white'}}
                         />
                     )}
+                    </View>
+                    <View style={styles.avatar}>
                     {rowData.late == true && (
                         <Image
                             style={styles.penalty}
@@ -91,6 +96,7 @@ export default function HistoryDetail({ navigation, route }) {
                             overlayContainerStyle={{backgroundColor: 'white'}}
                         />
                     )}
+                    </View>
                 </View>
             </View>
         )
@@ -173,10 +179,16 @@ const styles = StyleSheet.create({
     },
     resultCard: {
         flexDirection: "row",
-        justifyContent: "space-evenly",
     },
     nametime: {
-        alignSelf: "auto"
+        flex: 3,
+        alignSelf: "auto",
+        overflow: 'hidden',
+    },
+    avatar: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     penalty: {
         width: 30,
