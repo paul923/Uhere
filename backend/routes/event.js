@@ -90,7 +90,6 @@ router.get('/', function (req, res) {
           var sql = `select User.* from User, EventUser where EventId = '${result.EventId}'
           AND User.UserId = EventUser.UserId
           AND EventUser.Status = 'ACCEPTED';`;
-          console.log(sql);
           const promise = new Promise((resolve, reject) => {
             connection.query(sql, function (error, results, fields) {
               if (error) {
@@ -329,7 +328,8 @@ router.post('/', function (req,res) {
     var event = {
       ...req.body.event,
       DateTime: new Date(req.body.event.DateTime),
-      isDeleted: 0
+      isDeleted: 0,
+      PenaltyUser: ''
     }
     var eventSql = "INSERT INTO Event SET ?";
     // Executing the MySQL query (select all data from the 'users' table).
