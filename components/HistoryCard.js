@@ -64,7 +64,8 @@ const styles = StyleSheet.create({
     padding: 18,
     borderStyle: "dashed",
     borderColor: "black",
-    borderWidth: 2
+    borderWidth: 2,
+    marginBottom: 10,
   },
   cardRow:{
     flexDirection: "row",
