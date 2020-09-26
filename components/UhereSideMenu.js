@@ -12,9 +12,7 @@ export default function UhereSideMenu(props) {
   
   function menuContent() {
     return (
-      <View style={styles.container}>
-        <Text>{props.data}</Text>
-      </View>
+      <View style={styles.container}>{props.data}</View>
     )
   }
 
@@ -35,7 +33,7 @@ export default function UhereSideMenu(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#D8D8D8',
     borderWidth: 1,
     justifyContent: "center"
   },

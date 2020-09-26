@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, SectionList, SafeAreaView, FlatList, TouchableWithoutFeedback, Modal, Alert } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
+import CustomInput from 'components/CustomInput';
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
-import { getFriendsList, getUserGroup, deleteFriend } from 'api/user'
+import { getRelationships, getGroupsByUserId } from 'api/user'
 import firebase from 'firebase';
 import { backend } from 'constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
@@ -52,22 +53,28 @@ export default function FriendScreen({navigation}) {
 
 
   async function retrieveData() {
-    let list = await getFriendsList(firebase.auth().currentUser.uid);
-    list.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
-    setFriends(list);
+    let friends = await getRelationships(firebase.auth().currentUser.uid);
+    // list.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+    // setFriends(list);
+    if (!friends){
+      friends = [];
+    }
+    console.log(friends);
+    let groups = await getGroupsByUserId(firebase.auth().currentUser.uid);
+    if (!groups){
+      groups = []
+    }
+    console.log(groups)
 
-    let group = await getUserGroup(firebase.auth().currentUser.uid);
-    setGroups(group);
-    console.log(group)
 
     let data = [
       {
         title: "Groups",
-        data: group
+        data: groups
       },
       {
         title: "Friends",
-        data: list
+        data: friends
       }
     ]
     setCombinedData(data)
@@ -211,82 +218,21 @@ export default function FriendScreen({navigation}) {
         flex: 1,
         zIndex: 10
       }}>
-        <SearchBar
-          round={true}
-          lightTheme={true}
-          placeholder="Search..."
-          autoCapitalize='none'
-          autoCorrect={false}
+        <Text style={styles.friendsHeader}>Friends</Text>
+        <View style={styles.searchBoxAbsolute}>
+        <CustomInput
+          containerStyle={{flex: 1}}
+          placeholder='Seach Friends?'
+          inputStyle={{color: '#000000'}}
           onChangeText={friendSearch}
           value={searchText}
-          containerStyle={{
-            backgroundColor:"white",
-            margin: 10,
-            borderColor: "#C4C4C4",
-            borderWidth: 1,
-            borderRadius: 10,
-            padding: 3
-          }}
-          inputContainerStyle={{
-            backgroundColor:"white"
-          }}
-          inputStyle={{
-            backgroundColor:"white"
-          }}
-          leftIconContainerStyle={{
-            backgroundColor:"white"
-          }}
-          rightIconContainerStyle={{
-            backgroundColor:"white"
-          }}
         />
+        </View>
 
-        {
-         /**
-          * Group section */
-        }
-        {
-         /**
-
-        <ScrollView>
-          <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>Group</Text>
-          </View>
-          <FlatList
-            data={ groups }
-            renderItem={renderGroupsCard}
-            keyExtractor={(item) => item.GroupId}
-            contentContainerStyle={{
-              paddingHorizontal: 20,
-              backgroundColor: "white"
-            }}
-          />
-          <View style={{paddingHorizontal: 20, paddingVertical: 8}}>
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>Friends</Text>
-          </View>
-          <FlatList
-            data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friends)}
-            renderItem={renderFriendsCard}
-            keyExtractor={(item) => item.UserId}
-            contentContainerStyle={{
-              paddingHorizontal: 20,
-              backgroundColor: "white"
-            }}
-            bounces={false}
-            scrollEnabled={false}
-          />
-        </ScrollView>
-
-        * Group section */
-        }
-
+        <View style={styles.listContainer}>
         <SectionList
           sections={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && combinedData)}
           keyExtractor={(item, index) => item + index}
-          contentContainerStyle={{
-            paddingHorizontal: 20,
-            backgroundColor: "white"
-          }}
           renderItem={({ item, section }) => {
             if(section.title === "Groups"){
               return (
@@ -294,6 +240,7 @@ export default function FriendScreen({navigation}) {
                   groupId: item.GroupId
                 })}>
                   <FriendCard
+                    style={{paddingLeft: 20}}
                     displayName = {item.GroupName}
                     userId = {item.GroupName}
                   />
@@ -302,26 +249,20 @@ export default function FriendScreen({navigation}) {
             } else if(section.title === "Friends"){
               return (
                 <FriendCard
+                  style={{paddingLeft: 20}}
                   avatarUrl= {item.AvatarURI}
                   avatarTitle= {!item.AvatarURI && item.Nickname.substr(0, 2).toUpperCase()}
                   displayName = {item.Nickname}
                   userId = {item.Username}
-                  rightElement = {
-                    <Button
-                      title="Remove"
-                      titleStyle= {{fontSize: 12}}
-                      buttonStyle={{backgroundColor: 'red'}}
-                      onPress={()=>createTwoButtonRemoveAlert(item)}
-                    />
-                  }
                 />
               )
             }
           }}
           renderSectionHeader={({ section: { title } }) => (
-            <Text style={{fontSize: 18, fontWeight: 'bold'}}>{title}</Text>
+            <Text style={styles.headerStyle}>{title}</Text>
           )}
         />
+        </View>
       </View>
     </View>
   )
@@ -331,7 +272,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: "#f5f5f5",
   },
   dropDownButton: {
     width: 100,
@@ -366,4 +307,37 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5
   },
+  headerStyle: {
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 18,
+    fontWeight: "700",
+    letterSpacing: 0,
+    color: "#15cdca",
+    marginLeft: 10,
+    marginTop: 10
+  },
+  searchBoxAbsolute: {
+    marginTop: 15,
+    zIndex: 1,
+    marginLeft: 20,
+    marginRight: 20,
+    backgroundColor: '#fefefe',
+    borderRadius: 5,
+    flexDirection: 'row'
+  },
+  listContainer: {
+    flex: 1,
+    marginTop: 20,
+    borderRadius: 10,
+    marginRight: 20,
+  },
+  friendsHeader: {
+    fontFamily: "OpenSans_400Regular",
+    fontSize: 24,
+    fontWeight: "700",
+    letterSpacing: 0,
+    color: "#15cdca",
+    marginLeft: 10,
+    marginTop: 10
+  }
 });

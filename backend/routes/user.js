@@ -85,7 +85,7 @@ router.get('/:userId/groups', function (req, res) {
         const promises = []
         results.forEach(result => {
           var sql = `SELECT User.*
-          FROM uhere.GroupMember 
+          FROM uhere.GroupMember
           left join uhere.User on GroupMember.MemberId = User.UserId
           WHERE 1=1
           AND GroupMember.GroupId = ?
@@ -132,9 +132,11 @@ router.get('/:userId/groups', function (req, res) {
 router.get('/:userId/relationships', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = "SELECT * FROM ?? WHERE UserId1 = ? and IsDeleted = false";
-    var parameters = ['UserRelationship', req.params.userId];
+    var sql = `SELECT User.*, UserRelationship.IsDeleted, UserRelationship.Type FROM ??, ??
+    WHERE UserRelationship.UserId1 = ? and User.UserId = UserRelationship.UserId2 and UserRelationship.IsDeleted = false and User.IsDeleted = false`;
+    var parameters = ['UserRelationship', 'User', req.params.userId];
     sql = mysql.format(sql, parameters);
+    console.log(sql);
     connection.query(sql, function (error, results, fields) {
       if (error) {
         res.status(500).send({
@@ -193,7 +195,7 @@ router.get('/:userId/relationships', function (req, res) {
 router.get('/:userId/relationships/:username', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT UserRelationship.* 
+    var sql = `SELECT UserRelationship.*
     FROM UserRelationship
     left join User on UserRelationship.UserId2 = User.UserId
     WHERE 1=1

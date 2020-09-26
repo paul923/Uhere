@@ -62,7 +62,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOpacity: 1,
     padding: 18,
-    marginVertical: 10,
     borderStyle: "dashed",
     borderColor: "black",
     borderWidth: 2
