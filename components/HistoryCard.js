@@ -1,20 +1,16 @@
 import * as React from 'react';
-import { formatDate, formatTime, convertDateToLocalTimezone } from "../utils/date";
+import { formatHeaderDate, convertDateToLocalTimezone } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Text, Divider, Icon, Button, Image, Avatar } from 'react-native-elements';
-import { backend } from '../constants/Environment';
-import firebase from 'firebase';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-import FriendTile from '../components/FriendTile'
+import { Text, Avatar } from 'react-native-elements';
 
-export default function HistoryCard({onPress, item, status}) {
+export default function HistoryCard({ event, onPress}) {
   return (
     <TouchableOpacity onPress = {onPress}>
       <View style={styles.cardContainer}>
         <View style={styles.cardRow}>
           <View>
-            <Text style={styles.subTitleText}>15 June 2020</Text>
-            <Text style={styles.titleText}>Title goes here</Text>
+            <Text style={styles.subTitleText}>{formatHeaderDate(convertDateToLocalTimezone(new Date(event.DateTime)))}</Text>
+            <Text style={styles.titleText}>{event.Name}</Text>
           </View>
         </View>
         <View style={styles.spacer}></View>
@@ -22,19 +18,20 @@ export default function HistoryCard({onPress, item, status}) {
         <View style={styles.cardRow}>
           <View>
             <Text style={styles.subTitleText}>Location</Text>
-            <Text style={styles.titleText}>Ham ji Bak</Text>
+            <Text style={styles.titleText}>{event.LocationName}</Text>
           </View>
           <View style={styles.memberList}>
-            {data.map((member, i) => {
+            {event.Members.map((member, i) => {
               if(i < 3)
                 return(
                   <MemberTile
-                    source={member.uri}
+                    key={i}
+                    source={{uri:member.AvatarURI}}
                   />
                 )
             })}
             {
-              (data.length > 3) && <MemberTile title={"+" + (data.length - 3)} titleStyle={styles.avatarTitle}/>
+              (event.Members.length > 3) && <MemberTile title={"+" + (event.Members.length - 3)} titleStyle={styles.avatarTitle}/>
             }
           </View>
         </View>
@@ -52,18 +49,9 @@ function MemberTile(props){
   );
 }
 
-const data = [
-  {uri: require("../assets/images/robot-dev.png")},
-  {uri: require("../assets/images/robot-dev.png")},
-  {uri: require("../assets/images/robot-dev.png")},
-  {uri: require("../assets/images/robot-dev.png")},
-  {uri: require("../assets/images/robot-dev.png")},
-  {uri: require("../assets/images/robot-dev.png")},
-]
-
 const styles = StyleSheet.create({
   cardContainer: {
-    width: 342,
+    width: 380,
     height: 122,
     backgroundColor: "#ffffff",
     shadowColor: "rgba(0, 0, 0, 0.15)",
