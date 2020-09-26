@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/event/EventScreen';
 import EventNavigator from './EventNavigator';
+import NotificationNavigator from './NotificationNavigator';
 import HistoryNavigator from './HistoryNavigator'
 import FriendsTabNavigator from './FriendsTabNavigator';
 import JayTestScreen from '../screens/debug/JayTestScreen';
@@ -37,6 +38,8 @@ function showTab(route) {
 
   switch (routeName) {
     case 'Event':
+      return true;
+    case 'Notification':
       return true;
     case 'Create Event':
       return false;
@@ -162,6 +165,16 @@ export default function MainAppNavigator({ navigation, route }) {
         })}
       />
       {/* Test Screens */}
+      <BottomTab.Screen
+        name="Notification"
+        component={NotificationNavigator}
+        options={({ route }) => ({
+          title: 'Notification',
+          tabBarIcon: ({ focused, size  }) => <Image source={ require('assets/icons/home/Group11Copy.png') } style={{height:size , width:size}} resizeMode={'contain'} />,
+          headerMode: 'none',
+          tabBarVisible: showTab(route)
+        })}
+      />
       <BottomTab.Screen
         name="Justin"
         component={JustinTabNavigator}

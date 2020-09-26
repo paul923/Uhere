@@ -93,7 +93,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 10,
     marginLeft: 15,
-    marginRight: 15
+    marginRight: 15,
+    elevation: 5,
   },
   cardContentContainer: {
     flex: 1,
