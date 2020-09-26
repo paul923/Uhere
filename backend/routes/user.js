@@ -138,7 +138,6 @@ router.get('/:userId/relationships', function (req, res) {
     sql = mysql.format(sql, parameters);
     console.log(sql);
     connection.query(sql, function (error, results, fields) {
-      connection.release();
       if (error) {
         res.status(500).send({
           success: false,
@@ -147,12 +146,40 @@ router.get('/:userId/relationships', function (req, res) {
           }
         });
       } else if (results.length > 0) {
-        res.status(200).send({
-          success: true,
-          body: {
-            results
-          }
+        // GET user for each relationship
+        const promises = []
+        results.forEach(result => {
+          var sql = `SELECT *
+          FROM uhere.User 
+          WHERE 1=1
+          AND UserId = ?
+          AND IsDeleted = false`;
+          const promise = new Promise((resolve, reject) => {
+            connection.query(sql, result.UserId2, function (error, user) {
+              if (error) {
+                res.status(500).send({
+                  success: false,
+                  error: {
+                    message: "Database Error"
+                  }
+                });
+              } else {
+                result.User2 = user[0];
+                resolve()
+              }
+            });
+          })
+          promises.push(promise)
         });
+        Promise.all(promises).then(() => {
+          connection.release();
+          res.status(200).send({
+            success: true,
+            body: {
+              results
+            }
+          });
+        })
       } else {
         res.status(404).send({
           success: false,
