@@ -10,6 +10,7 @@ const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 import { getEvents } from 'api/event';
 import { FloatingAction } from "react-native-floating-action";
+import UhereHeader from "../../components/UhereHeader"
 
 export default function NotificationScreen({ navigation, route }) {
   const [notifications, setNotifications] = React.useState([]);
@@ -41,18 +42,8 @@ export default function NotificationScreen({ navigation, route }) {
   }
   return (
     <View style={styles.container}>
-      <Header
-        backgroundColor="#ffffff"
-        centerComponent={<Image
-          source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
-          style={{
-            height: 40,
-            width: 100
-          }}
-          resizeMode="contain"
-        />}
-        statusBarProps={{translucent: true}}
-        />
+      <UhereHeader
+      />
       <View style={styles.container}>
         <SectionList
         style={styles.listContainer}

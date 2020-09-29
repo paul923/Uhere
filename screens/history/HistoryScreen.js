@@ -3,6 +3,7 @@ import { StyleSheet, View, FlatList } from 'react-native';
 import { Image, Text, SearchBar, Header } from 'react-native-elements';
 import HistoryCard from 'components/HistoryCard';
 import { getEvents, getEvent } from 'api/event';
+import UhereHeader from "../../components/UhereHeader"
 
 export default function HistoryScreen({ navigation, route }) {
 	const [isFetching, setIsFetching] = React.useState(false);
@@ -71,17 +72,7 @@ export default function HistoryScreen({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			{/* Header */}
-			<Header
-				backgroundColor="#ffffff"
-				centerComponent={<Image
-					source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
-					style={{
-						height: 40,
-						width: 100
-					}}
-					resizeMode="contain"
-				/>}
-				statusBarProps={{ translucent: true }}
+			<UhereHeader
 			/>
 			<View style={styles.searchBar}>
 				<Text style={styles.historyText}>History</Text>

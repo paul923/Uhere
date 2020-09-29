@@ -62,6 +62,8 @@ export default function ProfileScreen({navigation, route}){
               borderColor: currentUser && currentUser.AvatarColor,
               borderStyle: "solid",
               alignSelf: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white'
             }}
             overlayContainerStyle= {{
               backgroundColor: 'white',
@@ -69,7 +71,7 @@ export default function ProfileScreen({navigation, route}){
             imageProps={{
               resizeMode: 'contain',
               style: {
-                width: 130,
+                width: 100,
                 alignItems: 'center',
                 alignSelf: 'center'
               }

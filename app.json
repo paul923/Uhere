@@ -14,7 +14,7 @@
     "icon": "./assets/images/miscs/penalty.png",
     "scheme": "myapp",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/miscs/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
