@@ -15,8 +15,8 @@ export default class LocationPermissionScreen extends Component {
             <View style={styles.instructionBox}>
               <View style={styles.instruction}>
                 <Image
-                  style={styles.bulletPoint}
-                  source={require("../assets/images/Group3Copy-ios-all/png/Group3Copy.imageset/UhereLogo.png")}
+                  style={[styles.bulletPoint, {width: 34, height: 33}]}
+                  source={require("../assets/images/logos/logo_icon_white/png/Group3Copy.imageset/Group3Copy.png")}
                   resizeMode="contain"
                 />
                 <Text style={[
@@ -46,21 +46,31 @@ export default class LocationPermissionScreen extends Component {
               <View style={styles.instruction}>
                 <Image
                   style={styles.bulletPoint}
-                  source={require("../assets/images/Group3Copy-ios-all/png/Group3Copy.imageset/UhereLogo.png")}
+                  source={require("../assets/images/logos/logo_icon_colored/png/Group3Copy.imageset/UhereLogo.png")}
                   resizeMode="contain"
                 />
                 <Text style={styles.instructionText}>At setting, click the location button</Text>
               </View>
+              <Image
+                style={{width: "100%", marginBottom: 20}}
+                source={require("../assets/images/location_setting/setting_image_1/png/IMG_07441.imageset/IMG_07441.png")}
+                resizeMode="contain"
+              />
             </View>
             <View style={styles.instructionBox}>
               <View style={styles.instruction}>
                 <Image
                   style={styles.bulletPoint}
-                  source={require("../assets/images/Group3Copy-ios-all/png/Group3Copy.imageset/UhereLogo.png")}
+                  source={require("../assets/images/logos/logo_icon_colored/png/Group3Copy.imageset/UhereLogo.png")}
                   resizeMode="contain"
                 />
                 <Text style={styles.instructionText}>Choose "Always" and come back!</Text>
               </View>
+              <Image
+                style={{width: "100%"}}
+                source={require("../assets/images/location_setting/setting_image_2/IMG_07461.png")}
+                resizeMode="contain"
+              />
             </View>
           </View>
         </View>

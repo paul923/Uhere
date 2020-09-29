@@ -13,7 +13,7 @@ export default function UhereHeader(props, {navigation}) {
         props.title ?
         <Text style={styles.headerTitle}>{props.title}</Text> :
         <Image
-          source={require('../assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+          source={require('../assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
           style={styles.uhereLogo}
           resizeMode="contain"
         />

@@ -88,6 +88,16 @@ export default function PaulTestScreen({ navigation }) {
         buttonStyle={styles.button}
         onPress={()=> navigation.navigate("Test Screen 6")}
       />
+      <Button
+        title='profile screen'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate("Profile Screen")}
+      />
+      <Button
+        title='noti permission screen'
+        buttonStyle={styles.button}
+        onPress={()=> navigation.navigate("Notification Permission Screen")}
+      />
     </ScrollView>
   )
 }

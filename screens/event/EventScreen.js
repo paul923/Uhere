@@ -45,7 +45,7 @@ export default function EventScreen({ navigation, route }) {
       <Header
         backgroundColor="#ffffff"
         centerComponent={<Image
-          source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+          source={require('assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
           style={{
             height: 40,
             width: 100

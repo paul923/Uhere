@@ -405,7 +405,7 @@ const slides = [
     key: 'Penalize!',
     title: 'Penalize!',
     text: 'Play the game if there are\nmultiple freinds who are late!',
-    image: require('./assets/images/Tutorial/uhereonboarding1.png'),
+    image: require('./assets/images/tutorials/uhereonboarding1.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
       color: '#15CDCA'
@@ -418,7 +418,7 @@ const slides = [
     key: 'Check!',
     title: 'Check!',
     text: 'Use Uhere to find and see\nwhere your friends are!',
-    image: require('./assets/images/Tutorial/uhereonboarding2.png'),
+    image: require('./assets/images/tutorials/uhereonboarding2.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
       color: '#15CDCA'
@@ -431,7 +431,7 @@ const slides = [
     key: 'Create!',
     title: 'Create!',
     text: 'Invite your friends and set\nup the location and penalty for the losers!',
-    image: require('./assets/images/Tutorial/uhereonboarding3.png'),
+    image: require('./assets/images/tutorials/uhereonboarding3.png'),
     backgroundColor: '#ffffff',
     titleStyle: {
       color: '#15CDCA'
