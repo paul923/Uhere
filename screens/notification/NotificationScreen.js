@@ -17,7 +17,11 @@ export default function NotificationScreen({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       let notifications = await getEvents('PENDING', false, 10, 0);
-      setNotifications(formatInvite(notifications))
+      if (notifications.message === "Not Found") {
+        setNotifications([]);
+      } else {
+        setNotifications(formatInvite(notifications))
+      }
     }
     const unsubscribeFocus = navigation.addListener('focus', () => {
       fetchData();
@@ -28,7 +32,11 @@ export default function NotificationScreen({ navigation, route }) {
   async function onRefresh() {
     setIsFetching(true);
     let notifications = await getEvents('PENDING', false, 10, 0);
-    setNotifications(formatInvite(notifications))
+    if (notifications.message === "Not Found") {
+      setNotifications([]);
+    } else {
+      setNotifications(formatInvite(notifications))
+    }
     setIsFetching(false);
   }
   return (

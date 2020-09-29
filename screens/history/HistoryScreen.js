@@ -9,12 +9,18 @@ export default function HistoryScreen({ navigation, route }) {
 	const [events, setEvents] = React.useState([]);
 	const [filteredEvents, setFilteredEvents] = React.useState([]);
 	const [searchText, setserchText] = React.useState();
-	
+
 	React.useEffect(() => {
 		async function fetchData() {
 			let events = await getEvents('ACCEPTED', true, 10, 0);
-			setEvents(events)
-			setFilteredEvents(events);
+			if (events.message === "Not Found") {
+				setEvents([]);
+				setFilteredEvents([]);
+	    } else {
+				setEvents(events)
+				setFilteredEvents(events);
+	    }
+
 		}
 		const unsubscribeFocus = navigation.addListener('focus', () => {
 			fetchData();
@@ -40,8 +46,13 @@ export default function HistoryScreen({ navigation, route }) {
 	async function onRefresh() {
 		setIsFetching(true);
 		let events = await getEvents('ACCEPTED', true, 10, 0);
-		setEvents(events)
-		setFilteredEvents(events);
+		if (events.message === "Not Found") {
+			setEvents([]);
+			setFilteredEvents([]);
+		} else {
+			setEvents(events)
+			setFilteredEvents(events);
+		}
 		setserchText();
 		setIsFetching(false);
 	}

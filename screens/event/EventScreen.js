@@ -18,8 +18,11 @@ export default function EventScreen({ navigation, route }) {
   React.useEffect(() => {
     async function fetchData() {
       let events = await getEvents('ACCEPTED', false, 10, 0);
-      console.log(events);
-      setEvents(formatEventList(events))
+      if (events.message === "Not Found") {
+        setEvents([]);
+      } else {
+        setEvents(formatEventList(events))
+      }
     }
     const unsubscribeFocus = navigation.addListener('focus', () => {
       fetchData();
@@ -30,7 +33,11 @@ export default function EventScreen({ navigation, route }) {
   async function onRefresh() {
     setIsFetching(true);
     let events = await getEvents('ACCEPTED', false, 10, 0);
-    setEvents(formatEventList(events))
+    if (events.message === "Not Found") {
+      setEvents([]);
+    } else {
+      setEvents(formatEventList(events))
+    }
     setIsFetching(false);
   }
   return (
