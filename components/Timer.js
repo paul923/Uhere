@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { millisToMinutesAndSeconds } from "../utils/date";
 import { Appearance, useColorScheme } from 'react-native-appearance';
 
@@ -22,17 +22,27 @@ export default function Timer({ eventDateTime }) {
     }, []);
 
     return (
-        <Text style={colorScheme === 'dark' ? styles.dark : styles.normal}>{millisToMinutesAndSeconds(timer)}</Text>
+        <View style={styles.container}>
+            <Text style={colorScheme === 'dark' ? styles.dark : styles.normal}>{millisToMinutesAndSeconds(timer)}</Text>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
+    container: {
+        width:203,
+        height:60,
+        backgroundColor: 'white',
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius: 10,
+    },
     normal: {
         fontSize: 30,
-        color: 'black',
+        color: '#15cdca',
     },
     dark: {
         fontSize: 30,
-        color: 'white',
+        color: '#15cdca',
     },
 });

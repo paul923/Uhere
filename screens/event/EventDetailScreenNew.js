@@ -12,6 +12,7 @@ import firebase from 'firebase';
 import { getEvent } from 'api/event'
 import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
+import Timer from 'components/Timer'
 
 
 const SCREEN = Dimensions.get('window');
@@ -21,18 +22,19 @@ const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
 export default function EventDetailScreenNew({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
-    const [mapRegion, setMapRegion] = React.useState();
-    
-    
     
     const [event, setEvent] = React.useState(null);
-    const [showSwitch, setShowSwitch] = React.useState(false);
+    const [mapRegion, setMapRegion] = React.useState();
+    
+
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [screen, setScreen] = React.useState("EventDetail");
 
     React.useEffect(() => {
         async function fetchData() {
+            let event = await getEvent(route.params.EventId);
+            setEvent(event);
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
             setMapRegion(region);
@@ -42,11 +44,28 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }, []);
 
     return (
-        <View>
+        <View style={styles.container}>
             <UhereHeader
                 showBackButton={true}
                 onPressBackButton={() => navigation.navigate('Event')}
             />
+            {!isLoading && event && (
+                <View style={styles.timer}>
+                    <Timer eventDateTime={event.DateTime} />
+                </View>
+            )}
         </View>
     )
-}   
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    timer: {
+        position: 'absolute',
+        alignSelf: 'center',
+        top: 100,
+        zIndex: 9999,
+    }
+});
