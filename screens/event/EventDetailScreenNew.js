@@ -46,6 +46,28 @@ export default function EventDetailScreenNew({ navigation, route }) {
         fetchData()
     }, []);
 
+    async function _goToMyLocation() {
+        let location = await Location.getCurrentPositionAsync();
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        mapRef.current.animateToRegion(region);
+    }
+    async function _fitAll() {
+        let location = await Location.getCurrentPositionAsync();
+        let coordinates = []
+        // user's location
+        coordinates.push({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+        // meeting location
+        coordinates.push({ latitude: event.LocationGeolat, longitude: event.LocationGeolong });
+        // eventMembers' locations
+        Object.keys(locations).map((key) => {
+            if (key !== firebase.auth().currentUser.uid) {
+                let coordinate = { latitude: locations[key].latitude, longitude: locations[key].longitude }
+                coordinates.push(coordinate);
+            }
+        })
+        mapRef.current.fitToCoordinates(coordinates, { edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, animated: true });
+    }
+
     return (
         <View style={styles.container}>
             <UhereHeader
@@ -74,9 +96,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                 longitude: event.LocationGeolong,
                             }}
                             radius={500} // in meters
-                            strokeWidth={2}
-                            strokeColor='rgba(89, 89, 89, 0.42)'
-                            fillColor='rgba(89, 89, 89, 0.42)'
+                            strokeWidth={1}
+                            strokeColor='#FAFAFA'
+                            fillColor='rgba(0, 12, 214, 0.2)'
                         />
                         {/* Member Markers */}
                         {/* {
@@ -95,15 +117,20 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         } */}
                     </MapView>
                     {/* My Location */}
-                    <TouchableOpacity style={styles.myLocationStyle}>
+                    <TouchableOpacity
+                        style={styles.myLocationStyle}
+                        onPress={_goToMyLocation}
+                    >
                         <Image
                             source={require('../../assets/icons/event/icon_me.png')}
                         />
                     </TouchableOpacity>
                     {/* Meeting Location */}
-                    <TouchableOpacity style={styles.meetingLocationStyle}>
+                    <TouchableOpacity 
+                        style={styles.meetingLocationStyle}
+                        onPress={_fitAll}
+                        >
                         <Image
-
                             source={require('../../assets/icons/event/info_location.png')}
                         />
                     </TouchableOpacity>
