@@ -19,6 +19,7 @@ export default function HistoryDetail({ navigation, route }) {
         async function fetchData() {
             let event = await getEvent(route.params.Event.EventId);
             setEvent(event)
+            console.log(event);
             let results = [];
             event.eventUsers.forEach(eventUser => {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
@@ -31,9 +32,9 @@ export default function HistoryDetail({ navigation, route }) {
                     lineColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     circleColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     timeColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
-                    late: eventUser.ArrivedTime < event.DateTime ? false : true,
                     icon: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
                     me: eventUser.UserId === firebase.auth().currentUser.uid ? true : false,
+                    penalty: eventUser.UserId === event.PenaltyUser ? true : false,
                 }
                 results.push(result);
             });
@@ -83,7 +84,7 @@ export default function HistoryDetail({ navigation, route }) {
                     )}
                     </View>
                     <View style={styles.avatar}>
-                    {rowData.late == true && (
+                    {rowData.penalty == true && (
                         <Image
                             style={styles.penalty}
                             source={require('../../assets/images/penalty.png')}
