@@ -11,6 +11,7 @@ import EventDetailScreen from 'screens/event/EventDetailScreen';
 import DetailEditPage from 'screens/event/DetailEditPage'
 import LocationSearchScreen from 'screens/event/LocationSearchScreen'
 import EventHistoryDetail from 'screens/event/EventHistoryDetail'
+import EventDetailScreenNew from 'screens/event/EventDetailScreenNew';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,10 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Event Detail"
         component={EventDetailScreen}
+      />
+      <Stack.Screen
+        name="Event Detail New"
+        component={EventDetailScreenNew}
       />
       <Stack.Screen
         name="Event History"
