@@ -14,6 +14,7 @@ import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
 import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
+import Modal from 'react-native-modal';
 
 
 const SCREEN = Dimensions.get('window');
@@ -26,7 +27,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
     
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
-    
+
+    const [isModalVisible, setModalVisible] = React.useState(false);
 
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
@@ -135,12 +137,23 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         />
                     </TouchableOpacity>
                     {/* Information */}
-                    <TouchableOpacity style={styles.informationStyle}>
+                    <TouchableOpacity 
+                        style={styles.informationStyle}
+                        onPress={()=>setModalVisible(true)}
+                        >
                         <Image
-
                             source={require('../../assets/icons/event/icon_info.png')}
                         />
                     </TouchableOpacity>
+                    <Modal style={styles.modalContainer}
+                        isVisible={isModalVisible}
+                        onBackdropPress={() => setModalVisible(false)}>
+                        <View style={styles.Modal}>
+                            <Text>Latest buys all! Don't be late</Text>
+                            <Text>I am the modal content!</Text>
+                            <Text>I am the modal content!</Text>
+                        </View>
+                    </Modal>
                 </React.Fragment>
             )}
         </View>
@@ -150,6 +163,20 @@ export default function EventDetailScreenNew({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    modalContainer:{
+        position: 'absolute',
+        right:10,
+        bottom: 200,
+        alignSelf: 'flex-end',
+    },
+    Modal: {
+        width: 291,
+        height: 214,
+        backgroundColor: 'white',
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius: 10,
     },
     timer: {
         position: 'absolute',
