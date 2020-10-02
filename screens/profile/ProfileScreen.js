@@ -6,10 +6,12 @@ import { ScrollView } from 'react-native-gesture-handler';
 import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
 import Constants from "expo-constants";
-import UhereHeader from "../../components/UhereHeader"
+import UhereHeader from "../../components/UhereHeader";
+import { getAvatarImage, avatarData } from "../../utils/asset.js";
 
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
+import { updateUser } from '../../api/user'
 
 
 const colorList = [
@@ -22,39 +24,18 @@ let initColor = colorList[0];
 export default function ProfileScreen({navigation, route}){
   const [ username, setUsername] = React.useState("");
   const [ nickname, setNickname] = React.useState("");
-  const [ avatarColor, setAvatarColor] = React.useState(initColor);
-  const [ selectedAvatar, setAvatar] = React.useState();
-  const [ user ] = React.useState(firebase.auth().currentUser);
-  const [ showSuccessOverlay, setShowSuccessOverlay] = React.useState(false);
+  const [ currentUser, setCurrentUser ] = React.useState();
   const [ buttonIndex, setIndex] = React.useState(0);
-  const { skipProfile } = React.useContext(AuthContext);
+  const [ buttonFlag, setFlag] = React.useState(true);
+  const { skipProfile, getUserInfo } = React.useContext(AuthContext);
 
+  React.useEffect(() => {
+    getUserInfo(firebase.auth().currentUser.uid).then(user => setCurrentUser(user));
+  }, []);
 
-
-  async function register(){
-    let user = {
-      UserId: firebase.auth().currentUser.uid,
-      Username: username,
-      Nickname: nickname,
-      AvatarURI: route.params && route.params.uri ? route.params.uri : undefined,
-      AvatarColor: avatarColor
-    };
-
-    let response = await fetch(`http://${backend}:3000/users`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        user,
-      }),
-    });
-    let responseJson = await response.json();
-    if (responseJson.status === 200){
-      setShowSuccessOverlay(true)
-      setTimeout(() => {skipProfile();}, 2000)
-    }
+  async function saveUser() {
+    let response = await updateUser(currentUser);
+    response ? alert("Saved!") : alert("Failed to save...")
   }
 
   return (
@@ -68,8 +49,8 @@ export default function ProfileScreen({navigation, route}){
           <View style={styles.headerSection}>
             <Text style={styles.headerCenterText}>Profile</Text>
           </View>
-          <TouchableOpacity style={styles.headerSection} onPress={() => console.log("save profile")}>
-            <Text style={styles.headerRightText}>Save</Text>
+          <TouchableOpacity style={styles.headerSection} onPress={() => {saveUser()}} disabled={buttonFlag}>
+            <Text style={[styles.headerRightText, buttonFlag && {color: "#0B6968"}]}>Save</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -78,18 +59,30 @@ export default function ProfileScreen({navigation, route}){
           <Avatar
             containerStyle={{
               borderWidth: 5,
-              borderColor: avatarColor,
+              borderColor: currentUser && currentUser.AvatarColor,
               borderStyle: "solid",
               alignSelf: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white'
             }}
-            editButton={{ name: 'mode-edit', type: 'material', color: 'white', underlayColor: 'white'}}
+            overlayContainerStyle= {{
+              backgroundColor: 'white',
+            }}
+            imageProps={{
+              resizeMode: 'contain',
+              style: {
+                width: 100,
+                alignItems: 'center',
+                alignSelf: 'center'
+              }
+            }}
             rounded
             size="xlarge"
-            source={selectedAvatar && selectedAvatar.uri}
-            title={route.params && route.params.uri ? undefined : user.email ? user.email.substr(0, 2).toUpperCase() : ''}
+            source={currentUser && getAvatarImage(currentUser.AvatarURI)}
+            title={currentUser ? currentUser.Nickname.substr(0, 2).toUpperCase() : ''}
           />
-          <Text style={styles.displayName}>Display Name</Text>
-          <Text style={styles.userName}>@username</Text>
+          <Text style={styles.displayName}>{currentUser && currentUser.Nickname}</Text>
+          <Text style={styles.userName}>@{currentUser && currentUser.Username}</Text>
           <View style={styles.tabView}>
             <View style={styles.buttonsContainer}>
               <TouchableOpacity 
@@ -133,7 +126,11 @@ export default function ProfileScreen({navigation, route}){
     return (
       <View style={styles.colorsContainer}>
         <ColorPalette
-          onChange={color => setAvatarColor(color)}
+          onChange={color => {
+            let user = {...currentUser, AvatarColor: color}
+            setCurrentUser(user);
+            setFlag(false);
+          }}
           defaultColor={colorList[0]}
           colors={colorList}
           title={""}
@@ -144,13 +141,17 @@ export default function ProfileScreen({navigation, route}){
   function renderAvatars() {
     return (
       <View style={styles.avatarsContainer}>
-        {data.map((icon, i)=> {
+        {avatarData.map((avatar, i)=> {
           return(
             <View style={styles.avatarWrapper} key={i}>
-              <TouchableOpacity onPress={() => setAvatar(icon)}>
+              <TouchableOpacity onPress={() => {
+                let user = {...currentUser, AvatarURI: avatar.AvatarURI}
+                setCurrentUser(user);
+                setFlag(false);
+              }}>
                 <Image 
                   style={styles.avatarImage}
-                  source={icon.uri}
+                  source={getAvatarImage(avatar.AvatarURI)}
                   resizeMode="contain"
                 />
               </TouchableOpacity>
@@ -163,15 +164,6 @@ export default function ProfileScreen({navigation, route}){
 
   
 }
-
-const data = [
-  {uri: require("../../assets/images/robot-dev.png")},
-  {uri: require("../../assets/images/robot-dev.png")},
-  {uri: require("../../assets/images/robot-dev.png")},
-  {uri: require("../../assets/images/robot-dev.png")},
-  {uri: require("../../assets/images/robot-dev.png")},
-  {uri: require("../../assets/images/robot-dev.png")},
-]
 
 const styles = StyleSheet.create({
   container: {
@@ -233,7 +225,7 @@ const styles = StyleSheet.create({
     margin: 8
   },
   tabView: {
-    height: 300,
+    height: 260,
     marginTop: 10,
     backgroundColor: "#f6f6f6",
     borderRadius: 10
@@ -264,12 +256,23 @@ const styles = StyleSheet.create({
     width: 300,
   },
   avatarsContainer: {
+    flex: 1,
     width: 300,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignSelf: 'center',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+  },
+  colorsContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   avatarImage: {
     width: 80

@@ -15,8 +15,8 @@ import Collapse from 'components/Collapse';
 import { AsyncStorage, FlatList } from 'react-native';
 import { backend } from 'constants/Environment';
 import FriendCard from 'components/FriendCard';
-import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
-import penaltyImage from 'assets/images/robot-dev.png';
+import googleSignInImage from 'assets/images/buttons/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
+import penaltyImage from 'assets/images/miscs/robot-dev.png';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Appearance, useColorScheme } from 'react-native-appearance';
 

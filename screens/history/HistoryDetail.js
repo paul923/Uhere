@@ -87,7 +87,7 @@ export default function HistoryDetail({ navigation, route }) {
                     {rowData.penalty == true && (
                         <Image
                             style={styles.penalty}
-                            source={require('../../assets/images/penalty.png')}
+                            source={require('../../assets/images/miscs/penalty.png')}
                         />
                     ) || (
                         <Avatar

@@ -7,9 +7,10 @@ import ProfileScreen from '../screens/profile/ProfileScreen'
 import TestScreen2 from '../screens/debug/TestScreen2';
 import DrawerLayoutScreen from '../screens/debug/DrawerLayoutScreen';
 import LoginTestScreen from '../screens/login/LoginScreen'
-import SignupScreen from '../screens/login/SignupScreen'
+import LocationScreen from '../screens/LocationPermissionScreen'
 import DetailEditPage from '../screens/event/DetailEditPage'
 import AddFriendsScreen from '../screens/friend/AddFriendsScreen'
+import NotificationPermissionScreen from '../screens/NotificationPermissionScreen'
 
 
 const Stack = createStackNavigator();
@@ -46,11 +47,15 @@ export default function PaulsTabNavigator({ navigation, route }) {
       />
       <Stack.Screen
         name="Test Screen 6"
-        component={SignupScreen}
+        component={LocationScreen}
       />
       <Stack.Screen
         name="Profile Screen"
         component={ProfileScreen}
+      />
+      <Stack.Screen
+        name="Notification Permission Screen"
+        component={NotificationPermissionScreen}
       />
 
     </Stack.Navigator>
