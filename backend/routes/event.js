@@ -329,7 +329,7 @@ router.post('/', function (req,res) {
       ...req.body.event,
       DateTime: new Date(req.body.event.DateTime),
       isDeleted: 0,
-      PenaltyUser: ''
+      PenaltyUser: null
     }
     var eventSql = "INSERT INTO Event SET ?";
     // Executing the MySQL query (select all data from the 'users' table).
