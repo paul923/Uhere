@@ -53,6 +53,10 @@ export default function EventDetailScreenNew({ navigation, route }) {
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         mapRef.current.animateToRegion(region);
     }
+    async function _goToEventLocation() {
+        let region = { latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        mapRef.current.animateToRegion(region);
+    }
     async function _fitAll() {
         let location = await Location.getCurrentPositionAsync();
         let coordinates = []
@@ -130,7 +134,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     {/* Meeting Location */}
                     <TouchableOpacity 
                         style={styles.meetingLocationStyle}
-                        onPress={_fitAll}
+                        onPress={_goToEventLocation}
                         >
                         <Image
                             source={require('../../assets/icons/event/info_location.png')}
