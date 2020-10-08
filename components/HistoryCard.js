@@ -2,6 +2,7 @@ import * as React from 'react';
 import { formatHeaderDate, convertDateToLocalTimezone } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Avatar } from 'react-native-elements';
+import { getAvatarImage } from 'utils/asset'
 
 export default function HistoryCard({ event, onPress}) {
   return (
@@ -26,7 +27,9 @@ export default function HistoryCard({ event, onPress}) {
                 return(
                   <MemberTile
                     key={i}
-                    source={{uri:member.AvatarURI}}
+                    imageProps={{resizeMode: 'contain'}}
+                    overlayContainerStyle={{backgroundColor: 'white'}}
+                    source={getAvatarImage(member.AvatarURI)}
                   />
                 )
             })}
@@ -92,6 +95,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     overflow:'hidden',
+    borderColor: '#15cdca',
     marginHorizontal: 3
   }
 });

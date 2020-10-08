@@ -7,6 +7,7 @@ import firebase from 'firebase';
 import { formatTime, convertDateToLocalTimezone } from "../../utils/date";
 import { stringifyNumber } from "../../utils/event";
 import { getEvent } from 'api/event';
+import { getAvatarImage } from 'utils/asset'
 
 export default function HistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -19,11 +20,11 @@ export default function HistoryDetail({ navigation, route }) {
         async function fetchData() {
             let event = await getEvent(route.params.Event.EventId);
             setEvent(event)
-            console.log(event);
             let results = [];
             event.eventUsers.forEach(eventUser => {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
                     setUser(eventUser);
+                    console.log(eventUser);
                 }
                 let result = {
                     id: eventUser.UserId,
@@ -32,7 +33,7 @@ export default function HistoryDetail({ navigation, route }) {
                     lineColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     circleColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
                     timeColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
-                    icon: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+                    avatar: eventUser.AvatarURI,
                     me: eventUser.UserId === firebase.auth().currentUser.uid ? true : false,
                     penalty: eventUser.UserId === event.PenaltyUser ? true : false,
                 }
@@ -61,9 +62,9 @@ export default function HistoryDetail({ navigation, route }) {
                     <Avatar
                         size="small"
                         rounded
-                        source={{
-                            uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-                        }}
+                        imageProps={{resizeMode: 'contain'}}
+                        overlayContainerStyle={{backgroundColor: 'white'}}
+                        source={getAvatarImage(rowData.avatar)}
                     />
                     </View>
                     <View style={styles.avatar}>
@@ -115,9 +116,9 @@ export default function HistoryDetail({ navigation, route }) {
                         containerStyle={styles.avatarStyle}
                         size="large"
                         rounded
-                        source={{
-                            uri: user.AvatarURI,
-                        }}
+                        imageProps={{resizeMode: 'contain'}}
+                        overlayContainerStyle={{backgroundColor: 'white'}}
+                        source={getAvatarImage(user.AvatarURI)}
                     />
                     <View style={styles.textContainer}>
                         <Text style={styles.descriptionText}>

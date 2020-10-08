@@ -4,6 +4,7 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Divider, Icon, Button, Image } from 'react-native-elements';
 import { backend } from '../constants/Environment';
 import firebase from 'firebase';
+import { getAvatarImage } from 'utils/asset'
 
 export default function EventCard({onPress, item, status}) {
   async function accept() {
@@ -65,7 +66,7 @@ export default function EventCard({onPress, item, status}) {
                   return (
                       <Image
                         key={index}
-                        source={{uri: member.AvatarURI}}
+                        source={getAvatarImage(member.AvatarURI)}
                         style={styles.memberAvatar}
                         resizeMode='contain'
                       />
