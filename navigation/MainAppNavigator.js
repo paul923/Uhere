@@ -45,7 +45,7 @@ function showTab(route) {
       return false;
     case 'HistoryDetail':
       return false;
-    case 'Filter Event':
+    case 'Event Detail New':
       return false;
     case 'FriendsTestScreen':
       return false;
