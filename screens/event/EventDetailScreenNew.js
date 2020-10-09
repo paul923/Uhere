@@ -15,6 +15,8 @@ import UhereHeader from '../../components/UhereHeader';
 import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
+import { SwipeablePanel } from 'rn-swipeable-panel';
+import BottomDrawer from 'rn-bottom-drawer';
 
 
 const SCREEN = Dimensions.get('window');
@@ -33,6 +35,16 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [screen, setScreen] = React.useState("EventDetail");
+
+    const [panelProps, setPanelProps] = React.useState({
+        fullWidth: true,
+        openLarge: false,
+        showCloseButton: false,
+        allowTouchOutside: true,
+    });
+    const [isPanelActive, setIsPanelActive] = React.useState(true);
+   
+
 
     const mapRef = React.useRef();
 
@@ -156,6 +168,16 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             
                         </ScrollView>
                     </View>
+                    <BottomDrawer
+                        style={styles.yyy}
+                        containerHeight={600}
+                        offset={100}
+                        startUp={false}
+                        downDisplay={500}
+                    >
+                        <Text style={{ color: '#15cdca', fontSize: 20, margin: 10 }}>BLAH BLAH BLAH</Text>
+                    </BottomDrawer>
+                    
                     {/* Info Modal */}
                     <Modal style={styles.modalContainer}
                         animationIn='zoomIn'
@@ -182,7 +204,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     xxx: {
-        height:113,
+        height:100,
+        zIndex:3,
+        backgroundColor:'blue',
+        shadowOpacity: 1,
+        opacity:0.7
+    },
+    yyy: {
+        zIndex:4,
     },
     modalContainer:{
         position: 'absolute',
@@ -200,7 +229,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignSelf: 'center',
         top: 110,
-        zIndex: 9999,
+        zIndex: 1,
     },
     mapStyle: {
         flex: 1,
