@@ -24,7 +24,6 @@ export default function HistoryDetail({ navigation, route }) {
             event.eventUsers.forEach(eventUser => {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
                     setUser(eventUser);
-                    console.log(eventUser);
                 }
                 let result = {
                     id: eventUser.UserId,

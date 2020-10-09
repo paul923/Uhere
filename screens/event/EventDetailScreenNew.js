@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { formatDate, formatTime } from "utils/date";
@@ -50,11 +50,11 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     async function _goToMyLocation() {
         let location = await Location.getCurrentPositionAsync();
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         mapRef.current.animateToRegion(region);
     }
     async function _goToEventLocation() {
-        let region = { latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        let region = { latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta:LATITUDE_DELTA_MAP*0.1, longitudeDelta: LONGITUDE_DELTA_MAP*0.1 }
         mapRef.current.animateToRegion(region);
     }
     async function _fitAll() {
@@ -92,6 +92,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         style={styles.mapStyle}
                         showsUserLocation={true}
                         showsMyLocationButton={false}
+                        showsCompass={false}
                         // region : which section of the map to render/zoom
                         initialRegion={mapRegion}
                     >
@@ -149,13 +150,25 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             source={require('../../assets/icons/event/icon_info.png')}
                         />
                     </TouchableOpacity>
+                    {/* Member Infos Box */}
+                    <View style={styles.xxx}>
+                        <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                            
+                        </ScrollView>
+                    </View>
+                    {/* Info Modal */}
                     <Modal style={styles.modalContainer}
+                        animationIn='zoomIn'
+                        animationOut='zoomOut'
+                        //backdropOpacity={0}
                         isVisible={isModalVisible}
                         onBackdropPress={() => setModalVisible(false)}>
                         <View style={styles.Modal}>
-                            <Text>Latest buys all! Don't be late</Text>
-                            <Text>I am the modal content!</Text>
-                            <Text>I am the modal content!</Text>
+                            <Text style={{color: '#15cdca', fontSize: 20, margin:10}}>Latest buys all! Don't be late</Text>
+                            <Text style={{color: '#15cdca', fontSize: 10}}>Where?</Text>
+                            <Text>{event.LocationName}</Text>
+                            <Text style={{color: '#15cdca', fontSize: 10}}>When?</Text>
+                            <Text>{event.DateTime}</Text>
                         </View>
                     </Modal>
                 </React.Fragment>
@@ -168,24 +181,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    xxx: {
+        height:113,
+    },
     modalContainer:{
         position: 'absolute',
         right:10,
-        bottom: 200,
+        bottom: 210,
         alignSelf: 'flex-end',
     },
     Modal: {
         width: 291,
         height: 214,
         backgroundColor: 'white',
-        justifyContent:'center',
-        alignItems:'center',
         borderRadius: 10,
     },
     timer: {
         position: 'absolute',
         alignSelf: 'center',
-        top: 100,
+        top: 110,
         zIndex: 9999,
     },
     mapStyle: {
@@ -203,7 +217,7 @@ const styles = StyleSheet.create({
     },
     informationStyle: {
         position: 'absolute',
-        bottom: 50,
+        bottom: 163,
         right: 0,
     },
 });
