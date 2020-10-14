@@ -187,6 +187,64 @@ router.get('/:eventId', function (req, res) {
   });
 })
 
+router.post('/:eventId/users/' function (req, res) {
+  let users = [];
+  if (req.body.users){
+    users = req.body.users.map(x => [req.params.eventId, x.UserId, 'PENDING', false, null, 0]);
+  }
+  var eventUserSql = "INSERT INTO ?? VALUES ?";
+  var parameters = ['EventUser'];
+  eventUserSql = mysql.format(eventUserSql, parameters);
+  connection.query(eventUserSql, [users], function (error, eventUserResults, fields) {
+    //TODO: Handle the case that event is inserted, but eventUsers are not inserted
+    if (error) {
+      connection.release();
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+      throw error;
+    }
+    if (eventUserResults.affectedRows > 0) {
+      let notifications = [];
+      notifications = req.body.users.map(x => [req.params.eventId, x.UserId, 'INVITE', new Date()]);
+      var notificationSql = "INSERT INTO ?? VALUES ?";
+      var parameters = ['Notification'];
+      notificationSql = mysql.format(notificationSql, parameters);
+      connection.query(notificationSql, [notifications], function (error, results, fields) {
+        if (error) {
+          connection.release();
+          res.status(500).send({
+            success: false,
+            error: {
+              message: "Database Error"
+            }
+          })
+          throw error;
+        }
+        if (results.affectedRows > 0) {
+          res.status(201).send({
+            success: true,
+            body: {
+              message: "Members are invited"
+            }
+          })
+        }
+      })
+
+    } else {
+      res.status(400).send({
+        success: false,
+        error: {
+          message: "Members are not invited"
+        }
+      })
+    }
+  })
+})
+
 router.patch('/:eventId/users/:userId', function (req, res) {
   if (!req.body.status) {
     res.status(400).send({
@@ -387,7 +445,38 @@ router.post('/', function (req,res) {
               throw error;
             }
             var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
+            var fiveMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 5));
             var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
+            var job = new CronJob(
+              fiveMinutesBeforeEvent,
+              function() {
+                let notifications = [];
+                notifications = req.body.users.map(x => [eventId, x.UserId, 'START', new Date()]);
+                var notificationSql = "INSERT INTO ?? VALUES ?";
+                var parameters = ['Notification'];
+                notificationSql = mysql.format(notificationSql, parameters);
+                connection.query(notificationSql, [notifications], function (error, results, fields) {
+                  if (error) {
+                    connection.release();
+                    res.status(500).send({
+                      success: false,
+                      error: {
+                        message: "Database Error"
+                      }
+                    })
+                    throw error;
+                  }
+                  if (results.affectedRows > 0) {
+                    res.status(201).send({
+                      success: true,
+                      body: {
+                        message: "Notifications Created"
+                      }
+                    })
+                  }
+                })
+              }
+            )
             var job = new CronJob(
             	jobDate,
             	function() {
