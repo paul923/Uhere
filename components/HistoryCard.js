@@ -2,6 +2,7 @@ import * as React from 'react';
 import { formatHeaderDate, convertDateToLocalTimezone } from "../utils/date";
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Text, Avatar } from 'react-native-elements';
+import { getAvatarImage } from '../utils/asset';
 
 export default function HistoryCard({ event, onPress}) {
   return (
@@ -26,7 +27,7 @@ export default function HistoryCard({ event, onPress}) {
                 return(
                   <MemberTile
                     key={i}
-                    source={{uri:member.AvatarURI}}
+                    source={getAvatarImage(member.AvatarURI)}
                   />
                 )
             })}
@@ -44,6 +45,19 @@ function MemberTile(props){
   return (
     <Avatar
       style={styles.memberAvatar}
+      containerStyle={{
+        alignSelf: 'center',
+        alignItems: 'center',
+      }}
+      overlayContainerStyle= {{
+        backgroundColor: '#15CDCA',
+      }}
+      imageProps={{
+        resizeMode: 'contain',
+        style: {
+          width: 20,
+        }
+      }}
       {...props}
     />
   );
@@ -92,6 +106,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     overflow:'hidden',
-    marginHorizontal: 3
+    marginHorizontal: 3,
+    justifyContent: "center",
+    alignItems: 'center',
+    backgroundColor: '#15CDCA'
   }
 });
