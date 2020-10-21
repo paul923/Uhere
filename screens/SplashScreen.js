@@ -7,18 +7,19 @@ export default function SplashScreen() {
       {/*Icon*/}
       <Image
         style={styles.uhereIcon}
-        source={require('assets/images/Group3Copy-ios-all/png/Group3Copy.imageset/UhereLogo.png')}
+        // source={require('assets/images/logo_icon_colored/png/Group3Copy.imageset/UhereLogo.png')}
+        source={require('../assets/images/logos/logo_icon_colored/png/Group3Copy.imageset/UhereLogo.png')}
         resizeMode="contain"
       />
       {/*Logo*/}
       <Image
-        source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+        source={require('../assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
         style={styles.uhereLogo}
         resizeMode="contain"
       />
       {/*Text*/}
       <Image
-        source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/dontbelateeveragain.png')}
+        source={require('../assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/dontbelateeveragain.png')}
         style={styles.text}
         resizeMode="contain"
       />

@@ -55,6 +55,8 @@ function showTab(route) {
       return false;
     case 'Profile Screen':
       return false;
+    case 'Test Screen 6':
+      return false;
   }
 
 }

@@ -11,7 +11,7 @@ import firebase from 'firebase';
 import firebaseObject from 'config/firebase';
 
 
-import googleSignInImage from 'assets/images/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
+import googleSignInImage from 'assets/images/buttons/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 
 
 
@@ -130,7 +130,7 @@ export default function LoginScreen({route, navigation}) {
       >
         <View style={styles.logoContainer}>
           <Image
-            source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+            source={require('assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
             style={styles.uhereLogo}
             resizeMode="contain"
           />

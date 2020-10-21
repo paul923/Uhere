@@ -45,7 +45,7 @@ export default function EventScreen({ navigation, route }) {
       <Header
         backgroundColor="#ffffff"
         centerComponent={<Image
-          source={require('assets/images/UhereCopy2-ios-all/png/UhereCopy2.imageset/UhereCopy2.png')}
+          source={require('assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
           style={{
             height: 40,
             width: 100
@@ -64,7 +64,7 @@ export default function EventScreen({ navigation, route }) {
             <EventCard
               item={item}
               status="ON-GOING"
-              onPress={()=>navigation.navigate('Event Detail', {
+              onPress={()=>navigation.navigate('Event Detail New', {
                 EventId: item.EventId,
                 EventType: "ON-GOING"
               })}
