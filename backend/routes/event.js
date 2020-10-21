@@ -445,44 +445,126 @@ router.post('/', function (req,res) {
               throw error;
             }
             var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
-            var fiveMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 5));
+            var beforeGameStartNotificationDate = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 45));
             var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
             var job = new CronJob(
-              fiveMinutesBeforeEvent,
+              thirtyMinutesBeforeEvent,
               function() {
-                let notifications = [];
-                notifications = req.body.users.map(x => [eventId, x.UserId, 'START', new Date()]);
-                var notificationSql = "INSERT INTO ?? VALUES ?";
-                var parameters = ['Notification'];
-                notificationSql = mysql.format(notificationSql, parameters);
-                connection.query(notificationSql, [notifications], function (error, results, fields) {
-                  if (error) {
-                    connection.release();
-                    res.status(500).send({
-                      success: false,
-                      error: {
-                        message: "Database Error"
-                      }
-                    })
-                    throw error;
-                  }
-                  if (results.affectedRows > 0) {
-                    res.status(201).send({
-                      success: true,
-                      body: {
-                        message: "Notifications Created"
-                      }
-                    })
-                  }
+                console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
+                pool.getConnection(function (err, connection) {
+                  var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+                  connection.query(sql, function (error, userResults, fields) {
+                    if (error) {
+                      connection.release();
+                      res.status(500).send({
+                        success: false,
+                        error: {
+                          message: "Database Error"
+                        }
+                      })
+                    }
+                    if (userResults.length > 0) {
+                      let notifications = [];
+                      notifications = userResults.map(x => [eventId, x.UserId, 'START', new Date()]);
+                      var notificationSql = "INSERT INTO ?? VALUES ?";
+                      var parameters = ['Notification'];
+                      notificationSql = mysql.format(notificationSql, parameters);
+                      connection.query(notificationSql, [notifications], function (error, results, fields) {
+                        if (error) {
+                          connection.release();
+                          res.status(500).send({
+                            success: false,
+                            error: {
+                              message: "Database Error"
+                            }
+                          })
+                          throw error;
+                        }
+                        if (results.affectedRows > 0) {
+                          connection.release();
+                          res.status(201).send({
+                            success: true,
+                            body: {
+                              message: "Notifications Created"
+                            }
+                          })
+                        }
+                      })
+                    } else {
+                      connection.release();
+                      res.status(204).send({
+                        success: true,
+                        error: {
+                          message: "No Notifications Created"
+                        }
+                      })
+                    }
+                  })
+                })
+              }
+            )
+            var job = new CronJob(
+              beforeGameStartNotificationDate,
+              function() {
+                console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
+                pool.getConnection(function (err, connection) {
+                  var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+                  connection.query(sql, function (error, userResults, fields) {
+                    if (error) {
+                      connection.release();
+                      res.status(500).send({
+                        success: false,
+                        error: {
+                          message: "Database Error"
+                        }
+                      })
+                    }
+                    if (userResults.length > 0) {
+                      let notifications = [];
+                      notifications = userResults.map(x => [eventId, x.UserId, 'BEFORE', new Date()]);
+                      var notificationSql = "INSERT INTO ?? VALUES ?";
+                      var parameters = ['Notification'];
+                      notificationSql = mysql.format(notificationSql, parameters);
+                      connection.query(notificationSql, [notifications], function (error, results, fields) {
+                        if (error) {
+                          connection.release();
+                          res.status(500).send({
+                            success: false,
+                            error: {
+                              message: "Database Error"
+                            }
+                          })
+                          throw error;
+                        }
+                        if (results.affectedRows > 0) {
+                          connection.release();
+                          res.status(201).send({
+                            success: true,
+                            body: {
+                              message: "Notifications Created"
+                            }
+                          })
+                        }
+                      })
+                    } else {
+                      connection.release();
+                      res.status(204).send({
+                        success: true,
+                        error: {
+                          message: "No Notifications Created"
+                        }
+                      })
+                    }
+                  })
                 })
               }
             )
             var job = new CronJob(
             	jobDate,
             	function() {
-            		console.log(`Cron Job For ${eventId} Started`);
+            		console.log(`Cron Job For Location Sharing for Event ${eventId} Started`);
                 pool.getConnection(function (err, connection) {
-                  var sql = `select UserId FROM EventUser where EventID = '${eventId}'`
+                  var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED`
                   connection.query(sql, function (error, userResults, fields) {
                     if (error) {
                       connection.release();
