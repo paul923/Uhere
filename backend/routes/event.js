@@ -187,7 +187,7 @@ router.get('/:eventId', function (req, res) {
   });
 })
 
-router.post('/:eventId/users/' function (req, res) {
+router.post('/:eventId/users/', function (req, res) {
   let users = [];
   if (req.body.users){
     users = req.body.users.map(x => [req.params.eventId, x.UserId, 'PENDING', false, null, 0]);
