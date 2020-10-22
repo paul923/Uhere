@@ -14,9 +14,7 @@ import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
 import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
-import Modal from 'react-native-modal';
 import { SwipeablePanel } from 'rn-swipeable-panel';
-import BottomDrawer from 'rn-bottom-drawer';
 
 
 const SCREEN = Dimensions.get('window');
@@ -30,8 +28,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
 
-    const [isModalVisible, setModalVisible] = React.useState(false);
-
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [screen, setScreen] = React.useState("EventDetail");
@@ -39,11 +35,20 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [panelProps, setPanelProps] = React.useState({
         fullWidth: true,
         openLarge: false,
-        showCloseButton: false,
+        showCloseButton: true,
         allowTouchOutside: true,
+        onClose: () => closePanel(),
+        onPressCloseButton: () => closePanel(),
     });
     const [isPanelActive, setIsPanelActive] = React.useState(true);
-   
+    
+    const openPanel = () => {
+        setIsPanelActive(true);
+    };
+
+    const closePanel = () => {
+        setIsPanelActive(false);
+    };
 
 
     const mapRef = React.useRef();
@@ -156,7 +161,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     {/* Information */}
                     <TouchableOpacity 
                         style={styles.informationStyle}
-                        onPress={()=>setModalVisible(true)}
+                        onPress={()=>setIsPanelActive(true)}
                         >
                         <Image
                             source={require('../../assets/icons/event/icon_info.png')}
@@ -168,31 +173,16 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             
                         </ScrollView>
                     </View>
-                    <BottomDrawer
-                        style={styles.yyy}
-                        containerHeight={600}
-                        offset={100}
-                        startUp={false}
-                        downDisplay={500}
-                    >
-                        <Text style={{ color: '#15cdca', fontSize: 20, margin: 10 }}>BLAH BLAH BLAH</Text>
-                    </BottomDrawer>
-                    
-                    {/* Info Modal */}
-                    <Modal style={styles.modalContainer}
-                        animationIn='zoomIn'
-                        animationOut='zoomOut'
-                        //backdropOpacity={0}
-                        isVisible={isModalVisible}
-                        onBackdropPress={() => setModalVisible(false)}>
+                    {/* Info Panel */}
+                    <SwipeablePanel {...panelProps} isActive={isPanelActive}>
                         <View style={styles.Modal}>
-                            <Text style={{color: '#15cdca', fontSize: 20, margin:10}}>Latest buys all! Don't be late</Text>
-                            <Text style={{color: '#15cdca', fontSize: 10}}>Where?</Text>
+                            <Text style={{ color: '#15cdca', fontSize: 20, margin: 10 }}>Latest buys all! Don't be late</Text>
+                            <Text style={{ color: '#15cdca', fontSize: 10 }}>Where?</Text>
                             <Text>{event.LocationName}</Text>
-                            <Text style={{color: '#15cdca', fontSize: 10}}>When?</Text>
+                            <Text style={{ color: '#15cdca', fontSize: 10 }}>When?</Text>
                             <Text>{event.DateTime}</Text>
                         </View>
-                    </Modal>
+                    </SwipeablePanel>
                 </React.Fragment>
             )}
         </View>
