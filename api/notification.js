@@ -14,7 +14,6 @@ export async function getNotifications() {
       return json.error;
     }
   } catch (error) {
-    // console.error(error);
     return null;
   }
 }

@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
 import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import InviteCard from 'components/InviteCard';
+import InviteNotificationCard from 'components/InviteNotificationCard';
+import ResultNotificationCard from 'components/ResultNotificationCard';
+import EventNotificationCard from 'components/EventNotificationCard';
 import { formatNotification } from 'utils/event';
 import { formatDate, formatTime } from 'utils/date';
 import Constants from "expo-constants";
@@ -50,13 +52,32 @@ export default function NotificationScreen({ navigation, route }) {
           sections={notifications}
           onRefresh={() => onRefresh()}
           refreshing={isFetching}
-          renderItem={({ item }) => (
-            <InviteCard
-              item={item}
-              status="ON-GOING"
-            />
-          )}
-          keyExtractor={(item) => item.EventId.toString()}
+          renderItem={({ item }) => {
+            switch(item.Type){
+              case "BEFORE":
+              case "RESULT":
+                return (
+                  <ResultNotificationCard
+                    item={item}
+                  />
+                )
+              case "INVITE":
+                return (
+                  <InviteNotificationCard
+                    item={item}
+                    status="ON-GOING"
+                  />
+                )
+              case "START":
+                return (
+                  <EventNotificationCard
+                    item={item}
+                  />
+                )
+            }
+
+          }}
+          keyExtractor={(item) => item.NotificationId.toString()}
           renderSectionHeader={({ section }) => (
             <Text h5 style={styles.sectionHeader}>{section.title}</Text>
           )}

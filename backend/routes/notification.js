@@ -24,9 +24,19 @@ router.get('/:userId', function(req, res, next) {
         throw error;
       }
       if (results.length > 0) {
-        res.json({"status": 200, "response": results});
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        });
       } else {
-        res.json({"status": 204, "response": "Not Found"})
+        res.status(204).send({
+          success: false,
+          error: {
+            message: "Not Found"
+          }
+        })
       }
     });
   });

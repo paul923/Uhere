@@ -113,7 +113,7 @@ router.get('/', function (req, res) {
         })
 
       } else {
-        res.status(404).send({
+        res.status(204).send({
           success: false,
           error: {
             message: "Not Found"
