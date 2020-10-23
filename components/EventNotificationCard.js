@@ -11,14 +11,6 @@ export default function EventNotificationCard({onPress, item, status}) {
   return (
     <View style={styles.cardContainer}>
       <View style={styles.cardContent}>
-        <View style={styles.cardColumn}>
-          <Avatar
-            overlayContainerStyle={{
-              borderRadius: 10
-            }}
-            size={45}
-          />
-        </View>
         <View style={{
           ...styles.cardColumn,
           paddingHorizontal: 10,
@@ -26,7 +18,6 @@ export default function EventNotificationCard({onPress, item, status}) {
         }}>
           <View style={{
             ...styles.cardRow,
-            width : 137
           }}>
             <Text style={styles.inviteContent}>Event EVENTNAME is starting in TIME!</Text>
           </View>
@@ -100,7 +91,7 @@ const styles = StyleSheet.create({
     color: '#15cdca'
   },
   goButton: {
-    width: 73, 
+    width: 73,
     height: 28,
     borderRadius: 14,
     backgroundColor: "#15cdca",

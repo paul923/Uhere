@@ -11,14 +11,6 @@ export default function InviteNotificationCard({onPress, item, status}) {
   return (
     <View style={styles.cardContainer}>
       <View style={styles.cardContent}>
-        <View style={styles.cardColumn}>
-          <Avatar
-            overlayContainerStyle={{
-              borderRadius: 10
-            }}
-            size={45}
-          />
-        </View>
         <View style={{
           ...styles.cardColumn,
           paddingHorizontal: 10,
@@ -26,7 +18,6 @@ export default function InviteNotificationCard({onPress, item, status}) {
         }}>
           <View style={{
             ...styles.cardRow,
-            width : 137
           }}>
             <Text style={styles.inviteContent}>You are invited to event {item ? item.Name : "No Name"}</Text>
           </View>
