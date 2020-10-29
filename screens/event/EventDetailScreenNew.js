@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
-import { formatDate, formatTime } from "utils/date";
+import { formatDate, formatDateFormat } from "utils/date";
 import EventDetailWithMiniMap from 'screens/event/EventDetailWithMiniMap'
 import EventMap from 'screens/event/EventMap'
 import SideMenu from 'react-native-side-menu'
@@ -14,7 +14,8 @@ import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
 import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
-import { SwipeablePanel } from 'rn-swipeable-panel';
+import Modal from 'react-native-modal';
+import { getAvatarImage } from 'utils/asset'
 
 
 const SCREEN = Dimensions.get('window');
@@ -30,26 +31,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
-    const [screen, setScreen] = React.useState("EventDetail");
-
-    const [panelProps, setPanelProps] = React.useState({
-        fullWidth: true,
-        openLarge: false,
-        showCloseButton: true,
-        allowTouchOutside: true,
-        onClose: () => closePanel(),
-        onPressCloseButton: () => closePanel(),
-    });
-    const [isPanelActive, setIsPanelActive] = React.useState(true);
+    const [memberLocations, setMemberLocations] = React.useState([]);
     
-    const openPanel = () => {
-        setIsPanelActive(true);
-    };
-
-    const closePanel = () => {
-        setIsPanelActive(false);
-    };
-
+    const [isModalVisible, setModalVisible] = React.useState(false);
 
     const mapRef = React.useRef();
 
@@ -60,10 +44,42 @@ export default function EventDetailScreenNew({ navigation, route }) {
             let location = await Location.getCurrentPositionAsync();
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
             setMapRegion(region);
+            setEventMembers(event.eventUsers);
             setIsLoading(false);
         }
         fetchData()
+        loadInitial();
     }, []);
+
+    React.useEffect(() => {
+        if(!isLoading){
+            Object.keys(locations).map((key) => {
+                const memberLocation = memberLocations.find(m => m.member.UserId === key);
+                if (memberLocation === undefined) {
+                    // create and add it to array with new animated marker
+                    const member = eventMembers.find(m => m.UserId === key);
+                    const latitude = locations[key].latitude;
+                    const longitude = locations[key].longitude;
+                    const memberLocation = {
+                        member: member,
+                        location: new AnimatedRegion({
+                            latitude: latitude,
+                            longitude: longitude,
+                            latitudeDelta: LATITUDE_DELTA_MAP,
+                            longitudeDelta: LONGITUDE_DELTA_MAP,
+                        })
+                    }
+                    memberLocations.push(memberLocation);
+                    setMemberLocations(memberLocations);
+                } else {
+                    memberLocation.location.timing({
+                        latitude: locations[key].latitude,
+                        longitude: locations[key].longitude,
+                    }).start();
+                }
+            })
+        }
+    }, [locations])
 
     async function _goToMyLocation() {
         let location = await Location.getCurrentPositionAsync();
@@ -74,6 +90,30 @@ export default function EventDetailScreenNew({ navigation, route }) {
         let region = { latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta:LATITUDE_DELTA_MAP*0.1, longitudeDelta: LONGITUDE_DELTA_MAP*0.1 }
         mapRef.current.animateToRegion(region);
     }
+
+    async function loadInitial() {
+        socket.on('requestPosition', async () => {
+          let location = await Location.getCurrentPositionAsync();
+          let user = firebase.auth().currentUser.uid;
+          let position = { latitude: location.coords.latitude + Math.floor((Math.random() * 10) + 1), longitude: location.coords.longitude + Math.floor((Math.random() * 10) + 1) }
+          setLocations({...locations, [user]: position});
+          socket.emit('position', {
+              user,
+              position
+          })
+        })
+        socket.on('updatePosition', ({user, position}) => {
+          setLocations((prevLocations) => {
+            return {
+              ...prevLocations,
+              [user]: position
+            }
+          })
+        })
+        socket.emit('requestPosition', {event: route.params.EventId});
+      }
+
+
     async function _fitAll() {
         let location = await Location.getCurrentPositionAsync();
         let coordinates = []
@@ -125,9 +165,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             fillColor='rgba(0, 12, 214, 0.2)'
                         />
                         {/* Member Markers */}
-                        {/* {
+                        {
                             memberLocations.map(memberLocation => {
-                                if (memberLocation.member.UserId !== firebase.auth().currentUser.uid) {
+                                if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
                                     return (
                                         <MapView.Marker.Animated
                                             key={memberLocation.member.UserId}
@@ -138,7 +178,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                     )
                                 }
                             })
-                        } */}
+                        }
                     </MapView>
                     {/* My Location */}
                     <TouchableOpacity
@@ -161,28 +201,68 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     {/* Information */}
                     <TouchableOpacity 
                         style={styles.informationStyle}
-                        onPress={()=>setIsPanelActive(true)}
+                        onPress={()=>setModalVisible(true)}
                         >
                         <Image
                             source={require('../../assets/icons/event/icon_info.png')}
                         />
                     </TouchableOpacity>
-                    {/* Member Infos Box */}
-                    <View style={styles.xxx}>
-                        <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                    {/* Info Modal */}
+                    <Modal style={styles.modalContainer}
+                        animationIn='zoomIn'
+                        animationOut='zoomOut'
+                        //backdropOpacity={0}
+                        isVisible={isModalVisible}
+                        onBackdropPress={() => setModalVisible(false)}>
+                        <View style={styles.Modal}>
+                            <Text style={{color: '#15cdca', fontSize: 20, margin:10}}>Latest buys all! Don't be late</Text>
+                            <View style={styles.horizontalLine}></View>
                             
+                            <Text style={{color: '#15cdca', fontSize: 15 ,marginLeft:10}}>Where?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>{event.LocationName}</Text>
+                            
+                            <Text style={{color: '#15cdca', fontSize: 15, marginLeft:10}}>When?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>
+                                {formatDateFormat(new Date(event.DateTime),'MMMM dd')} | {formatDateFormat(new Date(event.DateTime),'iiii')} | {formatDateFormat(new Date(event.DateTime),'hh:mm a')}
+                            </Text>
+                            <Text style={{color: '#15cdca', fontSize: 15 ,marginLeft:10}}>What?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>{event.Penalty}</Text>
+
+                            <Text style={{color: '#15cdca', fontSize: 15 ,marginLeft:10}}>Who?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>{event.MaxMember}</Text>
+
+
+                        </View>
+                    </Modal>
+
+                    {/* Member Infos Box */}
+                    <View style={styles.avatarContianer}>
+                        <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                            {/* eventMembers */}
+                            {
+                                Object.keys(locations).map((key) => {
+                                    const member = eventMembers.find(m => m.UserId === key);
+                                    if (/*key !== firebase.auth().currentUser.uid*/true) {
+                                        let memberRegion = { latitude: locations[key].latitude, longitude: locations[key].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+                                        return (
+                                            <TouchableOpacity
+                                                style={styles.avatarView}
+                                                key={key}
+                                                onPress={() => mapRef.current.animateToRegion(memberRegion)}
+                                            >
+                                                <Image
+                                                    source={getAvatarImage(member.AvatarURI)}
+                                                    style={styles.memberAvatar}
+                                                    resizeMode='contain'
+                                                />
+                                                <Text>{member.Nickname}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                })
+                            }
                         </ScrollView>
                     </View>
-                    {/* Info Panel */}
-                    <SwipeablePanel {...panelProps} isActive={isPanelActive}>
-                        <View style={styles.Modal}>
-                            <Text style={{ color: '#15cdca', fontSize: 20, margin: 10 }}>Latest buys all! Don't be late</Text>
-                            <Text style={{ color: '#15cdca', fontSize: 10 }}>Where?</Text>
-                            <Text>{event.LocationName}</Text>
-                            <Text style={{ color: '#15cdca', fontSize: 10 }}>When?</Text>
-                            <Text>{event.DateTime}</Text>
-                        </View>
-                    </SwipeablePanel>
                 </React.Fragment>
             )}
         </View>
@@ -193,16 +273,39 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    xxx: {
-        height:100,
+    horizontalLine: {
+        backgroundColor: '#15cdca',
+        width: '90%',
+        height: 1,
+        alignSelf:'center'
+    },
+    avatarContianer: {
         zIndex:3,
-        backgroundColor:'blue',
+        height:100,
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        shadowColor: "black",
+        shadowOffset: {
+            width: 0,
+            height: 10
+        },
+        elevation: 5,
+        shadowRadius: 10,
         shadowOpacity: 1,
-        opacity:0.7
     },
-    yyy: {
-        zIndex:4,
+    avatarView: {
+        margin: 10,
+        alignItems: 'center'
     },
+    memberAvatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        borderColor: '#15cdca',
+        borderWidth: 2,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
     modalContainer:{
         position: 'absolute',
         right:10,
