@@ -280,8 +280,7 @@ const styles = StyleSheet.create({
         alignSelf:'center'
     },
     avatarContianer: {
-        zIndex:3,
-        height:100,
+        height:90,
         flexDirection: 'row',
         backgroundColor: 'white',
         shadowColor: "black",
