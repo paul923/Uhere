@@ -19,7 +19,18 @@ export default function EventNotificationCard({onPress, item, status}) {
           <View style={{
             ...styles.cardRow,
           }}>
-            <Text style={styles.inviteContent}>Event EVENTNAME is starting in TIME!</Text>
+            {
+              item.Type === 'START' &&
+              (
+                <Text style={styles.inviteContent}>Event {item.Name ? item.Name : 'No Name'} is started!</Text>
+              )
+            }
+            {
+              item.Type === 'BEFORE' &&
+              (
+                <Text style={styles.inviteContent}>Event {item.Name ? item.Name : 'No Name'} is starting in 15 minutes!</Text>
+              )
+            }
           </View>
           <View style={styles.cardRow}>
             <Text style={styles.dateContent}>{item ? formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' | ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime))) : "No Date"}</Text>
