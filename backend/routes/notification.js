@@ -10,10 +10,10 @@ router.get('/:userId', function(req, res, next) {
     let sql;
     let parameters;
     if (req.query.type) {
-      sql = "select * from Notification where UserId = ? and Type = ?";
+      sql = "select * from Notification left join Event on Notification.EventId = Event.EventId where UserId = ? and Type = ?";
       parameters = [req.params.userId, req.query.type];
     } else {
-      sql = "select * from Notification where UserId = ?";
+      sql = "select * from Notification left join Event on Notification.EventId = Event.EventId where UserId = ?";
       parameters = [req.params.userId];
     }
     sql = mysql.format(sql, parameters);
