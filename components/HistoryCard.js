@@ -28,6 +28,7 @@ export default function HistoryCard({ event, onPress}) {
                   <MemberTile
                     key={i}
                     source={getAvatarImage(member.AvatarURI)}
+                    imageColor={member.AvatarColor}
                   />
                 )
             })}
@@ -49,13 +50,12 @@ function MemberTile(props){
         alignSelf: 'center',
         alignItems: 'center',
       }}
-      overlayContainerStyle= {{
-        backgroundColor: '#15CDCA',
-      }}
+      placeholderStyle={{backgroundColor: "transparent"}}
       imageProps={{
         resizeMode: 'contain',
         style: {
           width: 20,
+          tintColor: props.imageColor
         }
       }}
       {...props}
@@ -109,6 +109,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 3,
     justifyContent: "center",
     alignItems: 'center',
-    backgroundColor: '#15CDCA'
+    // backgroundColor: '#15CDCA'
   }
 });

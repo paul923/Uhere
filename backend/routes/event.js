@@ -316,6 +316,50 @@ router.patch('/:eventId/users/:userId', function (req, res) {
   });
 })
 
+router.patch('/:eventId/:userId', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      res.status(500).send({
+        success: false,
+        error: {
+          message: "Database Error"
+        }
+      })
+    }
+    var sql = "UPDATE ?? SET PenaltyUser = ? WHERE EventId = ? AND IsDeleted = false";
+    var parameters = ['Event', req.params.userId, req.params.eventId];
+    sql = mysql.format(sql, parameters);
+    // Executing the MySQL query (select all data from the 'users' table).
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        })
+      }
+      if (results.affectedRows > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "Penalty User Updated"
+          }
+        })
+      } else {
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "Penalty User Not Found"
+          }
+        })
+      }
+    });
+  });
+})
+
 router.delete('/:eventId', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {

@@ -6,6 +6,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import HistoryScreen from 'screens/history/HistoryScreen';
 import HistoryDetail from 'screens/history/HistoryDetail'
+import ResultGameScreen from 'screens/history/ResultGameScreen'
+import ResultLateScreen from 'screens/history/ResultLateScreen'
 
 const Stack = createStackNavigator();
 
@@ -24,6 +26,17 @@ export default function HistoryNavigator({ navigation, route }) {
 			<Stack.Screen
 				name="HistoryDetail"
 				component={HistoryDetail}
+			/>
+			<Stack.Screen
+				name="Result Late Screen"
+				component={ResultLateScreen}
+			/>
+			<Stack.Screen
+				name="Result Game Screen"
+				component={ResultGameScreen}
+				options={{
+          gestureEnabled: false,
+        }}
 			/>
 		</Stack.Navigator>
 	)

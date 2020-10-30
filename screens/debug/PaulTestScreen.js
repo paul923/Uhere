@@ -94,9 +94,9 @@ export default function PaulTestScreen({ navigation }) {
         onPress={()=> navigation.navigate("Profile Screen")}
       />
       <Button
-        title='noti permission screen'
+        title='game screen'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate("Notification Permission Screen")}
+        onPress={()=> navigation.navigate("Game Screen")}
       />
       <Button
         title='noti cards screen'
