@@ -1,18 +1,35 @@
 export function getAvatarImage(avatarURI){
   switch(avatarURI) {
     case "avatar-rabbit":
-      return require("../assets/images/avatars/avatar_rabbit/png/Group2032.imageset/Group2032.png");
+      return require("../assets/images/avatars/avatar_rabbit/avatar_rabbit.png");
     case "avatar-cat":
-      return require("../assets/images/avatars/avatar_cat/png/Group2028.imageset/Group2028.png");
+      return require("../assets/images/avatars/avatar_cat/avatar_cat.png");
     case "avatar-dog":
-      return require("../assets/images/avatars/avatar_dog/png/Group2026.imageset/Group2026.png");
+      return require("../assets/images/avatars/avatar_dog/avatar_dog.png");
     case "avatar-squirrel":
-      return require("../assets/images/avatars/avatar_squirrel/png/Group2030.imageset/Group2030.png");
+      return require("../assets/images/avatars/avatar_squirrel/avatar_squirrel.png");
     case "avatar-whale":
-      return require("../assets/images/avatars/avatar_whale/png/Group2031.imageset/Group2031.png");
+      return require("../assets/images/avatars/avatar_whale/avatar_whale.png");
     case "avatar-turtle":
-      return require("../assets/images/avatars/avatar_turtle/png/Group2027.imageset/Group2027.png");
+      return require("../assets/images/avatars/avatar_turtle/avatar_turtle.png");
+    case "avatar-croco":
+      return require("../assets/images/avatars/avatar_croco/avatar_croco.png");
+    case "avatar-bird":
+      return require("../assets/images/avatars/avatar_bird/avatar_bird.png");
+    case "avatar-elephant":
+      return require("../assets/images/avatars/avatar_elephant/avatar_elephant.png");
   }
+}
+
+export function getCountImage(count) {
+  // switch(count) {
+  //   case "count-1":
+  //     return require("");
+  //   case "count-2":
+  //     return require("");
+  //   case "count-3":
+  //     return require("");
+  // }
 }
 
 export const avatarData = [

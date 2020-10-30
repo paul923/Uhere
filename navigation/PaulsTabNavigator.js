@@ -12,6 +12,7 @@ import DetailEditPage from '../screens/event/DetailEditPage'
 import AddFriendsScreen from '../screens/friend/AddFriendsScreen'
 import NotificationPermissionScreen from '../screens/NotificationPermissionScreen'
 import NotificationCardScreen from '../screens/debug/NotificationCardScreen'
+import ResultGameScreen from '../screens/history/ResultGameScreen'
 
 
 const Stack = createStackNavigator();
@@ -61,6 +62,10 @@ export default function PaulsTabNavigator({ navigation, route }) {
       <Stack.Screen
         name="Notification Card Screen"
         component={NotificationCardScreen}
+      />
+      <Stack.Screen
+        name="Game Screen"
+        component={ResultGameScreen}
       />
 
     </Stack.Navigator>

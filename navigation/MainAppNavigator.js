@@ -57,6 +57,12 @@ function showTab(route) {
       return false;
     case 'Test Screen 6':
       return false;
+    case 'Game Screen':
+      return false;
+    case 'Result Late Screen':
+      return false;
+    case 'Result Game Screen':
+      return false;
   }
 
 }

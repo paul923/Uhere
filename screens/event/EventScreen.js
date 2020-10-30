@@ -44,14 +44,15 @@ export default function EventScreen({ navigation, route }) {
     <View style={styles.container}>
       <Header
         backgroundColor="#ffffff"
-        centerComponent={<Image
-          source={require('assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
-          style={{
-            height: 40,
-            width: 100
-          }}
-          resizeMode="contain"
-        />}
+        centerComponent={
+          <Image
+            source={{uri: 'assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png'}}
+            style={{
+              height: 40,
+              width: 100
+            }}
+            resizeMode="contain"
+          />}
         statusBarProps={{translucent: true}}
         />
       <View style={styles.container}>
