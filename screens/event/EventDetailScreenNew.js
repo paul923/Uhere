@@ -252,7 +252,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                             >
                                                 <Image
                                                     source={getAvatarImage(member.AvatarURI)}
-                                                    style={styles.memberAvatar}
+                                                    style={[styles.memberAvatar,{tintColor: member.AvatarColor}]}
                                                     resizeMode='contain'
                                                 />
                                                 <Text>{member.Nickname}</Text>

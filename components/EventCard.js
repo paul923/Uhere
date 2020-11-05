@@ -67,7 +67,7 @@ export default function EventCard({onPress, item, status}) {
                       <Image
                         key={index}
                         source={getAvatarImage(member.AvatarURI)}
-                        style={styles.memberAvatar}
+                        style={[styles.memberAvatar, {tintColor:member.AvatarColor}]}
                         resizeMode='contain'
                       />
                   )
