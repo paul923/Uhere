@@ -46,7 +46,7 @@ export default function NotificationScreen({ navigation, route }) {
       />
       <View style={styles.container}>
         <SectionList
-        style={styles.listContainer}
+          style={styles.listContainer}
           sections={notifications}
           onRefresh={() => onRefresh()}
           refreshing={isFetching}
@@ -54,7 +54,7 @@ export default function NotificationScreen({ navigation, route }) {
             <InviteCard
               item={item}
               status="ON-GOING"
-              />
+            />
           )}
           keyExtractor={(item) => item.EventId.toString()}
           renderSectionHeader={({ section }) => (

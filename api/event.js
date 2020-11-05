@@ -112,6 +112,27 @@ export async function declineEvent(eventId) {
   }
 }
 
+export async function updatePenaltyUser(eventId, userId) {
+  try {
+    let url = `http://${backend}:3000/events/${eventId}/${userId}`;
+    let response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    let json = response.json();
+    if (json.success) {
+      return json.body;
+    } else {
+      return json.error;
+    }
+  } catch (error) {
+    return null;
+  }
+}
+
 
 export async function cancelEvent(eventId) {
   try {
