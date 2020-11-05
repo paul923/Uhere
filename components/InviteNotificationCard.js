@@ -7,36 +7,6 @@ import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
 export default function InviteNotificationCard({onPress, item, status}) {
-  async function accept() {
-    let response = await fetch(`http://${backend}:3000/event/accept`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        EventId: item.EventId,
-        UserId: firebase.auth().currentUser.uid
-      }),
-    });
-    let responseJson = await response.json();
-    alert(responseJson.response);
-  }
-  async function decline() {
-    let response = await fetch(`http://${backend}:3000/event/decline`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        EventId: item.EventId,
-        UserId: firebase.auth().currentUser.uid
-      }),
-    });
-    let responseJson = await response.json();
-    alert(responseJson.response);
-  }
 
   return (
     <View style={styles.cardContainer}>
