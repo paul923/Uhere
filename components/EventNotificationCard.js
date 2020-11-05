@@ -6,7 +6,7 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function EventNotificationCard({onPress, item, status}) {
+export default function EventNotificationCard({navigation, onPress, item, status}) {
 
   return (
     <View style={styles.cardContainer}>
@@ -37,7 +37,10 @@ export default function EventNotificationCard({onPress, item, status}) {
           </View>
         </View>
         <View style={styles.cardColumn}>
-          <TouchableOpacity style={styles.goButton} onPress={() => navigateToEvent(item.EventId)}>
+          <TouchableOpacity style={styles.goButton} onPress={() => navigation.navigate('Event Detail New', {
+            EventId: item.EventId,
+            EventType: "ON-GOING"
+          })}>
             <Text style={styles.buttonFont}>Go</Text>
           </TouchableOpacity>
         </View>

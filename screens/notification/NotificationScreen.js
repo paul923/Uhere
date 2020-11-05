@@ -55,25 +55,28 @@ export default function NotificationScreen({ navigation, route }) {
           renderItem={({ item }) => {
             switch(item.Type){
               case "BEFORE":
+              case "START":
+                return (
+                  <EventNotificationCard
+                    item={item}
+                    navigation={navigation}
+                  />
+                )
               case "RESULT":
                 return (
                   <ResultNotificationCard
                     item={item}
+                    navigation={navigation}
                   />
                 )
               case "INVITE":
                 return (
                   <InviteNotificationCard
                     item={item}
-                    status="ON-GOING"
+                    navigation={navigation}
                   />
                 )
-              case "START":
-                return (
-                  <EventNotificationCard
-                    item={item}
-                  />
-                )
+
             }
 
           }}
