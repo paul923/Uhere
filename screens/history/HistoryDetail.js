@@ -45,8 +45,8 @@ export default function HistoryDetail({ navigation, route }) {
             results.sort((a, b) => (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0));
             setResults(results);
             let index = results.findIndex(x => x.UserId === firebase.auth().currentUser.uid);
-            console.log(index);
-            setMyRank(stringifyNumber(index + 1));
+            let myresult = results[index];
+            setMyRank(myresult.LateFlag === "LATE" ? "late" : stringifyNumber(index + 1));
             setIsLoading(false);
         }
         fetchData();
