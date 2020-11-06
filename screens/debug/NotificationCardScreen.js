@@ -7,7 +7,7 @@ import AuthContext from 'contexts/AuthContext';
 import firebase from 'firebase';
 import Constants from "expo-constants";
 import ResultNotificationCard from '../../components/ResultNotificationCard'
-import InviteCard from '../../components/InviteCard'
+import InviteNotificationCard from '../../components/InviteNotificationCard'
 import EventNotificationCard from '../../components/EventNotificationCard'
 import UhereHeader from '../../components/UhereHeader';
 
@@ -26,7 +26,7 @@ export default function NotificationCardScreen(){
       <ResultNotificationCard
         status="ON-GOING"
       />
-      <InviteCard
+      <InviteNotificationCard
         status="ON-GOING"
       />
       <EventNotificationCard
@@ -35,7 +35,7 @@ export default function NotificationCardScreen(){
     </View>
   );
 
-  
+
 }
 
 const styles = StyleSheet.create({

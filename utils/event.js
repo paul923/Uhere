@@ -18,7 +18,7 @@ export function formatEventList(list) {
   return result;
 }
 
-export function formatInvite(list) {
+export function formatNotification(list) {
   let grouped = _.chain(list).sortBy('DateTime').reverse().groupBy(function(item){
     return formatHeaderDate(new Date(item.DateTime))
   }).value();

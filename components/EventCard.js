@@ -72,9 +72,11 @@ export default function EventCard({onPress, item, status}) {
                   )
                 }
               })}
-              <View style={styles.memberAvatarPlaceholder}>
-                <Text style={styles.memberCount}>+{item.MemberCount-4 < 0 ? 0 : item.MemberCount-4}</Text>
-              </View>
+              {item.MemberCount > 3 && (
+                <View style={styles.memberAvatarPlaceholder}>
+                  <Text style={styles.memberCount}>+{item.MemberCount-4 < 0 ? 0 : item.MemberCount-4}</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>

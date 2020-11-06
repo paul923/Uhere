@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { SectionList, SafeAreaView, StyleSheet, View, TouchableOpacity, FlatList  } from 'react-native';
 import { Image, Button, Text, CheckBox, Divider, Icon, SearchBar, Header } from 'react-native-elements';
-import InviteCard from 'components/InviteCard';
-import { formatInvite } from 'utils/event';
+import InviteNotificationCard from 'components/InviteNotificationCard';
+import ResultNotificationCard from 'components/ResultNotificationCard';
+import EventNotificationCard from 'components/EventNotificationCard';
+import { formatNotification } from 'utils/event';
 import { formatDate, formatTime } from 'utils/date';
 import Constants from "expo-constants";
 import firebase from "firebase";
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
-import { getEvents } from 'api/event';
+import { getNotifications } from 'api/notification';
 import { FloatingAction } from "react-native-floating-action";
 import UhereHeader from "../../components/UhereHeader"
 
@@ -17,11 +19,11 @@ export default function NotificationScreen({ navigation, route }) {
   const [isFetching, setIsFetching] = React.useState(false);
   React.useEffect(() => {
     async function fetchData() {
-      let notifications = await getEvents('PENDING', false, 10, 0);
+      let notifications = await getNotifications();
       if (notifications.message === "Not Found") {
         setNotifications([]);
       } else {
-        setNotifications(formatInvite(notifications))
+        setNotifications(formatNotification(notifications))
       }
     }
     const unsubscribeFocus = navigation.addListener('focus', () => {
@@ -32,11 +34,11 @@ export default function NotificationScreen({ navigation, route }) {
 
   async function onRefresh() {
     setIsFetching(true);
-    let notifications = await getEvents('PENDING', false, 10, 0);
+    let notifications = await getNotifications();
     if (notifications.message === "Not Found") {
       setNotifications([]);
     } else {
-      setNotifications(formatInvite(notifications))
+      setNotifications(formatNotification(notifications))
     }
     setIsFetching(false);
   }
@@ -50,13 +52,35 @@ export default function NotificationScreen({ navigation, route }) {
           sections={notifications}
           onRefresh={() => onRefresh()}
           refreshing={isFetching}
-          renderItem={({ item }) => (
-            <InviteCard
-              item={item}
-              status="ON-GOING"
-            />
-          )}
-          keyExtractor={(item) => item.EventId.toString()}
+          renderItem={({ item }) => {
+            switch(item.Type){
+              case "BEFORE":
+              case "START":
+                return (
+                  <EventNotificationCard
+                    item={item}
+                    navigation={navigation}
+                  />
+                )
+              case "RESULT":
+                return (
+                  <ResultNotificationCard
+                    item={item}
+                    navigation={navigation}
+                  />
+                )
+              case "INVITE":
+                return (
+                  <InviteNotificationCard
+                    item={item}
+                    navigation={navigation}
+                  />
+                )
+
+            }
+
+          }}
+          keyExtractor={(item) => item.NotificationId.toString()}
           renderSectionHeader={({ section }) => (
             <Text h5 style={styles.sectionHeader}>{section.title}</Text>
           )}

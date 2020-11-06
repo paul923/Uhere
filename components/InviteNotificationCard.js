@@ -6,19 +6,11 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function InviteCard({onPress, item, status}) {
+export default function InviteNotificationCard({onPress, item, status}) {
 
   return (
     <View style={styles.cardContainer}>
       <View style={styles.cardContent}>
-        <View style={styles.cardColumn}>
-          <Avatar
-            overlayContainerStyle={{
-              borderRadius: 10
-            }}
-            size={45}
-          />
-        </View>
         <View style={{
           ...styles.cardColumn,
           paddingHorizontal: 10,
@@ -26,7 +18,6 @@ export default function InviteCard({onPress, item, status}) {
         }}>
           <View style={{
             ...styles.cardRow,
-            width : 137
           }}>
             <Text style={styles.inviteContent}>You are invited to event {item ? item.Name : "No Name"}</Text>
           </View>
@@ -59,7 +50,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     marginHorizontal: 15,
     marginVertical: 8,
-    borderRadius: 7, 
+    borderRadius: 7,
     shadowColor: "rgba(0, 0, 0, 0.2)",
     shadowOffset: {
       width: 0,
@@ -105,7 +96,7 @@ const styles = StyleSheet.create({
     color: '#15cdca'
   },
   acceptButton: {
-    width: 73, 
+    width: 73,
     height: 28,
     borderRadius: 14,
     backgroundColor: "#15cdca",
@@ -114,7 +105,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   declineButton: {
-    width: 73, 
+    width: 73,
     height: 28,
     borderRadius: 14,
     backgroundColor: "#505050",

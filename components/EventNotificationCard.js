@@ -6,19 +6,11 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function EventNotificationCard({onPress, item, status}) {
+export default function EventNotificationCard({navigation, onPress, item, status}) {
 
   return (
     <View style={styles.cardContainer}>
       <View style={styles.cardContent}>
-        <View style={styles.cardColumn}>
-          <Avatar
-            overlayContainerStyle={{
-              borderRadius: 10
-            }}
-            size={45}
-          />
-        </View>
         <View style={{
           ...styles.cardColumn,
           paddingHorizontal: 10,
@@ -26,16 +18,29 @@ export default function EventNotificationCard({onPress, item, status}) {
         }}>
           <View style={{
             ...styles.cardRow,
-            width : 137
           }}>
-            <Text style={styles.inviteContent}>Event EVENTNAME is starting in TIME!</Text>
+            {
+              item.Type === 'START' &&
+              (
+                <Text style={styles.inviteContent}>Event {item.Name ? item.Name : 'No Name'} is started!</Text>
+              )
+            }
+            {
+              item.Type === 'BEFORE' &&
+              (
+                <Text style={styles.inviteContent}>Event {item.Name ? item.Name : 'No Name'} is starting in 15 minutes!</Text>
+              )
+            }
           </View>
           <View style={styles.cardRow}>
             <Text style={styles.dateContent}>{item ? formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' | ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime))) : "No Date"}</Text>
           </View>
         </View>
         <View style={styles.cardColumn}>
-          <TouchableOpacity style={styles.goButton} onPress={() => navigateToEvent(item.EventId)}>
+          <TouchableOpacity style={styles.goButton} onPress={() => navigation.navigate('Event Detail New', {
+            EventId: item.EventId,
+            EventType: "ON-GOING"
+          })}>
             <Text style={styles.buttonFont}>Go</Text>
           </TouchableOpacity>
         </View>
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
     color: '#15cdca'
   },
   goButton: {
-    width: 73, 
+    width: 73,
     height: 28,
     borderRadius: 14,
     backgroundColor: "#15cdca",
