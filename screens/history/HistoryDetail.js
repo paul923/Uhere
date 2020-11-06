@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
-import { Avatar } from 'react-native-elements';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import { Avatar, Button, Image } from 'react-native-elements';
 import UhereHeader from '../../components/UhereHeader';
 import Timeline from 'react-native-timeline-flatlist';
 import firebase from 'firebase';
 import { formatTime, convertDateToLocalTimezone } from "../../utils/date";
 import { stringifyNumber } from "../../utils/event";
 import { getEvent } from 'api/event';
-import { getAvatarImage } from 'utils/asset'
+import { getAvatarImage, avatarData } from "../../utils/asset.js";
 
 export default function HistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -15,6 +15,7 @@ export default function HistoryDetail({ navigation, route }) {
     const [user, setUser] = React.useState();
     const [results, setResults] = React.useState();
     const [myRank, setMyRank] = React.useState();
+    const [lateCount, setLateCount] = React.useState(null);
 
     React.useEffect(() => {
         async function fetchData() {
@@ -26,22 +27,26 @@ export default function HistoryDetail({ navigation, route }) {
                     setUser(eventUser);
                 }
                 let result = {
-                    id: eventUser.UserId,
-                    time: eventUser.ArrivedTime === null ? "LATE" : formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))),
-                    title: eventUser.Nickname,
-                    lineColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
-                    circleColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
-                    timeColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
-                    avatar: eventUser.AvatarURI,
-                    me: eventUser.UserId === firebase.auth().currentUser.uid ? true : false,
-                    penalty: eventUser.UserId === event.PenaltyUser ? true : false,
+                    UserId: eventUser.UserId,
+                    LateFlag: eventUser.ArrivedTime === null ? "LATE" : formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))),
+                    EventId: eventUser.EventId,
+                    Nickname: eventUser.Nickname,
+                    AvatarColor: eventUser.AvatarColor,
+                    LineColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
+                    CircleColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
+                    TimeColor: eventUser.ArrivedTime < event.DateTime ? "#57e889" : "#ff3653",
+                    AvatarURI: eventUser.AvatarURI,
+                    CurrentUser: eventUser.UserId === firebase.auth().currentUser.uid ? true : false,
+                    PenaltyUser: eventUser.PenaltyUser,
+                    Penalty: eventUser.UserId === event.PenaltyUser ? true : false,
                 }
                 results.push(result);
             });
             results.sort((a, b) => (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0));
             setResults(results);
-            let index = results.findIndex(x => x.id === firebase.auth().currentUser.uid);
-            setMyRank(stringifyNumber(index + 1));
+            let index = results.findIndex(x => x.UserId === firebase.auth().currentUser.uid);
+            let myresult = results[index];
+            setMyRank(myresult.LateFlag === "LATE" ? "late" : stringifyNumber(index + 1));
             setIsLoading(false);
         }
         fetchData();
@@ -54,20 +59,24 @@ export default function HistoryDetail({ navigation, route }) {
             <View style={styles.timelinedetailContainerStyle}>
                 <View style={styles.resultCard}>
                     <View style={styles.nametime}>
-                        <Text style={{color: '#15cdca'}}>{rowData.title}</Text>
-                        <Text style={{color: rowData.timeColor}}>{rowData.time}</Text>
+                        <Text style={{color: '#15cdca'}}>{rowData.Nickname}</Text>
+                        <Text style={{color: rowData.TimeColor}}>{rowData.LateFlag}</Text>
                     </View>
                     <View style={styles.avatar}>
                     <Avatar
                         size="small"
                         rounded
-                        imageProps={{resizeMode: 'contain'}}
-                        overlayContainerStyle={{backgroundColor: 'white'}}
-                        source={getAvatarImage(rowData.avatar)}
+                        imageProps= {{
+                            style: {
+                                tintColor: rowData.AvatarColor
+                            }
+                        }}
+                        source={getAvatarImage(rowData.AvatarURI)}
+                        placeholderStyle={{backgroundColor: "transparent"}}
                     />
                     </View>
                     <View style={styles.avatar}>
-                    {rowData.me == true && (
+                    {rowData.CurrentUser == true && (
                         <Avatar
                             size={25}
                             rounded
@@ -84,10 +93,11 @@ export default function HistoryDetail({ navigation, route }) {
                     )}
                     </View>
                     <View style={styles.avatar}>
-                    {rowData.penalty == true && (
+                    {rowData.Penalty == true && (
                         <Image
                             style={styles.penalty}
                             source={require('../../assets/images/miscs/penalty.png')}
+                            placeholderStyle={{backgroundColor:'transparent'}}
                         />
                     ) || (
                         <Avatar
@@ -115,9 +125,8 @@ export default function HistoryDetail({ navigation, route }) {
                         containerStyle={styles.avatarStyle}
                         size="large"
                         rounded
-                        imageProps={{resizeMode: 'contain'}}
-                        overlayContainerStyle={{backgroundColor: 'white'}}
                         source={getAvatarImage(user.AvatarURI)}
+                        placeholderStyle={{backgroundColor: "transparent"}}
                     />
                     <View style={styles.textContainer}>
                         <Text style={styles.descriptionText}>
@@ -140,6 +149,16 @@ export default function HistoryDetail({ navigation, route }) {
                             renderDetail={renderDetail}
                         />
                     </View>
+                    <Button
+                        title="Play Game"
+                        disabled={event.PenaltyUser || results.filter(user => user.LateFlag === 'LATE').length === 0 ? true : false}
+                        containerStyle= {{
+                            marginVertical: 10
+                        }}
+                        onPress={() => {
+                            navigation.navigate('Result Late Screen', results.filter(user => user.LateFlag === 'LATE'))
+                        }}
+                    />
                 </View>
             )}
         </View>
@@ -169,7 +188,7 @@ const styles = StyleSheet.create({
     timeline: {
         marginTop: 15,
         width: 362,
-        height: 400,
+        flex: 1,
         backgroundColor: 'white'
     },
     timelinedetailContainerStyle: {

@@ -12,6 +12,8 @@ import firebase from 'firebase';
 import { getEvent } from 'api/event'
 import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
+import UhereSideMenu from '../../components/UhereSideMenu';
+import EventMenuContent from '../../components/EventMenuContent'
 import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
@@ -28,7 +30,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
-
+    const [host, setHost] = React.useState();
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [memberLocations, setMemberLocations] = React.useState([]);
@@ -36,6 +38,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [isModalVisible, setModalVisible] = React.useState(false);
 
     const mapRef = React.useRef();
+    const drawerRef = React.useRef(null);
 
     React.useEffect(() => {
         async function fetchData() {
@@ -45,6 +48,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
             let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
             setMapRegion(region);
             setEventMembers(event.eventUsers);
+            let host = event.eventUsers.find(m => m.IsHost === 1);
+            setHost(host);
             setIsLoading(false);
         }
         fetchData()
@@ -95,7 +100,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
         socket.on('requestPosition', async () => {
           let location = await Location.getCurrentPositionAsync();
           let user = firebase.auth().currentUser.uid;
-          let position = { latitude: location.coords.latitude + Math.floor((Math.random() * 10) + 1), longitude: location.coords.longitude + Math.floor((Math.random() * 10) + 1) }
+          let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
           setLocations({...locations, [user]: position});
           socket.emit('position', {
               user,
@@ -133,9 +138,19 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            <UhereSideMenu
+                drawerRef={drawerRef}
+                data={!isLoading && event &&(<EventMenuContent
+                    eventTitle={event.Name}
+                    membersData={eventMembers}
+                    hostData={host}
+                />)}
+            >
             <UhereHeader
                 showBackButton={true}
                 onPressBackButton={() => navigation.navigate('Event')}
+                showSideMenu={true}
+                onPressSideMenu={() => drawerRef.current.openDrawer()}
             />
             {!isLoading && event && (
                 <React.Fragment>
@@ -252,7 +267,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                             >
                                                 <Image
                                                     source={getAvatarImage(member.AvatarURI)}
-                                                    style={styles.memberAvatar}
+                                                    style={[styles.memberAvatar,{tintColor: member.AvatarColor}]}
                                                     resizeMode='contain'
                                                 />
                                                 <Text>{member.Nickname}</Text>
@@ -265,6 +280,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     </View>
                 </React.Fragment>
             )}
+            </UhereSideMenu>
         </View>
     )
 }

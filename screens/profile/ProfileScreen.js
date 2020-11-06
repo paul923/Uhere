@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image, ActivityIndicator } from 'react-native';
 import { Overlay, Icon, Avatar, Header, Button } from 'react-native-elements';
 import ColorPalette from 'components/react-native-color-palette/src';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -59,22 +59,24 @@ export default function ProfileScreen({navigation, route}){
           <Avatar
             containerStyle={{
               borderWidth: 5,
-              borderColor: currentUser && currentUser.AvatarColor,
+              borderColor: "#979797",
               borderStyle: "solid",
               alignSelf: 'center',
               alignItems: 'center',
-              backgroundColor: 'white'
-            }}
-            overlayContainerStyle= {{
               backgroundColor: 'white',
             }}
+            placeholderStyle= {{
+              backgroundColor: 'transparent',
+            }}
+            renderPlaceholderContent={<ActivityIndicator/>}
             imageProps={{
               resizeMode: 'contain',
               style: {
                 width: 100,
                 alignItems: 'center',
-                alignSelf: 'center'
-              }
+                alignSelf: 'center',
+                tintColor: currentUser && currentUser.AvatarColor
+              },
             }}
             rounded
             size="xlarge"
@@ -131,7 +133,7 @@ export default function ProfileScreen({navigation, route}){
             setCurrentUser(user);
             setFlag(false);
           }}
-          defaultColor={colorList[0]}
+          defaultColor={currentUser && currentUser.AvatarColor}
           colors={colorList}
           title={""}
         />
@@ -150,7 +152,11 @@ export default function ProfileScreen({navigation, route}){
                 setFlag(false);
               }}>
                 <Image 
-                  style={styles.avatarImage}
+                  style={{
+                    width: 75,
+                    height: 80,
+                    tintColor: currentUser && currentUser.AvatarColor
+                  }}
                   source={getAvatarImage(avatar.AvatarURI)}
                   resizeMode="contain"
                 />
@@ -274,7 +280,4 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
   },
-  avatarImage: {
-    width: 80
-  }
 });
