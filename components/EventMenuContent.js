@@ -3,11 +3,19 @@ import { StyleSheet, View, TouchableOpacity, TouchableHighlight, FlatList } from
 import { Text, Divider, Icon, Button, Image, Avatar } from 'react-native-elements';
 import { backend } from '../constants/Environment';
 import firebase from 'firebase';
+import { getAvatarImage } from '../utils/asset';
 
 export default function EventMenuContent(props) {
   const renderItem = ({ item }) => (
     <View style={styles.memberCard}>
       <Avatar
+        imageProps={{
+          resizeMode: 'contain',
+          style: {
+            tintColor: item.AvatarColor
+          },
+          source:getAvatarImage(item.AvatarURI)
+        }}
         style={[styles.memberAvatar, { borderColor: item.AvatarColor }]}
       />
       <Text style={styles.memberName}>{item.Nickname}</Text>
@@ -23,6 +31,13 @@ export default function EventMenuContent(props) {
         <View style={styles.hostContainer}>
           <Avatar
             containerStyle={[styles.hostAvatar, { borderColor: props.hostData.AvatarColor }]}
+            imageProps={{
+              resizeMode: 'contain',
+              style: {
+                tintColor: props.hostData.AvatarColor
+              },
+              source:getAvatarImage(props.hostData.AvatarURI)
+            }}
           />
           <Text style={styles.hostText}>Host</Text>
           <Text style={styles.displayName}>{props.hostData.Nickname}</Text>
@@ -62,7 +77,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5
   },
   hostAvatar: {
-    borderColor: 'red',
     alignSelf: 'center',
     margin: 10,
     width: 65,

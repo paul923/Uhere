@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { formatDate, formatTime, convertDateToLocalTimezone } from "../utils/date";
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import { Text, Divider, Icon, Button, Image, Avatar } from 'react-native-elements';
 import { backend } from '../constants/Environment';
 import firebase from 'firebase';
@@ -12,7 +12,7 @@ export default function UhereSideMenu(props) {
   
   function menuContent() {
     return (
-      <View style={styles.container}>{props.data}</View>
+      <SafeAreaView style={styles.container}>{props.data}</SafeAreaView>
     )
   }
 

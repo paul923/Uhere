@@ -20,17 +20,17 @@ export default function TestScreen2({navigation}) {
     <UhereSideMenu
       drawerRef = {drawerRef}
       data = {
-        <ProfileMenuContent
-          navigation={navigation}
-          //TODO: remove user data props (user object from components)
-          userData={host}
-        />
-
-        // <EventMenuContent
-        //   eventTitle="Event Title Goes Here"
-        //   membersData= {data}
-        //   hostData= {host}
+        // <ProfileMenuContent
+        //   navigation={navigation}
+        //   //TODO: remove user data props (user object from components)
+        //   userData={host}
         // />
+
+        <EventMenuContent
+          eventTitle="Event Title Goes Here"
+          membersData= {data}
+          hostData= {host}
+        />
       }
     >
       <View style={styles.container}>
@@ -40,7 +40,7 @@ export default function TestScreen2({navigation}) {
           onPressBackButton={() => navigation.goBack()}
           onPressSideMenu={() => drawerRef.current.openDrawer()}
         />
-        <HistoryCard onPress={() => alert("pressed!")}/>
+        
       </View>
     </UhereSideMenu>
   )
