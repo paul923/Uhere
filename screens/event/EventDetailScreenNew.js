@@ -54,9 +54,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
             let interval = null;
             interval = setInterval(() => {
                 if (new Date(event.DateTime) - new Date() > 0) {
-                    console.log("RUNNING");
+                    
                 } else {
-                    console.log("HISTORY");
                     clearInterval(interval);
                     navigation.navigate('HistoryDetail', {
                         EventId: event.EventId
@@ -264,22 +263,21 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
                             {/* eventMembers */}
                             {
-                                Object.keys(locations).map((key) => {
-                                    const member = eventMembers.find(m => m.UserId === key);
-                                    if (/*key !== firebase.auth().currentUser.uid*/true) {
-                                        let memberRegion = { latitude: locations[key].latitude, longitude: locations[key].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+                                memberLocations.map(memberLocation => {
+                                    if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
+                                        let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, longitude: locations[memberLocation.member.UserId].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
                                         return (
                                             <TouchableOpacity
                                                 style={styles.avatarView}
-                                                key={key}
+                                                key={memberLocation.member.UserId}
                                                 onPress={() => mapRef.current.animateToRegion(memberRegion)}
                                             >
                                                 <Image
-                                                    source={getAvatarImage(member.AvatarURI)}
-                                                    style={[styles.memberAvatar,{tintColor: member.AvatarColor, borderColor: member.AvatarColor,}]}
+                                                    source={getAvatarImage(memberLocation.member.AvatarURI)}
+                                                    style={[styles.memberAvatar,{tintColor: memberLocation.member.AvatarColor, borderColor: memberLocation.member.AvatarColor,}]}
                                                     resizeMode='contain'
                                                 />
-                                                <Text>{member.Nickname}</Text>
+                                                <Text>{memberLocation.member.Nickname}</Text>
                                             </TouchableOpacity>
                                         )
                                     }
