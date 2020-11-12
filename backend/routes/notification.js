@@ -42,4 +42,36 @@ router.get('/:userId', function(req, res, next) {
   });
 })
 
+router.patch('/:userId/:notificationId', function(req, res, next) {
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    let sql;
+    let parameters;
+    sql = "UPDATE Notification SET isNew = ? WHERE UserId = ? and NotificationId = ?";
+    parameters = [req.body.isNew, req.params.userId, req.params.notificationId];
+    sql = mysql.format(sql, parameters);
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        throw error;
+      }
+      if (results.length > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "Notification is Updated"
+          }
+        })
+      } else {
+        res.status(204).send({
+          success: false,
+          error: {
+            message: "Notification Not Found"
+          }
+        })
+      }
+    });
+  });
+})
+
 module.exports = router;

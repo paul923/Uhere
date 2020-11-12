@@ -33,3 +33,22 @@ export async function getNotificationsByType(type) {
     return null;
   }
 }
+
+export async function flagIsNewNotification(notificationId, isNew) {
+  try {
+    let url = `http://${backend}:3000/notifications/${firebase.auth().currentUser.uid}/${notificationId}`;
+    let response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          isNew
+      }),
+    });
+  } catch (error) {
+    // console.error(error);
+    return null;
+  }
+}
