@@ -51,8 +51,21 @@ export default function EventDetailScreenNew({ navigation, route }) {
             let host = event.eventUsers.find(m => m.IsHost === 1);
             setHost(host);
             setIsLoading(false);
+            let interval = null;
+            interval = setInterval(() => {
+                if (new Date(event.DateTime) - new Date() > 0) {
+                    console.log("RUNNING");
+                } else {
+                    console.log("HISTORY");
+                    clearInterval(interval);
+                    navigation.navigate('HistoryDetail', {
+                        EventId: event.EventId
+                    })
+                }
+            }, 1000);
+            return () => clearInterval(interval);
         }
-        fetchData()
+        fetchData();
         loadInitial();
     }, []);
 
