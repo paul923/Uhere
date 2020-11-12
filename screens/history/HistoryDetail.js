@@ -19,7 +19,7 @@ export default function HistoryDetail({ navigation, route }) {
 
     React.useEffect(() => {
         async function fetchData() {
-            let event = await getEvent(route.params.Event.EventId);
+            let event = await getEvent(route.params.EventId);
             setEvent(event)
             let results = [];
             event.eventUsers.forEach(eventUser => {
