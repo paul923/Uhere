@@ -115,10 +115,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
           let user = firebase.auth().currentUser.uid;
           let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
           setLocations({...locations, [user]: position});
-          socket.emit('position', {
-              user,
-              position
-          })
         })
         socket.on('updatePosition', ({user, position}) => {
           setLocations((prevLocations) => {
@@ -280,7 +276,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                             >
                                                 <Image
                                                     source={getAvatarImage(member.AvatarURI)}
-                                                    style={[styles.memberAvatar,{tintColor: member.AvatarColor}]}
+                                                    style={[styles.memberAvatar,{tintColor: member.AvatarColor, borderColor: member.AvatarColor,}]}
                                                     resizeMode='contain'
                                                 />
                                                 <Text>{member.Nickname}</Text>
@@ -330,7 +326,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 10,
-        borderColor: '#15cdca',
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center'
