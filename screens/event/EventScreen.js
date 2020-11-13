@@ -10,6 +10,7 @@ const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 import { getEvents } from 'api/event';
 import { FloatingAction } from "react-native-floating-action";
+import UhereHeader from 'components/UhereHeader';
 
 export default function EventScreen({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
@@ -42,19 +43,9 @@ export default function EventScreen({ navigation, route }) {
   }
   return (
     <View style={styles.container}>
-      <Header
-        backgroundColor="#ffffff"
-        centerComponent={
-          <Image
-            source={{uri: 'assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png'}}
-            style={{
-              height: 40,
-              width: 100
-            }}
-            resizeMode="contain"
-          />}
-        statusBarProps={{translucent: true}}
-        />
+      <UhereHeader
+          showBackButton={false}
+      />
       <View style={styles.container}>
         <SectionList
         style={styles.listContainer}
