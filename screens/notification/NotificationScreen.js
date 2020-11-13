@@ -84,6 +84,7 @@ export default function NotificationScreen({ navigation, route }) {
                   <InviteNotificationCard
                     item={item}
                     navigation={navigation}
+                    onRefresh={onRefresh}
                   />
                 )
 

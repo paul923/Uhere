@@ -6,8 +6,8 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function InviteNotificationCard({onPress, item, status}) {
-
+export default function InviteNotificationCard({navigation, item, onRefresh}) {
+  console.log(item);
   return (
     <View style={item.isNew ? styles.newCardContainer : styles.cardContainer}>
       <View style={styles.cardContent}>
@@ -19,7 +19,15 @@ export default function InviteNotificationCard({onPress, item, status}) {
           <View style={{
             ...styles.cardRow,
           }}>
-            <Text style={styles.inviteContent}>You are invited to event {item ? item.Name : "No Name"}</Text>
+            {item.Status === 'PENDING' && (
+              <Text style={styles.inviteContent}>You are invited to event {item ? item.Name : "No Name"}</Text>
+            )}
+            {item.Status === 'DECLINED' && (
+              <Text style={styles.inviteContent}>You declined invite to event {item ? item.Name : "No Name"}</Text>
+            )}
+            {item.Status === 'ACCEPTED' && (
+              <Text style={styles.inviteContent}>You accepted invite to event {item ? item.Name : "No Name"}</Text>
+            )}
           </View>
           <View style={styles.cardRow}>
           <Text style={styles.dateContent}>
@@ -27,14 +35,32 @@ export default function InviteNotificationCard({onPress, item, status}) {
           </Text>
           </View>
         </View>
-        <View style={styles.cardColumn}>
-          <TouchableOpacity style={styles.acceptButton} onPress={() => acceptEvent(item.EventId)}>
-            <Text style={styles.buttonFont}>Accept</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.declineButton} onPress={() => declineEvent(item.EventId)}>
-            <Text style={styles.buttonFont}>Decline</Text>
-          </TouchableOpacity>
-        </View>
+        {item.Status === 'PENDING' && (
+          <View style={styles.cardColumn}>
+            <TouchableOpacity style={styles.acceptButton} onPress={() => {
+              acceptEvent(item.EventId);
+              onRefresh();
+            }}>
+              <Text style={styles.buttonFont}>Accept</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.declineButton} onPress={() => {
+              declineEvent(item.EventId);
+              onRefresh();
+            }}>
+              <Text style={styles.buttonFont}>Decline</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        {item.Status === 'ACCEPTED' && (
+          <View style={styles.cardColumn}>
+            <TouchableOpacity style={styles.goButton} onPress={() => navigation.navigate('Event Detail New', {
+              EventId: item.EventId,
+              EventType: "ON-GOING"
+            })}>
+              <Text style={styles.buttonFont}>Go</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   )
@@ -127,6 +153,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#505050",
     marginBottom: 5,
     marginTop: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  goButton: {
+    width: 73,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#15cdca",
     alignItems: 'center',
     justifyContent: 'center'
   },

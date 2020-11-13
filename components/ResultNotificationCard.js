@@ -6,7 +6,7 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function ResultNotificationCard({navigation, onPress, item, status}) {
+export default function ResultNotificationCard({navigation, item}) {
 
   return (
     <View style={item.isNew ? styles.newCardContainer : styles.cardContainer}>
