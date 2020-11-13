@@ -18,6 +18,7 @@ import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
 import { getAvatarImage } from 'utils/asset'
+import { StackActions } from '@react-navigation/native';
 
 
 const SCREEN = Dimensions.get('window');
@@ -57,7 +58,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     
                 } else {
                     clearInterval(interval);
-                    navigation.navigate('HistoryDetail', {
+                    //const popAction = StackActions.pop(1);
+                    //navigation.dispatch(popAction);
+                    navigation.navigate('History', {
                         EventId: event.EventId
                     })
                 }

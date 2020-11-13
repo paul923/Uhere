@@ -15,6 +15,11 @@ export default function HistoryNavigator({ navigation, route }) {
 
 	// Load any resources or data that we need prior to rendering the app
 	React.useEffect(() => {
+		if(route.params.EventId){
+			navigation.navigate('HistoryDetail', {
+				EventId: route.params.EventId
+			})
+		}
 	}, []);
 
 	return (
