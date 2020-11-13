@@ -51,8 +51,20 @@ export default function EventDetailScreenNew({ navigation, route }) {
             let host = event.eventUsers.find(m => m.IsHost === 1);
             setHost(host);
             setIsLoading(false);
+            let interval = null;
+            interval = setInterval(() => {
+                if (new Date(event.DateTime) - new Date() > 0) {
+                    
+                } else {
+                    clearInterval(interval);
+                    navigation.navigate('HistoryDetail', {
+                        EventId: event.EventId
+                    })
+                }
+            }, 1000);
+            return () => clearInterval(interval);
         }
-        fetchData()
+        fetchData();
         loadInitial();
     }, []);
 
@@ -102,10 +114,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
           let user = firebase.auth().currentUser.uid;
           let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
           setLocations({...locations, [user]: position});
-          socket.emit('position', {
-              user,
-              position
-          })
         })
         socket.on('updatePosition', ({user, position}) => {
           setLocations((prevLocations) => {
@@ -255,22 +263,21 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
                             {/* eventMembers */}
                             {
-                                Object.keys(locations).map((key) => {
-                                    const member = eventMembers.find(m => m.UserId === key);
-                                    if (/*key !== firebase.auth().currentUser.uid*/true) {
-                                        let memberRegion = { latitude: locations[key].latitude, longitude: locations[key].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+                                memberLocations.map(memberLocation => {
+                                    if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
+                                        let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, longitude: locations[memberLocation.member.UserId].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
                                         return (
                                             <TouchableOpacity
                                                 style={styles.avatarView}
-                                                key={key}
+                                                key={memberLocation.member.UserId}
                                                 onPress={() => mapRef.current.animateToRegion(memberRegion)}
                                             >
                                                 <Image
-                                                    source={getAvatarImage(member.AvatarURI)}
-                                                    style={[styles.memberAvatar,{tintColor: member.AvatarColor}]}
+                                                    source={getAvatarImage(memberLocation.member.AvatarURI)}
+                                                    style={[styles.memberAvatar,{tintColor: memberLocation.member.AvatarColor, borderColor: memberLocation.member.AvatarColor,}]}
                                                     resizeMode='contain'
                                                 />
-                                                <Text>{member.Nickname}</Text>
+                                                <Text>{memberLocation.member.Nickname}</Text>
                                             </TouchableOpacity>
                                         )
                                     }
@@ -316,7 +323,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 10,
-        borderColor: '#15cdca',
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center'
