@@ -210,7 +210,7 @@ router.post('/:eventId/users/', function (req, res) {
     if (eventUserResults.affectedRows > 0) {
       let notifications = [];
       notifications = req.body.users.map(x => [req.params.eventId, x.UserId, 'INVITE', new Date()]);
-      var notificationSql = "INSERT INTO ?? VALUES ?";
+      var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
       var parameters = ['Notification'];
       notificationSql = mysql.format(notificationSql, parameters);
       connection.query(notificationSql, [notifications], function (error, results, fields) {
@@ -448,12 +448,12 @@ router.post('/', function (req,res) {
         throw error;
       }
       if (results.insertId) {
+        const eventId = results.insertId;
         let users = [];
         if (req.body.users){
-          users = req.body.users.map(x => [results.insertId, x.UserId, 'PENDING', false, null, 0]);
+          users = req.body.users.map(x => [eventId, x.UserId, 'PENDING', false, null, 0]);
         }
-        users.push([results.insertId, req.body.host, 'ACCEPTED', true, null, 0]);
-        const eventId = results.insertId;
+        users.push([eventId, req.body.host, 'ACCEPTED', true, null, 0]);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);
@@ -471,7 +471,7 @@ router.post('/', function (req,res) {
           }
           let notifications = [];
           notifications = req.body.users.map(x => [eventId, x.UserId, 'INVITE', new Date()]);
-          var notificationSql = "INSERT INTO ?? VALUES ?";
+          var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
           var parameters = ['Notification'];
           notificationSql = mysql.format(notificationSql, parameters);
           connection.query(notificationSql, [notifications], function (error, results, fields) {
@@ -486,7 +486,7 @@ router.post('/', function (req,res) {
               throw error;
             }
             var eventJob = {
-              EventId: results.insertId,
+              EventId: eventId,
               DateTime: new Date(req.body.event.DateTime),
               IsProcessed: 0
             }
@@ -516,48 +516,22 @@ router.post('/', function (req,res) {
                     connection.query(sql, function (error, userResults, fields) {
                       if (error) {
                         connection.release();
-                        res.status(500).send({
-                          success: false,
-                          error: {
-                            message: "Database Error"
-                          }
-                        })
                       }
                       if (userResults.length > 0) {
                         let notifications = [];
                         notifications = userResults.map(x => [eventId, x.UserId, 'START', new Date()]);
-                        var notificationSql = "INSERT INTO ?? VALUES ?";
+                        var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
                         var parameters = ['Notification'];
                         notificationSql = mysql.format(notificationSql, parameters);
                         connection.query(notificationSql, [notifications], function (error, results, fields) {
                           if (error) {
                             connection.release();
-                            res.status(500).send({
-                              success: false,
-                              error: {
-                                message: "Database Error"
-                              }
-                            })
                             throw error;
                           }
-                          if (results.affectedRows > 0) {
-                            connection.release();
-                            res.status(201).send({
-                              success: true,
-                              body: {
-                                message: "Notifications Created"
-                              }
-                            })
-                          }
+                          connection.release();
                         })
                       } else {
                         connection.release();
-                        res.send({
-                          success: true,
-                          error: {
-                            message: "No Notifications Created"
-                          }
-                        })
                       }
                     })
                   })
@@ -572,48 +546,18 @@ router.post('/', function (req,res) {
                     connection.query(sql, function (error, userResults, fields) {
                       if (error) {
                         connection.release();
-                        res.status(500).send({
-                          success: false,
-                          error: {
-                            message: "Database Error"
-                          }
-                        })
                       }
                       if (userResults.length > 0) {
                         let notifications = [];
                         notifications = userResults.map(x => [eventId, x.UserId, 'BEFORE', new Date()]);
-                        var notificationSql = "INSERT INTO ?? VALUES ?";
+                        var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
                         var parameters = ['Notification'];
                         notificationSql = mysql.format(notificationSql, parameters);
                         connection.query(notificationSql, [notifications], function (error, results, fields) {
-                          if (error) {
-                            connection.release();
-                            res.status(500).send({
-                              success: false,
-                              error: {
-                                message: "Database Error"
-                              }
-                            })
-                            throw error;
-                          }
-                          if (results.affectedRows > 0) {
-                            connection.release();
-                            res.status(201).send({
-                              success: true,
-                              body: {
-                                message: "Notifications Created"
-                              }
-                            })
-                          }
+                          connection.release();
                         })
                       } else {
                         connection.release();
-                        res.send({
-                          success: true,
-                          error: {
-                            message: "No Notifications Created"
-                          }
-                        })
                       }
                     })
                   })
@@ -628,12 +572,6 @@ router.post('/', function (req,res) {
                     connection.query(sql, function (error, userResults, fields) {
                       if (error) {
                         connection.release();
-                        res.status(500).send({
-                          success: false,
-                          error: {
-                            message: "Database Error"
-                          }
-                        })
                       }
                       req.app.get('io').in('lobby').clients(function(error, clients) {
                         clients.forEach(function(socketId){
@@ -656,14 +594,6 @@ router.post('/', function (req,res) {
                       eventJobSql = mysql.format(eventJobSql, parameters);
                       connection.query(eventJobSql, function (error, eventJobResult, fields) {
                         connection.release();
-                        if (error) {
-                          res.status(500).send({
-                            success: false,
-                            error: {
-                              message: "Database Error"
-                            }
-                          })
-                        }
                       })
                     });
                   })
