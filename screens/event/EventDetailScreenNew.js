@@ -58,8 +58,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     
                 } else {
                     clearInterval(interval);
-                    //const popAction = StackActions.pop(1);
-                    //navigation.dispatch(popAction);
                     navigation.navigate('History', {
                         EventId: event.EventId
                     })
@@ -155,6 +153,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     eventTitle={event.Name}
                     membersData={eventMembers}
                     hostData={host}
+                    navigation={() => navigation.navigate('Event Edit', {EventId: event.EventId, close:() => drawerRef.current.closeDrawer()} )}
+                    close = {() => drawerRef.current.closeDrawer()}
                 />)}
             >
             <UhereHeader

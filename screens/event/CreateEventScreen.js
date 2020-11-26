@@ -18,7 +18,7 @@ import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 
-import { createEvent } from 'api/event';
+import { createEvent,getEvent } from 'api/event';
 
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
@@ -40,7 +40,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 const SetupStack = createStackNavigator();
 
-export default function CreateEventScreen({navigation}) {
+export default function CreateEventScreen({navigation, route}) {
   const [ step, setStep] = React.useState("Location");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
@@ -124,6 +124,20 @@ export default function CreateEventScreen({navigation}) {
 
 
     }
+    async function fillEvent(){
+      let event = await getEvent(route.params.EventId);
+      console.log(event);
+      setEventName(event.Name);
+      setEventDescription(event.Description);
+      setEventMembers(event.eventUsers);
+      setEventDate(new Date(event.DateTime));
+      setEventTime(new Date(event.DateTime));
+      setMaximumNumberOfMembers(event.MaxMemeber);
+      let location = { name:event.LocationName, geolat:event.LocationGeolat, geolong:event.LocationGeolong, address:event.LocationAddress}
+      setLocation(location);
+      setStep("Review");
+    }
+    fillEvent()
     fetchData()
     fetchRecentLocation()
 

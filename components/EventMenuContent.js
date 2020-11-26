@@ -52,8 +52,8 @@ export default function EventMenuContent(props) {
         </View>
       </View>
       <View style={styles.footer}>
-        <Icon type="material-community" name="exit-to-app" color="#636363"/>
-        <Icon type="antdesign" name="setting" color="#636363"/>
+        <Icon type="material-community" name="exit-to-app" color="#636363" onPress={props.close}/>
+        <Icon type="antdesign" name="setting" color="#636363" onPress={props.navigation}/>
       </View>
     </View>
   )
