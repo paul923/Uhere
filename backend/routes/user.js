@@ -132,11 +132,16 @@ router.get('/:userId/groups', function (req, res) {
 router.get('/:userId/relationships', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT User.*, UserRelationship.IsDeleted, UserRelationship.Type FROM ??, ??
-    WHERE UserRelationship.UserId1 = ? and User.UserId = UserRelationship.UserId2 and UserRelationship.IsDeleted = false and User.IsDeleted = false`;
+    var sql = `
+    SELECT User.*, UserRelationship.IsDeleted, UserRelationship.Type 
+    FROM ??, ??
+    WHERE UserRelationship.UserId1 = ? 
+      and User.UserId = UserRelationship.UserId2 
+      and UserRelationship.IsDeleted = false 
+      and User.IsDeleted = false
+    `;
     var parameters = ['UserRelationship', 'User', req.params.userId];
     sql = mysql.format(sql, parameters);
-    console.log(sql);
     connection.query(sql, function (error, results, fields) {
       if (error) {
         res.status(500).send({
@@ -150,17 +155,17 @@ router.get('/:userId/relationships', function (req, res) {
         const promises = []
         results.forEach(result => {
           var sql = `SELECT *
-          FROM uhere.User 
+          FROM User 
           WHERE 1=1
           AND UserId = ?
           AND IsDeleted = false`;
           const promise = new Promise((resolve, reject) => {
-            connection.query(sql, result.UserId2, function (error, user) {
+            connection.query(sql, result.UserId, function (error, user) {
               if (error) {
                 res.status(500).send({
                   success: false,
                   error: {
-                    message: "Database Error"
+                    message: "Database Error2"
                   }
                 });
               } else {
@@ -192,19 +197,23 @@ router.get('/:userId/relationships', function (req, res) {
   });
 })
 
-router.get('/:userId/relationships/:username', function (req, res) {
+router.get('/:userId/relationships/:userName', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `SELECT UserRelationship.*
-    FROM UserRelationship
-    left join User on UserRelationship.UserId2 = User.UserId
-    WHERE 1=1
-    AND Userid1 = ?
-    AND Username = ?
-    AND UserRelationship.IsDeleted = false
-    AND User.IsDeleted = false`;
-    var parameters = [req.params.userId, req.params.username];
-    sql = mysql.format(sql, parameters);
+    var sql = `
+    SELECT User.*, 
+      (SELECT COUNT(UserId2) 
+      FROM UserRelationship 
+      WHERE UserId1 = '${req.params.userId}' 
+        AND UserId2 = User.UserId 
+        AND IsDeleted = 0) HasRelationship,
+      (SELECT COUNT(IsDeleted) 
+      FROM UserRelationship 
+      WHERE UserId1 = '${req.params.userId}' 
+        AND UserId2 = User.UserId) HadRelationship 
+    FROM User 
+    WHERE Username = '${req.params.userName}'
+    `;
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {

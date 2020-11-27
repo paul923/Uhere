@@ -65,7 +65,7 @@ export default function ResultLateScreen({navigation, route}){
           data={userList}
           renderItem={renderItem}
           style={styles.lateList}
-          keyExtractor={item => item.Nickname}
+          keyExtractor={item => item.UserId}
         />
       </View>
       <View style={styles.buttonContainer}>

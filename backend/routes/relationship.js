@@ -25,20 +25,48 @@ router.get('/:userId', function(req, res, next) {
   });
 })
 
-router.get('/type/:uid/:userName', function(req, res, next) {
+router.get('/types/:userId/:userName', function(req, res, next) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = `select User.*, (select COUNT(UserId2) from UserRelationship where UserId1 = '${req.params.uid}' and UserId2 = User.UserId and IsDeleted = 0) HasRelationship, (select COUNT(IsDeleted) from UserRelationship where UserId1 = 'O1BDrdaufPcrbKaKt4v1w8Bz0Zl1' and UserId2 = User.UserId) WasDeleted from User where Username = '${req.params.userName}'`;
+    var sql = `
+    SELECT User.*, 
+      (SELECT COUNT(UserId2) 
+      FROM UserRelationship 
+      WHERE UserId1 = '${req.params.userId}' 
+        AND UserId2 = User.UserId 
+        AND IsDeleted = 0) HasRelationship,
+      (SELECT COUNT(IsDeleted) 
+      FROM UserRelationship 
+      WHERE UserId1 = '${req.params.userId}' 
+        AND UserId2 = User.UserId) HadRelationship 
+    FROM User 
+    WHERE Username = '${req.params.userName}'
+    `;
     // Executing the MySQL query (select relationship type from the 'UserRelationship' table).
     connection.query(sql, function (error, results, fields) {
       connection.release();
       if (error) {
-        throw error;
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
       }
       if (results.length > 0) {
-        res.json({"status": 200, "response": results});
+        res.status(200).send({
+          success: true,
+          body: {
+            results
+          }
+        });
       } else {
-        res.json({"status": 204, "response": "Not Found"})
+        res.status(404).send({
+          success: false,
+          error: {
+            message: "User Not Found with Username: " + req.params.userName
+          }
+        })
       }
     });
   });

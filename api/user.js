@@ -37,7 +37,7 @@ export async function getGroupsByUserId(UserId) {
         let response = await fetch(url);
         let json = await response.json();
         if (json.success) {
-            return json.body.results[0];
+            return json.body.results;
         } else {
             return null;
         }
