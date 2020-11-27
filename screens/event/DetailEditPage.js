@@ -50,8 +50,7 @@ export default function DetailEditPage({ navigation, route }) {
         onPressBackButton={() => {
           route.params.close()
           navigation.navigate('Event Detail New', {
-            EventId: route.params.EventId,
-            EventType: "ON-GOING"
+            EventId: route.params.EventId
           })
         }}
       />
