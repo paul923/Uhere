@@ -127,7 +127,6 @@ export default function COPY({navigation, route}) {
     }
     async function fillEvent(){
       let event = await getEvent(route.params.EventId);
-      console.log(event);
       setEventName(event.Name);
       setEventDescription(event.Description);
       setEventMembers(event.eventUsers);

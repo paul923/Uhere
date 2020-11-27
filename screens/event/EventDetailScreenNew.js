@@ -42,31 +42,12 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const drawerRef = React.useRef(null);
 
     React.useEffect(() => {
-        async function fetchData() {
-            let event = await getEvent(route.params.EventId);
-            setEvent(event);
-            let location = await Location.getCurrentPositionAsync();
-            let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-            setMapRegion(region);
-            setEventMembers(event.eventUsers);
-            let host = event.eventUsers.find(m => m.IsHost === 1);
-            setHost(host);
-            setIsLoading(false);
-            let interval = null;
-            interval = setInterval(() => {
-                if (new Date(event.DateTime) - new Date() > 0) {
-                    
-                } else {
-                    clearInterval(interval);
-                    navigation.navigate('History', {
-                        EventId: event.EventId
-                    })
-                }
-            }, 1000);
-            return () => clearInterval(interval);
-        }
-        fetchData();
-        loadInitial();
+        const unsubscribeFocus = navigation.addListener('focus', () => {
+            console.log('refreshed');
+            fetchData();
+            loadInitial();
+          });
+          return unsubscribeFocus;
     }, []);
 
     React.useEffect(() => {
@@ -107,6 +88,30 @@ export default function EventDetailScreenNew({ navigation, route }) {
     async function _goToEventLocation() {
         let region = { latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta:LATITUDE_DELTA_MAP*0.1, longitudeDelta: LONGITUDE_DELTA_MAP*0.1 }
         mapRef.current.animateToRegion(region);
+    }
+
+    async function fetchData() {
+        let event = await getEvent(route.params.EventId);
+        setEvent(event);
+        let location = await Location.getCurrentPositionAsync();
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        setMapRegion(region);
+        setEventMembers(event.eventUsers);
+        let host = event.eventUsers.find(m => m.IsHost === 1);
+        setHost(host);
+        setIsLoading(false);
+        let interval = null;
+        interval = setInterval(() => {
+            if (new Date(event.DateTime) - new Date() > 0) {
+                
+            } else {
+                clearInterval(interval);
+                navigation.navigate('History', {
+                    EventId: event.EventId
+                })
+            }
+        }, 1000);
+        return () => clearInterval(interval);
     }
 
     async function loadInitial() {
