@@ -10,7 +10,7 @@ import Constants from "expo-constants";
 import firebase from "firebase";
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
-import { getNotifications } from 'api/notification';
+import { getNotifications, flagIsNewNotification } from 'api/notification';
 import { FloatingAction } from "react-native-floating-action";
 import UhereHeader from "../../components/UhereHeader"
 
@@ -25,7 +25,8 @@ export default function NotificationScreen({ navigation, route }) {
       } else {
         setNotifications(formatNotification(notifications))
       }
-    }
+      setReadNotification(notifications);
+      }
     const unsubscribeFocus = navigation.addListener('focus', () => {
       fetchData();
     });
@@ -41,6 +42,15 @@ export default function NotificationScreen({ navigation, route }) {
       setNotifications(formatNotification(notifications))
     }
     setIsFetching(false);
+    setReadNotification(notifications);
+  }
+
+  async function setReadNotification(notifications) {
+    notifications.forEach(async notification => {
+      if (notification.isNew) {
+        await flagIsNewNotification(notification.NotificationId, false);
+      }
+    })
   }
   return (
     <View style={styles.container}>
@@ -74,6 +84,7 @@ export default function NotificationScreen({ navigation, route }) {
                   <InviteNotificationCard
                     item={item}
                     navigation={navigation}
+                    onRefresh={onRefresh}
                   />
                 )
 

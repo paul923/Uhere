@@ -178,7 +178,7 @@ export default function MainAppNavigator({ navigation, route }) {
         component={NotificationNavigator}
         options={({ route }) => ({
           title: 'Notification',
-          tabBarIcon: ({ focused, size  }) => <Image source={ require('assets/icons/home/Group11Copy.png') } style={{height:size , width:size}} resizeMode={'contain'} />,
+          tabBarIcon: ({ focused, size  }) => <Image source={ require('assets/icons/notification/Group16.png') } style={{height:size , width:size}} resizeMode={'contain'} />,
           headerMode: 'none',
           tabBarVisible: showTab(route)
         })}

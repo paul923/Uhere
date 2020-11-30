@@ -6,10 +6,10 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function ResultNotificationCard({navigation, onPress, item, status}) {
+export default function ResultNotificationCard({navigation, item}) {
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={item.isNew ? styles.newCardContainer : styles.cardContainer}>
       <View style={styles.cardContent}>
         <View style={{
           ...styles.cardColumn,
@@ -45,6 +45,22 @@ const styles = StyleSheet.create({
     height: 84,
     flexDirection: 'row',
     backgroundColor: '#ffffff',
+    borderRadius: 7,
+    marginHorizontal: 15,
+    marginVertical: 8,
+    shadowColor: "rgba(0, 0, 0, 0.2)",
+    shadowOffset: {
+      width: 0,
+      height: 5
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1,
+    padding: 10
+  },
+  newCardContainer: {
+    height: 84,
+    flexDirection: 'row',
+    backgroundColor: '#fdffb6',
     borderRadius: 7,
     marginHorizontal: 15,
     marginVertical: 8,
