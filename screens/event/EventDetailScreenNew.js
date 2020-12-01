@@ -43,7 +43,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     React.useEffect(() => {
         const unsubscribeFocus = navigation.addListener('focus', () => {
-            console.log('refreshed');
             fetchData();
             loadInitial();
           });

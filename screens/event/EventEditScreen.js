@@ -41,7 +41,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 const SetupStack = createStackNavigator();
 
-export default function COPY({navigation, route}) {
+export default function EventEditScreen({navigation, route}) {
   const [ step, setStep] = React.useState("Location");
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
