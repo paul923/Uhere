@@ -19,9 +19,8 @@ export default function HistoryDetail({ navigation, route }) {
 
     React.useEffect(() => {
         async function fetchData() {
-            let event = await getEvent(route.params.Event.EventId);
+            let event = await getEvent(route.params.EventId);
             setEvent(event)
-            console.log(event);
             let results = [];
             event.eventUsers.forEach(eventUser => {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
@@ -45,8 +44,9 @@ export default function HistoryDetail({ navigation, route }) {
             });
             results.sort((a, b) => (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0));
             setResults(results);
-            let index = results.findIndex(x => x.id === firebase.auth().currentUser.uid);
-            setMyRank(stringifyNumber(index + 1));
+            let index = results.findIndex(x => x.UserId === firebase.auth().currentUser.uid);
+            let myresult = results[index];
+            setMyRank(myresult.LateFlag === "LATE" ? "late" : stringifyNumber(index + 1));
             setIsLoading(false);
         }
         fetchData();

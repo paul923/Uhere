@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet,  View, TextInput, TouchableOpacity } from 'react-native';
-import {Icon, Header, Input, Text, Button} from 'react-native-elements'
+import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
+import { Icon, Header, Input, Text, Button } from 'react-native-elements'
 
 import { ScrollView } from 'react-native-gesture-handler';
 import RNPickerSelect from 'react-native-picker-select';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import UhereHeader from '../../components/UhereHeader';
 
 import { Appearance, useColorScheme } from 'react-native-appearance';
 
@@ -23,8 +24,8 @@ export default function DetailEditPage({ navigation, route }) {
 
   React.useEffect(() => {
     console.log(colorScheme)
-  },[]);
-  
+  }, []);
+
 
 
   const showDatePicker = () => {
@@ -41,40 +42,31 @@ export default function DetailEditPage({ navigation, route }) {
     hideDatePicker();
   };
 
-  return(
-    
+  return (
+
     <View style={styles.container}>
-      <Header
-        centerComponent={{text: 'Edit', style: { color: '#fff' }}}
-        leftComponent= {
-          <Icon
-            name="close"
-            type="antdesign"
-            color="white"
-            onPress={()=> navigation.goBack()}
-          />
-        }
-        rightComponent={
-          <TouchableOpacity onPress={()=> console.log('save')}>
-            <View>
-              <Text style={{color: 'white'}}>Save</Text>
-            </View>
-          </TouchableOpacity>
-        }
+      <UhereHeader
+        showBackButton={true}
+        onPressBackButton={() => {
+          route.params.close()
+          navigation.navigate('Event Detail New', {
+            EventId: route.params.EventId
+          })
+        }}
       />
       <ScrollView
         centerContent
         contentContainerStyle={{
-          flexGrow:1,
+          flexGrow: 1,
         }}
       >
         <Input
           containerStyle={styles.titleInput}
           placeholder='Title'
           value={eventTitle}
-          onChangeText={(text)=> setEventTitle(text)}
+          onChangeText={(text) => setEventTitle(text)}
         />
-        
+
         <View style={styles.menuBox}>
           <View style={styles.leftBox}><Text style={styles.leftText}>Starts</Text></View>
           <View style={styles.rightBox}>
@@ -86,7 +78,7 @@ export default function DetailEditPage({ navigation, route }) {
               minimumDate={new Date(Date.now())}
               isDarkModeEnabled={colorScheme === 'dark'}
             />
-            <TouchableOpacity onPress={showDatePicker} style={{minHeight: 30}}>
+            <TouchableOpacity onPress={showDatePicker} style={{ minHeight: 30 }}>
               <Text style={styles.rightText}>{eventStartTime}</Text>
             </TouchableOpacity>
           </View>
@@ -94,15 +86,15 @@ export default function DetailEditPage({ navigation, route }) {
 
         <View style={styles.menuBox}>
           <View style={styles.leftBox}><Text style={styles.leftText}>Location</Text></View>
-          
-            <View style={styles.rightBox}>
-              
-          <TouchableOpacity onPress={()=> navigation.navigate('Location Search')}  style={{minHeight: 30}}>
-                <Text style={styles.rightText}>{eventLocation}</Text>
-          </TouchableOpacity>
-            </View>
+
+          <View style={styles.rightBox}>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Location Search')} style={{ minHeight: 30 }}>
+              <Text style={styles.rightText}>{eventLocation}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        
+
         <View style={styles.menuBox}>
           <View style={styles.leftBox}><Text style={styles.leftText}>Penalty</Text></View>
           <View style={styles.rightBox}>
@@ -123,12 +115,12 @@ export default function DetailEditPage({ navigation, route }) {
                 },
               ]}
               style={pickerSelectStyles}
-              value= {eventPenalty}
+              value={eventPenalty}
               useNativeAndroidPickerStyle={false}
             />
           </View>
         </View>
-        
+
         <View style={styles.menuBox}>
           <View style={styles.leftBox}><Text style={styles.leftText}>Reminder</Text></View>
           <View style={styles.rightBox}>
@@ -149,7 +141,7 @@ export default function DetailEditPage({ navigation, route }) {
                 },
               ]}
               style={pickerSelectStyles}
-              value= {eventReminder}
+              value={eventReminder}
               useNativeAndroidPickerStyle={false}
             />
           </View>
@@ -163,7 +155,7 @@ export default function DetailEditPage({ navigation, route }) {
           }}
           placeholder='Add Description'
           value={eventDescription}
-          onChangeText={(text)=> setEventDescription(text)}
+          onChangeText={(text) => setEventDescription(text)}
         />
       </ScrollView>
     </View>
@@ -189,16 +181,16 @@ const styles = StyleSheet.create({
   leftBox: {
     justifyContent: 'center',
   },
-  rightBox:{
+  rightBox: {
     justifyContent: 'center',
     flex: 1,
   },
-  leftText:{
+  leftText: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10
   },
-  rightText:{
+  rightText: {
     fontSize: 11,
     fontWeight: 'bold',
     textAlign: 'right'

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
-import { formatDate, formatTime } from "utils/date";
+import { formatDate, formatDateFormat } from "utils/date";
 import EventDetailWithMiniMap from 'screens/event/EventDetailWithMiniMap'
 import EventMap from 'screens/event/EventMap'
 import SideMenu from 'react-native-side-menu'
@@ -12,9 +12,13 @@ import firebase from 'firebase';
 import { getEvent } from 'api/event'
 import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
+import UhereSideMenu from '../../components/UhereSideMenu';
+import EventMenuContent from '../../components/EventMenuContent'
 import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
+import { getAvatarImage } from 'utils/asset'
+import { StackActions } from '@react-navigation/native';
 
 
 const SCREEN = Dimensions.get('window');
@@ -27,32 +31,107 @@ export default function EventDetailScreenNew({ navigation, route }) {
     
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
-
-    const [isModalVisible, setModalVisible] = React.useState(false);
-
+    const [host, setHost] = React.useState();
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
-    const [screen, setScreen] = React.useState("EventDetail");
+    const [memberLocations, setMemberLocations] = React.useState([]);
+    
+    const [isModalVisible, setModalVisible] = React.useState(false);
 
     const mapRef = React.useRef();
+    const drawerRef = React.useRef(null);
 
     React.useEffect(() => {
-        async function fetchData() {
-            let event = await getEvent(route.params.EventId);
-            setEvent(event);
-            let location = await Location.getCurrentPositionAsync();
-            let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-            setMapRegion(region);
-            setIsLoading(false);
-        }
-        fetchData()
+        const unsubscribeFocus = navigation.addListener('focus', () => {
+            fetchData();
+            loadInitial();
+          });
+          return unsubscribeFocus;
     }, []);
+
+    React.useEffect(() => {
+        if(!isLoading){
+            Object.keys(locations).map((key) => {
+                const memberLocation = memberLocations.find(m => m.member.UserId === key);
+                if (memberLocation === undefined) {
+                    // create and add it to array with new animated marker
+                    const member = eventMembers.find(m => m.UserId === key);
+                    const latitude = locations[key].latitude;
+                    const longitude = locations[key].longitude;
+                    const memberLocation = {
+                        member: member,
+                        location: new AnimatedRegion({
+                            latitude: latitude,
+                            longitude: longitude,
+                            latitudeDelta: LATITUDE_DELTA_MAP,
+                            longitudeDelta: LONGITUDE_DELTA_MAP,
+                        })
+                    }
+                    memberLocations.push(memberLocation);
+                    setMemberLocations(memberLocations);
+                } else {
+                    memberLocation.location.timing({
+                        latitude: locations[key].latitude,
+                        longitude: locations[key].longitude,
+                    }).start();
+                }
+            })
+        }
+    }, [locations])
 
     async function _goToMyLocation() {
         let location = await Location.getCurrentPositionAsync();
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         mapRef.current.animateToRegion(region);
     }
+    async function _goToEventLocation() {
+        let region = { latitude: event.LocationGeolat, longitude: event.LocationGeolong, latitudeDelta:LATITUDE_DELTA_MAP*0.1, longitudeDelta: LONGITUDE_DELTA_MAP*0.1 }
+        mapRef.current.animateToRegion(region);
+    }
+
+    async function fetchData() {
+        let event = await getEvent(route.params.EventId);
+        setEvent(event);
+        let location = await Location.getCurrentPositionAsync();
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        setMapRegion(region);
+        setEventMembers(event.eventUsers);
+        let host = event.eventUsers.find(m => m.IsHost === 1);
+        setHost(host);
+        setIsLoading(false);
+        let interval = null;
+        interval = setInterval(() => {
+            if (new Date(event.DateTime) - new Date() > 0) {
+                
+            } else {
+                clearInterval(interval);
+                navigation.navigate('History', {
+                    EventId: event.EventId
+                })
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }
+
+    async function loadInitial() {
+        socket.on('requestPosition', async () => {
+          let location = await Location.getCurrentPositionAsync();
+          let user = firebase.auth().currentUser.uid;
+          let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+          setLocations({...locations, [user]: position});
+        })
+        socket.on('updatePosition', ({user, position}) => {
+          setLocations((prevLocations) => {
+            return {
+              ...prevLocations,
+              [user]: position
+            }
+          })
+        })
+        socket.emit('requestPosition', {event: route.params.EventId});
+      }
+
+
     async function _fitAll() {
         let location = await Location.getCurrentPositionAsync();
         let coordinates = []
@@ -72,9 +151,21 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     return (
         <View style={styles.container}>
+            <UhereSideMenu
+                drawerRef={drawerRef}
+                data={!isLoading && event &&(<EventMenuContent
+                    eventTitle={event.Name}
+                    membersData={eventMembers}
+                    hostData={host}
+                    navigation={() => navigation.navigate('Event Edit', {EventId: event.EventId, close:() => drawerRef.current.closeDrawer()} )}
+                    close = {() => drawerRef.current.closeDrawer()}
+                />)}
+            >
             <UhereHeader
                 showBackButton={true}
                 onPressBackButton={() => navigation.navigate('Event')}
+                showSideMenu={true}
+                onPressSideMenu={() => drawerRef.current.openDrawer()}
             />
             {!isLoading && event && (
                 <React.Fragment>
@@ -88,6 +179,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         style={styles.mapStyle}
                         showsUserLocation={true}
                         showsMyLocationButton={false}
+                        showsCompass={false}
                         // region : which section of the map to render/zoom
                         initialRegion={mapRegion}
                     >
@@ -103,9 +195,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             fillColor='rgba(0, 12, 214, 0.2)'
                         />
                         {/* Member Markers */}
-                        {/* {
+                        {
                             memberLocations.map(memberLocation => {
-                                if (memberLocation.member.UserId !== firebase.auth().currentUser.uid) {
+                                if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
                                     return (
                                         <MapView.Marker.Animated
                                             key={memberLocation.member.UserId}
@@ -116,7 +208,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                     )
                                 }
                             })
-                        } */}
+                        }
                     </MapView>
                     {/* My Location */}
                     <TouchableOpacity
@@ -130,7 +222,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     {/* Meeting Location */}
                     <TouchableOpacity 
                         style={styles.meetingLocationStyle}
-                        onPress={_fitAll}
+                        onPress={_goToEventLocation}
                         >
                         <Image
                             source={require('../../assets/icons/event/info_location.png')}
@@ -145,17 +237,64 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             source={require('../../assets/icons/event/icon_info.png')}
                         />
                     </TouchableOpacity>
+                    {/* Info Modal */}
                     <Modal style={styles.modalContainer}
+                        animationIn='zoomIn'
+                        animationOut='zoomOut'
+                        //backdropOpacity={0}
                         isVisible={isModalVisible}
                         onBackdropPress={() => setModalVisible(false)}>
                         <View style={styles.Modal}>
-                            <Text>Latest buys all! Don't be late</Text>
-                            <Text>I am the modal content!</Text>
-                            <Text>I am the modal content!</Text>
+                            <Text style={{color: '#15cdca', fontSize: 20, margin:10}}>Latest buys all! Don't be late</Text>
+                            <View style={styles.horizontalLine}></View>
+                            
+                            <Text style={{color: '#15cdca', fontSize: 15 ,marginLeft:10}}>Where?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>{event.LocationName}</Text>
+                            
+                            <Text style={{color: '#15cdca', fontSize: 15, marginLeft:10}}>When?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>
+                                {formatDateFormat(new Date(event.DateTime),'MMMM dd')} | {formatDateFormat(new Date(event.DateTime),'iiii')} | {formatDateFormat(new Date(event.DateTime),'hh:mm a')}
+                            </Text>
+                            <Text style={{color: '#15cdca', fontSize: 15 ,marginLeft:10}}>What?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>{event.Penalty}</Text>
+
+                            <Text style={{color: '#15cdca', fontSize: 15 ,marginLeft:10}}>Who?</Text>
+                            <Text style={{fontSize: 15,marginLeft:10}}>{event.MaxMember}</Text>
+
+
                         </View>
                     </Modal>
+
+                    {/* Member Infos Box */}
+                    <View style={styles.avatarContianer}>
+                        <ScrollView horizontal={true} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                            {/* eventMembers */}
+                            {
+                                memberLocations.map(memberLocation => {
+                                    if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
+                                        let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, longitude: locations[memberLocation.member.UserId].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+                                        return (
+                                            <TouchableOpacity
+                                                style={styles.avatarView}
+                                                key={memberLocation.member.UserId}
+                                                onPress={() => mapRef.current.animateToRegion(memberRegion)}
+                                            >
+                                                <Image
+                                                    source={getAvatarImage(memberLocation.member.AvatarURI)}
+                                                    style={[styles.memberAvatar,{tintColor: memberLocation.member.AvatarColor, borderColor: memberLocation.member.AvatarColor,}]}
+                                                    resizeMode='contain'
+                                                />
+                                                <Text>{memberLocation.member.Nickname}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                })
+                            }
+                        </ScrollView>
+                    </View>
                 </React.Fragment>
             )}
+            </UhereSideMenu>
         </View>
     )
 }
@@ -164,25 +303,54 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
+    horizontalLine: {
+        backgroundColor: '#15cdca',
+        width: '90%',
+        height: 1,
+        alignSelf:'center'
+    },
+    avatarContianer: {
+        height:90,
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        shadowColor: "black",
+        shadowOffset: {
+            width: 0,
+            height: 10
+        },
+        elevation: 5,
+        shadowRadius: 10,
+        shadowOpacity: 1,
+    },
+    avatarView: {
+        margin: 10,
+        alignItems: 'center'
+    },
+    memberAvatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        borderWidth: 2,
+        justifyContent: 'center',
+        alignItems: 'center'
+      },
     modalContainer:{
         position: 'absolute',
         right:10,
-        bottom: 200,
+        bottom: 210,
         alignSelf: 'flex-end',
     },
     Modal: {
         width: 291,
         height: 214,
         backgroundColor: 'white',
-        justifyContent:'center',
-        alignItems:'center',
         borderRadius: 10,
     },
     timer: {
         position: 'absolute',
         alignSelf: 'center',
-        top: 100,
-        zIndex: 9999,
+        top: 110,
+        zIndex: 1,
     },
     mapStyle: {
         flex: 1,
@@ -199,7 +367,7 @@ const styles = StyleSheet.create({
     },
     informationStyle: {
         position: 'absolute',
-        bottom: 50,
+        bottom: 163,
         right: 0,
     },
 });

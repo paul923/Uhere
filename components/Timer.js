@@ -5,14 +5,13 @@ import { Appearance, useColorScheme } from 'react-native-appearance';
 
 
 export default function Timer({ eventDateTime }) {
-    const [timer, setTimer] = React.useState(new Date(eventDateTime) - new Date());
+    const [timer, setTimer] = React.useState(new Date(eventDateTime) - new Date() >= 1800000 ? 1800000 : new Date(eventDateTime) - new Date());
     let colorScheme = useColorScheme();
     React.useEffect(() => {
-        console.log(colorScheme)
         let interval = null;
         interval = setInterval(() => {
             if (new Date(eventDateTime) - new Date() > 0) {
-                setTimer(new Date(eventDateTime) - new Date());
+                setTimer(new Date(eventDateTime) - new Date() >= 1800000 ? 1800000 : new Date(eventDateTime) - new Date());
             } else {
                 setTimer(0);
                 clearInterval(interval);
@@ -30,7 +29,7 @@ export default function Timer({ eventDateTime }) {
 
 const styles = StyleSheet.create({
     container: {
-        width:203,
+        width:200,
         height:60,
         backgroundColor: 'white',
         justifyContent:'center',

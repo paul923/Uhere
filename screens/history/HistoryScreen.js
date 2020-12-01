@@ -17,11 +17,10 @@ export default function HistoryScreen({ navigation, route }) {
 			if (events.message === "Not Found") {
 				setEvents([]);
 				setFilteredEvents([]);
-	    } else {
+			} else {
 				setEvents(events)
 				setFilteredEvents(events);
-	    }
-
+			}
 		}
 		const unsubscribeFocus = navigation.addListener('focus', () => {
 			fetchData();
@@ -31,7 +30,6 @@ export default function HistoryScreen({ navigation, route }) {
 
 	async function filterEvents(searchText) {
 		setserchText(searchText);
-		console.log(searchText.length)
 		if (searchText.length > 0) {
 			let filtered = events.filter(
 				(event) => {
@@ -63,7 +61,7 @@ export default function HistoryScreen({ navigation, route }) {
 			<HistoryCard
 				event={item}
 				onPress={() => navigation.navigate('HistoryDetail', {
-					Event: item
+					EventId: item.EventId
 				})}
 			/>
 		)

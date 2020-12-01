@@ -57,8 +57,7 @@ export default function EventScreen({ navigation, route }) {
               item={item}
               status="ON-GOING"
               onPress={()=>navigation.navigate('Event Detail New', {
-                EventId: item.EventId,
-                EventType: "ON-GOING"
+                EventId: item.EventId              
               })}
               />
           )}

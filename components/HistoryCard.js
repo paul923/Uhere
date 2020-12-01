@@ -105,10 +105,10 @@ const styles = StyleSheet.create({
     height: 30,
     borderWidth: 1,
     borderRadius: 10,
+    borderColor: '#15cdca',
     overflow:'hidden',
     marginHorizontal: 3,
     justifyContent: "center",
     alignItems: 'center',
-    // backgroundColor: '#15CDCA'
   }
 });
