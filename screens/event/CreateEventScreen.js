@@ -660,21 +660,34 @@ export default function CreateEventScreen({navigation, route}) {
 
   async function addRecentLocation(item) {
     let locations = await AsyncStorage.getItem("recentLocation");
-    locationHistory[0].data.unshift(item);
+    locations = JSON.parse(locations);
+    let isExist = locations.some(location => location.address === item.address);
     if (locations) {
-      locations = JSON.parse(locations);
-      if (locations.length < 10) {
-        locations.unshift(item);
+      if (isExist) {
+        if (locations.length < 10) {
+          locations = locations.filter(location => location.address !== item.address);
+          locations.unshift(item);
+        } else {
+          locations = locations.filter(location => location.address !== item.address);
+          locations.unshift(item);
+          locations.pop();
+        }
+        return await AsyncStorage.setItem("recentLocation", JSON.stringify(locations));
       } else {
-        locationHistory[0].data.pop();
-        locations.unshift(item);
-        locations.pop();
+        locationHistory[0].data.unshift(item);
+        if (locations.length < 10) {
+          locations.unshift(item);
+        } else {
+          locationHistory[0].data.pop();
+          locations.unshift(item);
+          locations.pop();
+        }
+        return await AsyncStorage.setItem("recentLocation", JSON.stringify(locations));
       }
-      return await AsyncStorage.setItem("recentLocation", JSON.stringify(locations));
-
     } else {
       return await AsyncStorage.setItem("recentLocation", JSON.stringify([item]));
     }
+
     setLocationHistory(locationHistory)
 
   }

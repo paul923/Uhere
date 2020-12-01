@@ -10,7 +10,7 @@ const { manifest } = Constants;
 import { backend } from 'constants/Environment';
 import { getEvents } from 'api/event';
 import { FloatingAction } from "react-native-floating-action";
-import UhereHeader from '../../components/UhereHeader';
+import UhereHeader from 'components/UhereHeader';
 
 export default function EventScreen({ navigation, route }) {
   const [events, setEvents] = React.useState([]);
@@ -44,7 +44,7 @@ export default function EventScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <UhereHeader
-        showBackButton={false}
+          showBackButton={false}
       />
       <View style={styles.container}>
         <SectionList

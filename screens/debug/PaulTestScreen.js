@@ -79,12 +79,12 @@ export default function PaulTestScreen({ navigation }) {
         onPress={() => deleteGroup()}
       />
       <Button
-        title='history card'
+        title='AddFriendsScreen'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate("Test Screen 2")}
+        onPress={()=> navigation.navigate("Test Screen 5")}
       />
       <Button
-        title='location screen'
+        title='Add friend screen by id'
         buttonStyle={styles.button}
         onPress={()=> navigation.navigate("Test Screen 6")}
       />

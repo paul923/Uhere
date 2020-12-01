@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 
 const eventRouter = require('./routes/event');
 const userRouter = require('./routes/user');
+const notificationRouter = require('./routes/notification');
 const relationshipRouter = require('./routes/relationship');
 const groupRouter = require('./routes/group');
 dotenv.config();
@@ -155,7 +156,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/events', eventRouter);
 app.use('/users', userRouter);
-app.use('/relationship', relationshipRouter);
+app.use('/notifications', notificationRouter);
+app.use('/relationships', relationshipRouter);
 app.use('/groups', groupRouter);
 
 

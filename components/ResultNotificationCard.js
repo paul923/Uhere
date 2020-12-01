@@ -6,19 +6,11 @@ import { backend } from '../constants/Environment';
 import firebase from 'firebase';
 import { acceptEvent, declineEvent } from 'api/event';
 
-export default function ResultNotificationCard({onPress, item, status}) {
+export default function ResultNotificationCard({navigation, item}) {
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={item.isNew ? styles.newCardContainer : styles.cardContainer}>
       <View style={styles.cardContent}>
-        <View style={styles.cardColumn}>
-          <Avatar
-            overlayContainerStyle={{
-              borderRadius: 10
-            }}
-            size={45}
-          />
-        </View>
         <View style={{
           ...styles.cardColumn,
           paddingHorizontal: 10,
@@ -26,16 +18,17 @@ export default function ResultNotificationCard({onPress, item, status}) {
         }}>
           <View style={{
             ...styles.cardRow,
-            width : 137
           }}>
-            <Text style={styles.inviteContent}>USERNAME is penalized with PENALTY for being late in EVENTNAME!</Text>
+            <Text style={styles.inviteContent}>{item.PenaltyUser} is penalized with {item.Penalty} for being late in {item.Name}!</Text>
           </View>
           <View style={styles.cardRow}>
             <Text style={styles.dateContent}>{item ? formatDate(convertDateToLocalTimezone(new Date(item.DateTime))) + ' | ' + formatTime(convertDateToLocalTimezone(new Date(item.DateTime))) : "No Date"}</Text>
           </View>
         </View>
         <View style={styles.cardColumn}>
-          <TouchableOpacity style={styles.goButton} onPress={() => navigateToEvent(item.EventId)}>
+          <TouchableOpacity style={styles.goButton} onPress={() => navigation.navigate('EventHistory', {
+            Event: item,
+          })}>
             <Text style={styles.buttonFont}>Go</Text>
           </TouchableOpacity>
         </View>
@@ -52,6 +45,22 @@ const styles = StyleSheet.create({
     height: 84,
     flexDirection: 'row',
     backgroundColor: '#ffffff',
+    borderRadius: 7,
+    marginHorizontal: 15,
+    marginVertical: 8,
+    shadowColor: "rgba(0, 0, 0, 0.2)",
+    shadowOffset: {
+      width: 0,
+      height: 5
+    },
+    shadowRadius: 10,
+    shadowOpacity: 1,
+    padding: 10
+  },
+  newCardContainer: {
+    height: 84,
+    flexDirection: 'row',
+    backgroundColor: '#fdffb6',
     borderRadius: 7,
     marginHorizontal: 15,
     marginVertical: 8,
@@ -100,7 +109,7 @@ const styles = StyleSheet.create({
     color: '#15cdca'
   },
   goButton: {
-    width: 73, 
+    width: 73,
     height: 28,
     borderRadius: 14,
     backgroundColor: "#15cdca",
