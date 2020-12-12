@@ -46,7 +46,7 @@ export default function EventEditScreen({navigation, route}) {
   const [ eventName, setEventName] = React.useState("");
   const [ eventDescription, setEventDescription] = React.useState("");
   const [ eventMembers, setEventMembers] = React.useState([]);
-  const [ selectedMembers, setSelectedMembers] = React.useState([]);
+  const [ invitedMembers, setInvitedMembers] = React.useState([]);
   const [ eventDate, setEventDate] = React.useState(new Date());
   const [ eventTime, setEventTime] = React.useState(new Date());
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
@@ -129,7 +129,7 @@ export default function EventEditScreen({navigation, route}) {
       let event = await getEvent(route.params.EventId);
       setEventName(event.Name);
       setEventDescription(event.Description);
-      setEventMembers(event.eventUsers);
+      setEventMembers(event.eventUsers.filter(users => !users.IsHost));
       setEventDate(new Date(event.DateTime));
       setEventTime(new Date(event.DateTime));
       setMaximumNumberOfMembers(event.MaxMemeber);
@@ -198,7 +198,7 @@ export default function EventEditScreen({navigation, route}) {
         uncheckedIcon: 'circle-o',
         checkedColor:'#d3d3d3',
         uncheckedColor: '#d3d3d3',
-        checked: selectedMembers.includes(item),
+        checked: invitedMembers.includes(item),
         onPress: () => selectFriend(item)
       }}
     />
@@ -206,12 +206,12 @@ export default function EventEditScreen({navigation, route}) {
   }
 
   function selectFriend (item) {
-    if(!selectedMembers.includes(item)){
-      if (selectedMembers.length < maximumNumberOfMembers) {
-        setSelectedMembers([...selectedMembers, item])
+    if(!invitedMembers.includes(item)){
+      if (invitedMembers.length < maximumNumberOfMembers) {
+        setInvitedMembers([...invitedMembers, item])
       }
     } else {
-      setSelectedMembers(selectedMembers.filter(a => a !== item));
+      setInvitedMembers(invitedMembers.filter(a => a !== item));
     }
   }
 
@@ -287,7 +287,7 @@ export default function EventEditScreen({navigation, route}) {
             EventId: route.params.EventId
           })} />}
         centerComponent={{ text: "Add Members", style: { color: '#000' } }}
-        rightComponent={() => <Icon name="check" color='#000' underlayColor="transparent" onPress={() => {setEventMembers(selectedMembers); setStep("Setup")}} />}
+        rightComponent={() => <Icon name="check" color='#000' underlayColor="transparent" onPress={() => {setEventMembers(invitedMembers); setStep("Setup")}} />}
         />
       <View style={{flex: 1}}>
         <View style={styles.searchBoxAbsolute}>
@@ -402,7 +402,7 @@ export default function EventEditScreen({navigation, route}) {
                 <Text style={styles.memberCount}>+{eventMembers.length-4 < 0 ? 0 : eventMembers.length-4}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={() => { setSelectedMembers(eventMembers); setStep("SetupMember")}} style={{flex: 1}}>
+            <TouchableOpacity onPress={() => { setInvitedMembers(eventMembers); setStep("SetupMember")}} style={{flex: 1}}>
               <Icon name='add' color='#ffffff'
                 containerStyle={{
                   borderRadius: 5,
@@ -748,7 +748,7 @@ export default function EventEditScreen({navigation, route}) {
           </View>
       )
     } else if (step === "Review") {
-      return ( 
+      return (
       <View style={styles.temp}>
           <PreviousStep disabled={false} onPress={() => setStep("Setup")} />
           <NextStep confirm onPress={() => publish()} />

@@ -21,19 +21,28 @@ export default class FriendCard extends Component {
             }}
             placeholderStyle={{backgroundColor: "transparent"}}
           />
-          <View style={styles.meContentContainer}>
-            { this.props.meIcon &&
-              <Image
-                resizeMode="contain"
-                style={styles.meIcon}
-                source={require('../assets/icons/me/icon_me.png')}
-              />
-            }
             <ListItem.Content>
+              <View style={styles.meContentContainer}>
+              {
+                this.props.meIcon &&
+                <Image
+                  resizeMode="contain"
+                  style={styles.meIcon}
+                  source={require('../assets/icons/me/icon_me.png')}
+                />
+              }
+              <View>
               <ListItem.Title style={styles.title}>{this.props.displayName}</ListItem.Title>
               <ListItem.Subtitle style={styles.subtitle}>{`@${this.props.userId}`}</ListItem.Subtitle>
+              </View>
+              </View>
+
             </ListItem.Content>
-          </View>
+            <ListItem.CheckBox
+              {
+                ...this.props.checkBox
+              }
+              />
         </ListItem>
     );
   }
@@ -47,12 +56,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "700",
-    fontSize: 17, 
+    fontSize: 17,
     fontWeight: "700"
   },
   subtitle: {
-    fontSize: 12, 
-    fontFamily: "OpenSans_400Regular", 
+    fontSize: 12,
+    fontFamily: "OpenSans_400Regular",
     fontWeight: "500"
   },
   avatarOverlayContainer: {
