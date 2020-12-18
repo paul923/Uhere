@@ -2,8 +2,23 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../db').pool;
 var mysql = require('../db').mysql;
+var sendPushNotification = require('../push').sendPushNotification;
 var CronJob = require('cron').CronJob;
 
+router.post('/push-test', function (req, res) {
+  const message = {
+    to: req.body.expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { data: 'goes here' },
+  };
+
+  const response = sendPushNotification(message).then(json => res.status(200).send({
+    success: true,
+    body: json
+  }));
+})
 
 //TODO: Apply sort filter
 router.get('/', function (req, res) {

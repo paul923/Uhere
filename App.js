@@ -5,6 +5,8 @@ import { useFonts,
   OpenSans_400Regular,
   OpenSans_600SemiBold
 } from '@expo-google-fonts/open-sans';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
 
 
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
@@ -28,6 +30,7 @@ import SplashScreen from './screens/SplashScreen';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
+import NotificationPermissionScreen from './screens/NotificationPermissionScreen'
 import { AppearanceProvider } from 'react-native-appearance';
 import * as userapi from 'api/user';
 
@@ -50,8 +53,11 @@ export default function App(props) {
   const { getInitialState } = useLinking(containerRef);
 
   const [isLocationPermissionGranted, _setLocationPermissionGranted] = React.useState(false);
+  const [isNotificationPermissionGranted, _setNotificationPermissionGranted] = React.useState(false);
   const isLocationPermissionGrantedRef = React.useRef(isLocationPermissionGranted);
+  const isNotificationPermissionGrantedRef = React.useRef(isNotificationPermissionGranted);
   React.useEffect(() => {
+    registerForPushNotificationsAsync();
     checkLocationPermissionAsync();
   }, []);
 
@@ -61,6 +67,72 @@ export default function App(props) {
   });
 
 
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        setNotificationPermissionGranted(false)
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      setNotificationPermissionGranted(true)
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      sendPushNotification(token);
+      console.log(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    return token;
+  }
+
+  async function sendPushNotification(expoPushToken) {
+    let response = await fetch(`http://${backend}:3000/events/push-test`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        expoPushToken,
+      }),
+    });
+    let json = response.json();
+    console.log(json);
+    // const message = {
+    //   to: expoPushToken,
+    //   sound: 'default',
+    //   title: 'Original Title',
+    //   body: 'And here is the body!',
+    //   data: { data: 'goes here' },
+    // };
+    //
+    // await fetch('https://exp.host/--/api/v2/push/send', {
+    //   method: 'POST',
+    //   headers: {
+    //     Accept: 'application/json',
+    //     'Accept-encoding': 'gzip, deflate',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(message),
+    // });
+  }
 
 
   // first time installing app gives you 'undetermined' == ask Next Time
@@ -79,6 +151,10 @@ export default function App(props) {
   const setLocationPermissionGranted = (value) => {
     isLocationPermissionGrantedRef.current = value;
     _setLocationPermissionGranted(value);
+  }
+  const setNotificationPermissionGranted = (value) => {
+    isNotificationPermissionGrantedRef.current = value;
+    _setNotificationPermissionGranted(value);
   }
 
   const [appState, _setAppState] = React.useState(AppState.currentState);
@@ -288,6 +364,12 @@ export default function App(props) {
    return (
      <LocationPermissionScreen
      updateLocationGranted={setLocationPermissionGranted}
+     />
+   );
+ }  else if (!isNotificationPermissionGranted) {
+   return (
+     <NotificationPermissionScreen
+     updateNotificationGranted={setNotificationPermissionGranted}
      />
    );
  } else if (state.fetchToken || !fontsLoaded) {
