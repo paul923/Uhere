@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, SectionList, SafeAreaView, FlatList, TouchableW
 import {Icon, Header, Avatar, Input, Button, SearchBar} from 'react-native-elements'
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
-import { getRelationships, getUserByUserId } from 'api/user'
+import { getRelationships, getUserByUserId, deleteRelationship } from 'api/user'
 import firebase from 'firebase';
 import { backend } from 'constants/Environment';
 import { SimpleAnimation } from 'react-native-simple-animations';
@@ -11,7 +11,6 @@ import { TouchableOpacity, ScrollView} from 'react-native-gesture-handler'
 import { useIsFocused } from '@react-navigation/native'
 import UhereHeader from '../../components/UhereHeader';
 import { FloatingAction } from "react-native-floating-action";
-import AuthContext from 'contexts/AuthContext';
 
 
 export default function FriendScreen({navigation}) {
@@ -19,7 +18,8 @@ export default function FriendScreen({navigation}) {
   const [ searchText, setSearchText] = React.useState("");
   const [ friendsData, setFriendsData] = React.useState([]);
   const [ filteredData, setFilteredData] = React.useState([]);
-  const { getUserInfo } = React.useContext(AuthContext);
+  const [ editToggle, setEditToggle] = React.useState(false);
+  const [ isLoading, setIsLoading] = React.useState(true);
 
   const isFocused = useIsFocused();
 
@@ -30,7 +30,7 @@ export default function FriendScreen({navigation}) {
 
   const createTwoButtonRemoveAlert = (user) =>{
     Alert.alert(
-      `Remove ${user.Nickname}?`,
+      `Delete ${user.Nickname}?`,
       `You cannot undo this action`,
       [
         {
@@ -40,9 +40,15 @@ export default function FriendScreen({navigation}) {
         },
         {
           text: "OK",
-          onPress: () => {
-            console.log("OK Pressed");
-            removeFriend(user.UserId);
+          onPress: async () => {
+            let result = await deleteRelationship(firebase.auth().currentUser.uid, user.UserId)
+            if (result) {
+              let newData = friendsData.filter(friend => friend.UserId !== user.UserId);
+              console.log("new data",newData)
+              setFriendsData(newData);
+            } else {
+              alert("Delete failed. Something went wrong.")
+            }
           }
         }
       ],
@@ -52,6 +58,7 @@ export default function FriendScreen({navigation}) {
 
   async function retrieveData() {
     let user = await getUserByUserId(firebase.auth().currentUser.uid);
+    Object.assign(user, {Type : "Friend"})
     setCurrentUser(user);
     let friends = await getRelationships(firebase.auth().currentUser.uid);
     friends.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
@@ -61,16 +68,13 @@ export default function FriendScreen({navigation}) {
     ]
     console.log('friends:', combinedFriends);
     setFriendsData(combinedFriends);
+    setIsLoading(false)
   }
 
-  async function removeFriend(friendId){
-    console.log(`Remove Friend Id ${friendId}`);
-
-    let userRelationship= {
-      UserId1 : firebase.auth().currentUser.uid,
-      UserId2 : friendId,
-    }
-    await deleteFriend(userRelationship);
+  function refresh() {
+    console.log('refreshing')
+    setIsLoading(true)
+    retrieveData()
   }
 
   function friendSearch(text) {
@@ -83,15 +87,26 @@ export default function FriendScreen({navigation}) {
   }
 
 
-  function pressDropDownItem(destination){
-    console.log('pressed')
-    navigation.navigate(destination);
+  function pressDropDownItem(action){
+    switch(action) {
+      case 'Add Friend By Id' : 
+        navigation.navigate(action);
+      case 'Edit Friend':
+        setEditToggle(!editToggle);
+    }
   }
 
 
   return (
+    <TouchableWithoutFeedback onPress={() => setEditToggle(false)}>
     <View style={styles.container}>
-      <UhereHeader/>
+      <UhereHeader
+        rightComponent={ editToggle &&
+          <TouchableOpacity onPress={() => setEditToggle(false)}>
+            <Text style={{color: '#808080'}}>Done</Text>
+          </TouchableOpacity>
+        }
+      />
       <View style={{flex: 1, paddingTop: 30}}>
         <Text style={styles.friendsHeader}>Friends</Text>
         <SearchBar
@@ -106,7 +121,10 @@ export default function FriendScreen({navigation}) {
           <FlatList
             data={filteredData && filteredData.length > 0 ? filteredData : (searchText.length === 0 && friendsData)}
             keyExtractor={item => item.UserId}
+            onRefresh={() => refresh()}
+            refreshing={isLoading}
             renderItem={({item}) => (
+              (item.Type === "Friend" || item.UserId === currentUser.UserId) && 
               <FriendCard
                 key={item.UserId}
                 avatarUrl= {item.AvatarURI}
@@ -115,6 +133,8 @@ export default function FriendScreen({navigation}) {
                 userId= {item.Username}
                 bottomDivider= {item.UserId === currentUser.UserId}
                 meIcon= {item.UserId === currentUser.UserId}
+                editToggle= {editToggle}
+                onPressDelete={() => createTwoButtonRemoveAlert(item)}
               />
             )}
           />
@@ -127,15 +147,23 @@ export default function FriendScreen({navigation}) {
           color="#15CDCA"
         />
       </View>
-    </View>
+    </View></TouchableWithoutFeedback>
   )
 }
 
 const actions = [
   {
     text: "Add Friend",
-    icon: require('../../assets/images/avatars/avatar_bird/avatar_bird.png'),
+    icon: <Icon type= "antdesign" name= "adduser" color="white" size={18}/>,
     name: "Add Friend By Id",
+    position: 2,
+    color: "#15CDCA",
+    buttonSize: 40
+  },
+  {
+    text: "Edit Friend",
+    icon: <Icon type= "entypo" name= "edit" color="white" size={18}/>,
+    name: "Edit Friend",
     position: 1,
     color: "#15CDCA",
     buttonSize: 40
