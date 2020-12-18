@@ -21,6 +21,7 @@ export default function UhereHeader(props, {navigation}) {
       rightComponent={props.showSideMenu && { icon: 'menu', color: '#000', onPress: props.onPressSideMenu}}
       statusBarProps={{translucent: true}}
       backgroundColor='#ffffff'
+      {...props}
     />
   )
 }
