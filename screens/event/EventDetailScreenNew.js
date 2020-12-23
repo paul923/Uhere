@@ -171,7 +171,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 <React.Fragment>
                     {/* Timer */}
                     <View style={styles.timer}>
-                        <Timer eventDateTime={event.DateTime} />
+                        <Timer eventDateTime={event.DateTime} event={event} />
                     </View>
                     {/* MapView */}
                     <MapView

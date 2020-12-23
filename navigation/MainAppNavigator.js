@@ -82,7 +82,7 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     console.log(error.message);
     return;
   }
-  console.log(socket.id);
+  //console.log(socket.id);
   if (data) {
     const { locations } = data;
     const location = locations[0]

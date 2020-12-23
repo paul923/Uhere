@@ -70,7 +70,7 @@ export default function App(props) {
     console.log('status', status);
     console.log('permissions', permissions.location.scope);
     // first time installing give you undetermined
-    if (Platform.OS === 'ios' ? (status === 'granted' && permissions.location.scope === 'whenInUse') : (status === 'granted' && permissions.location.scope === 'fine')) {
+    if (Platform.OS === 'ios' ? (status === 'granted' && permissions.location.scope === 'always') : (status === 'granted' && permissions.location.scope === 'fine')) {
       setLocationPermissionGranted(true);
     } else {
       setLocationPermissionGranted(false);
