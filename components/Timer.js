@@ -4,6 +4,9 @@ import { millisToMinutesAndSeconds } from "../utils/date";
 import { Appearance, useColorScheme } from 'react-native-appearance';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
+import { updateArrivedTime } from '../api/event';
+import firebase from 'firebase';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 const GEO_FENCING_TASK_NAME = 'geofencing';
 
@@ -16,9 +19,11 @@ TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, er
     }
     if (eventType === Location.GeofencingEventType.Enter) {
       console.log("You've entered region:", region);
+      updateArrivedTime(65,firebase.auth().currentUser.uid,new Date());
       Alert.alert("You've entered region");
     } else if (eventType === Location.GeofencingEventType.Exit) {
       console.log("You've left region:", region);
+      updateArrivedTime(65,firebase.auth().currentUser.uid,new Date());
       Alert.alert("You've left region");
     }
   });
