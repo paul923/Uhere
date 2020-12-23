@@ -80,7 +80,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }, [locations])
 
     async function _goToMyLocation() {
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         mapRef.current.animateToRegion(region);
     }
@@ -92,7 +92,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     async function fetchData() {
         let event = await getEvent(route.params.EventId);
         setEvent(event);
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         setMapRegion(region);
         setEventMembers(event.eventUsers);
@@ -115,21 +115,21 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     async function loadInitial() {
         socket.on('requestPosition', async () => {
-          let location = await Location.getCurrentPositionAsync();
-          let user = firebase.auth().currentUser.uid;
-          let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-          setLocations({...locations, [user]: position});
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+            let user = firebase.auth().currentUser.uid;
+            let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+            setLocations({ ...locations, [user]: position });
         })
-        socket.on('updatePosition', ({user, position}) => {
-          setLocations((prevLocations) => {
-            return {
-              ...prevLocations,
-              [user]: position
-            }
-          })
+        socket.on('updatePosition', ({ user, position }) => {
+            setLocations((prevLocations) => {
+                return {
+                    ...prevLocations,
+                    [user]: position
+                }
+            })
         })
-        socket.emit('requestPosition', {event: route.params.EventId});
-      }
+        socket.emit('requestPosition', { event: route.params.EventId });
+    }
 
 
     async function _fitAll() {
