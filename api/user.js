@@ -142,6 +142,32 @@ export async function updateUser(User) {
         return false;
     }
 }
+
+export async function updatePushToken(userId, pushToken) {
+  try {
+      let url = `http://${backend}:3000/users/pushToken/${userId}`;
+      console.log(pushToken);
+      let response = await fetch(url, {
+          method: 'PATCH',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              pushToken
+          }),
+      });
+      let json = await response.json();
+      if (json.success) {
+          return true;
+      } else {
+          return false;
+      }
+  } catch (error) {
+      return false;
+  }
+}
+
 // type : 'Friend' or 'Blocked'
 export async function updateRelationship(userId1, userId2, type) {
     try {

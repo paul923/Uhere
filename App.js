@@ -83,9 +83,7 @@ export default function App(props) {
         return;
       }
       setNotificationPermissionGranted(true)
-      token = (await Notifications.getExpoPushTokenAsync()).data;
-      sendPushNotification(token);
-      console.log(token);
+
     } else {
       alert('Must use physical device for Push Notifications');
     }
@@ -101,39 +99,6 @@ export default function App(props) {
 
     return token;
   }
-
-  async function sendPushNotification(expoPushToken) {
-    let response = await fetch(`http://${backend}:3000/events/push-test`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        expoPushToken,
-      }),
-    });
-    let json = response.json();
-    console.log(json);
-    // const message = {
-    //   to: expoPushToken,
-    //   sound: 'default',
-    //   title: 'Original Title',
-    //   body: 'And here is the body!',
-    //   data: { data: 'goes here' },
-    // };
-    //
-    // await fetch('https://exp.host/--/api/v2/push/send', {
-    //   method: 'POST',
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Accept-encoding': 'gzip, deflate',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(message),
-    // });
-  }
-
 
   // first time installing app gives you 'undetermined' == ask Next Time
   async function checkLocationPermissionAsync() {
@@ -260,6 +225,8 @@ export default function App(props) {
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
         let user = await userapi.getUserByUserId(data);
+        const expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
+        await userapi.updatePushToken(data, expoPushToken);
         if (user !== null) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
