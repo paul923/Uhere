@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { formatDate, formatDateFormat } from "utils/date";
@@ -8,8 +8,9 @@ import EventMap from 'screens/event/EventMap'
 import SideMenu from 'react-native-side-menu'
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 import firebase from 'firebase';
-import { getEvent } from 'api/event'
+import { getEvent, updateArrivedTime } from 'api/event'
 import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
 import UhereSideMenu from '../../components/UhereSideMenu';
@@ -26,20 +27,70 @@ const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA_MAP = 0.0922;
 const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
+const GEO_FENCING_TASK_NAME = 'geofencing';
+
+// Task Manager 
+TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, error }) => {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    if (eventType === Location.GeofencingEventType.Enter) {
+      console.log("You've entered region:", region);
+      //setGoalButton(true);
+      Alert.alert("You've entered region");
+    } else if (eventType === Location.GeofencingEventType.Exit) {
+      console.log("You've left region:", region);
+      //setGoalButton(false);
+      Alert.alert("You've left region");
+    }
+  });
+
 export default function EventDetailScreenNew({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
-    
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
     const [host, setHost] = React.useState();
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [memberLocations, setMemberLocations] = React.useState([]);
-    
     const [isModalVisible, setModalVisible] = React.useState(false);
+    const [goalButton, setGoalButton] = React.useState(true);
+   
+    const [geofencingStarted, _setgeofencingStarted] = React.useState(false);
+    const geofencingStartedRef = React.useRef(geofencingStarted);
+    const setgeofencingStarted = (value) => {
+      geofencingStartedRef.current = value;
+      _setgeofencingStarted(value);
+    }
+
 
     const mapRef = React.useRef();
     const drawerRef = React.useRef(null);
+
+    React.useEffect(() => {
+        let interval = null;
+        interval = setInterval( async () => {
+            let event = await getEvent(route.params.EventId);
+            if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
+                startGeoFencing(event.LocationGeolat, event.LocationGeolong);
+                setgeofencingStarted(true);
+            } else if (new Date(event.DateTime) - new Date() <= 0) {
+                clearInterval(interval);
+                // TODO: Figure out Navigation
+                // navigation.navigate('History', {
+                //     EventId: event.EventId
+                // })
+            } else {
+                console.log("is this running?");
+            }
+        }, 1000);
+        return () => {
+            clearInterval(interval);
+            Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+        };
+    }, []);
+
 
     React.useEffect(() => {
         const unsubscribeFocus = navigation.addListener('focus', () => {
@@ -89,6 +140,30 @@ export default function EventDetailScreenNew({ navigation, route }) {
         mapRef.current.animateToRegion(region);
     }
 
+    async function startGeoFencing(latitude, longitude) {
+        console.log('starting geo fencing with radius 500m from', latitude, longitude);
+        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        let regions = [
+            {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                radius: 50,
+                notifyOnEnter: true,
+                notifyOnExit: true,
+            }
+        ]
+        // let regions = [
+        //     {
+        //         latitude: latitude,
+        //         longitude: longitude,
+        //         radius: 500,// in meters
+        //         notifyOnEnter: true,
+        //         notifyOnExit: true,
+        //     }
+        // ]
+        Location.startGeofencingAsync(GEO_FENCING_TASK_NAME, regions)
+    }
+
     async function fetchData() {
         let event = await getEvent(route.params.EventId);
         setEvent(event);
@@ -98,19 +173,24 @@ export default function EventDetailScreenNew({ navigation, route }) {
         setEventMembers(event.eventUsers);
         let host = event.eventUsers.find(m => m.IsHost === 1);
         setHost(host);
-        setIsLoading(false);
-        let interval = null;
-        interval = setInterval(() => {
-            if (new Date(event.DateTime) - new Date() > 0) {
-                
-            } else {
-                clearInterval(interval);
-                navigation.navigate('History', {
-                    EventId: event.EventId
-                })
-            }
-        }, 1000);
-        return () => clearInterval(interval);
+        setIsLoading(false); 
+        // let interval = null;
+        // interval = setInterval(() => {
+        //     if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
+        //         console.log("once");
+        //         startGeoFencing(event.LocationGeolat, event.LocationGeolong);
+        //         setgeofencingStarted(true);
+        //     } else if (new Date(event.DateTime) - new Date() <= 0) {
+        //         clearInterval(interval);
+        //         navigation.navigate('History', {
+        //             EventId: event.EventId
+        //         })
+        //     }
+        // }, 1000);
+        // return () => {
+        //     clearInterval(interval);
+        //     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+        // };
     }
 
     async function loadInitial() {
@@ -264,6 +344,19 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
                         </View>
                     </Modal>
+                    {/* Goal In */}
+                    <TouchableOpacity 
+                        style={styles.goalinStyle}
+                        disabled={goalButton}
+                        onPress={()=>updateArrivedTime(65,firebase.auth().currentUser.uid,new Date())}
+                        >
+                        {
+                          goalButton === true ? 
+                            <Image source={require('../../assets/icons/event/icon_info.png')} />
+                              :
+                            <Image source={require('../../assets/icons/event/icon_me.png')} />
+                        }
+                    </TouchableOpacity>
 
                     {/* Member Infos Box */}
                     <View style={styles.avatarContianer}>
@@ -369,5 +462,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 163,
         right: 0,
+    },
+    goalinStyle: {
+        position: 'absolute',
+        alignSelf: 'center',
+        bottom: 163,
     },
 });
