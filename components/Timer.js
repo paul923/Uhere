@@ -20,7 +20,6 @@ export default function Timer({ eventDateTime, event }) {
                 setTimer(new Date(eventDateTime) - new Date() >= 1800000 ? 1800000 : new Date(eventDateTime) - new Date());
             } else {
                 setTimer(0);
-                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 clearInterval(interval);
             }
         }, 1000);
