@@ -5,6 +5,15 @@ var mysql = require('../db').mysql;
 var pushModule = require('../push');
 var CronJob = require('cron').CronJob;
 
+// Return original date if original date is in future.
+// If not, return current date + 30 seconds - This is due to limitation of cron job module
+var getCronJobDate = function (originalDate) {
+  var dt = new Date();
+  dt.setSeconds( dt.getSeconds() + 10 );
+  var jobDate = originalDate > new Date() ? originalDate : dt;
+  return jobDate;
+}
+
 router.post('/push-test', function (req, res) {
   const message = {
     to: req.body.expoPushToken,
@@ -521,13 +530,12 @@ router.post('/', function (req,res) {
               }
               console.log('event time: ' + event.DateTime);
               var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
-              var gameStartJobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
+              // var gameStartJobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
+              var gameStartJobDate = getCronJobDate(thirtyMinutesBeforeEvent);
               var beforeGameStartNotificationDate = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 15));
-              var beforeJobDate = beforeGameStartNotificationDate > new Date() ? beforeGameStartNotificationDate : new Date();
-              var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
-              console.log('thirtyMinuteBefore: ' + thirtyMinutesBeforeEvent);
-              console.log('beforeGameStartNotificationDate: ' + beforeGameStartNotificationDate);
-              console.log('jobDate: ' + jobDate);
+              // var beforeJobDate = beforeGameStartNotificationDate > new Date() ? beforeGameStartNotificationDate : new Date();
+              var beforeJobDate = getCronJobDate(beforeGameStartNotificationDate);
+              var jobDate = getCronJobDate(thirtyMinutesBeforeEvent);
               var gameStartJob = new CronJob(
                 gameStartJobDate,
                 function() {
