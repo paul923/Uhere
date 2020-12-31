@@ -76,6 +76,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 startGeoFencing(event.LocationGeolat, event.LocationGeolong);
                 setgeofencingStarted(true);
             } else if (new Date(event.DateTime) - new Date() <= 0) {
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 clearInterval(interval);
                 // TODO: Figure out Navigation
                 // navigation.navigate('History', {
@@ -85,9 +86,13 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 console.log("is this running?");
             }
         }, 1000);
-        return () => {
+        return async () => {
             clearInterval(interval);
-            Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+            let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+            if(started){
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                console.log("stop geo");
+            }
         };
     }, []);
 
