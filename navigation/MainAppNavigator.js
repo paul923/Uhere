@@ -9,7 +9,7 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { Image } from 'react-native-elements';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import TabBarIcon from '../components/TabBarIcon';
 import EventScreen from '../screens/event/EventScreen';
 import EventNavigator from './EventNavigator';
@@ -29,12 +29,19 @@ import JaysTabNavigator from './JaysTabNavigator';
 const BottomTab = createBottomTabNavigator();
 
 function showTab(route) {
-  const routeName = route.state
-    ? // Get the currently active route name in the tab navigator
-      route.state.routes[route.state.index].name
-    : // If state doesn't exist, we need to default to `screen` param if available, or the initial screen
-      // In our case, it's "Feed" as that's the first screen inside the navigator
-      route.params?.screen || 'Event';
+  // const routeName = route.state
+  //   ? // Get the currently active route name in the tab navigator
+  //     route.state.routes[route.state.index].name
+  //   : // If state doesn't exist, we need to default to `screen` param if available, or the initial screen
+  //     // In our case, it's "Feed" as that's the first screen inside the navigator
+  //     route.params?.screen || 'Event';
+
+  let routeName = getFocusedRouteNameFromRoute(route);
+  if (!routeName) {
+    routeName = route.params?.screen || 'Event';
+  }
+  console.log(routeName);
+
 
   switch (routeName) {
     case 'Event':

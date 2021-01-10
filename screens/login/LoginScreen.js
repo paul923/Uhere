@@ -85,7 +85,7 @@ export default function LoginScreen({route, navigation}) {
 
   signInWithFacebook = async () => {
     try {
-      await Facebook.initializeAsync('2728370123955490');
+      await Facebook.initializeAsync({appId: '2728370123955490'});
       const {
         type,
         token,
