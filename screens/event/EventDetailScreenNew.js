@@ -20,6 +20,7 @@ import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
 import { getAvatarImage } from 'utils/asset'
 import { StackActions } from '@react-navigation/native';
+import { locationService } from '../../utils/locationService';
 
 
 const SCREEN = Dimensions.get('window');
@@ -29,6 +30,7 @@ const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
 const GEO_FENCING_TASK_NAME = 'geofencing';
 
+
 // Task Manager 
 TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, error }) => {
     if (error) {
@@ -37,12 +39,12 @@ TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, er
     }
     if (eventType === Location.GeofencingEventType.Enter) {
       console.log("You've entered region:", region);
-      //setGoalButton(true);
-      Alert.alert("You've entered region");
+      locationService.setGoalin(true);
+      //Alert.alert("You've entered region");
     } else if (eventType === Location.GeofencingEventType.Exit) {
       console.log("You've left region:", region);
-      //setGoalButton(false);
-      Alert.alert("You've left region");
+      locationService.setGoalin(false);
+      //Alert.alert("You've left region");
     }
   });
 
@@ -55,7 +57,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [locations, setLocations] = React.useState({});
     const [memberLocations, setMemberLocations] = React.useState([]);
     const [isModalVisible, setModalVisible] = React.useState(false);
-    const [goalButton, setGoalButton] = React.useState(true);
+    const [goalButton, setGoalButton] = React.useState(false);
    
     const [geofencingStarted, _setgeofencingStarted] = React.useState(false);
     const geofencingStartedRef = React.useRef(geofencingStarted);
@@ -68,7 +70,12 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const mapRef = React.useRef();
     const drawerRef = React.useRef(null);
 
+    const onLocationUpdate = (goalin) => {
+        setGoalButton(goalin);
+      }
+
     React.useEffect(() => {
+        locationService.subscribe(onLocationUpdate);
         let interval = null;
         interval = setInterval( async () => {
             let event = await getEvent(route.params.EventId);
@@ -93,6 +100,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 console.log("stop geo");
             }
+            locationService.unsubscribe(onLocationUpdate);
         };
     }, []);
 
@@ -350,18 +358,20 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         </View>
                     </Modal>
                     {/* Goal In */}
-                    <TouchableOpacity 
-                        style={styles.goalinStyle}
-                        disabled={goalButton}
-                        onPress={()=>updateArrivedTime(65,firebase.auth().currentUser.uid,new Date())}
+                    {goalButton && (
+                        <TouchableOpacity 
+                            style={styles.goalinStyle}
+                            onPress={()=>{
+                                updateArrivedTime(event.EventId,firebase.auth().currentUser.uid,new Date())
+                                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                                console.log("stop geo");
+                                setGoalButton(false)}
+                            }
                         >
-                        {
-                          goalButton === true ? 
-                            <Image source={require('../../assets/icons/event/icon_info.png')} />
-                              :
-                            <Image source={require('../../assets/icons/event/icon_me.png')} />
-                        }
-                    </TouchableOpacity>
+                            {/* TODO change png */}
+                            <Image source={require('../../assets/icons/event/goalinButton.png')} />
+                        </TouchableOpacity>
+                    )}
 
                     {/* Member Infos Box */}
                     <View style={styles.avatarContianer}>
@@ -471,6 +481,6 @@ const styles = StyleSheet.create({
     goalinStyle: {
         position: 'absolute',
         alignSelf: 'center',
-        bottom: 163,
+        bottom: '40%',
     },
 });
