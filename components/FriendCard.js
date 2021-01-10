@@ -43,12 +43,22 @@ export default class FriendCard extends Component {
                 ...this.props.checkBox
               }
               />
+            { this.props.editToggle && !this.props.meIcon &&
+              <TouchableOpacity onPress={this.props.onPressDelete}>
+                <Icon
+                  type="entypo"
+                  name="circle-with-minus"
+                  color="red"
+                />
+            </TouchableOpacity>}
+          </View>
         </ListItem>
     );
   }
 }
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: "transparent",
     marginHorizontal: 15,
     padding: 0,
@@ -77,8 +87,8 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   meContentContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center'
   }
-
 });

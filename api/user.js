@@ -169,7 +169,7 @@ export async function updatePushToken(userId, pushToken) {
 }
 
 // type : 'Friend' or 'Blocked'
-export async function updateRelationship(userId1, userId2, type) {
+export async function addBackRelationship(userId1, userId2) {
     try {
         let url = `http://${backend}:3000/users/${userId1}/relationships/${userId2}`;
         let response = await fetch(url, {
@@ -178,9 +178,27 @@ export async function updateRelationship(userId1, userId2, type) {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                Type: type,
-            }),
+        });
+        let json = await response.json();
+        if (json.success) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        return false;
+    }
+}
+
+export async function deleteRelationship(userId1, userId2) {
+    try {
+        let url = `http://${backend}:3000/users/${userId1}/relationships/${userId2}`;
+        let response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
         });
         let json = await response.json();
         if (json.success) {

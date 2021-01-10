@@ -394,8 +394,8 @@ router.patch('/:userId1/relationships/:userId2', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = "UPDATE ?? SET Type = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = false";
-    var parameters = ['UserRelationship', req.body.Type, req.params.userId1, req.params.userId2];
+    var sql = "UPDATE ?? SET IsDeleted = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = 1";
+    var parameters = ['UserRelationship', 0, req.params.userId1, req.params.userId2];
     sql = mysql.format(sql, parameters);
     connection.query(sql, function (error, results, fields) {
       connection.release();
@@ -410,7 +410,42 @@ router.patch('/:userId1/relationships/:userId2', function (req, res) {
         res.status(200).send({
           success: true,
           body: {
-            message: "Relationship Updated to " + req.body.Type
+            message: "Relationship Updated"
+          }
+        });
+      } else {
+        res.status(404).send({
+          success: false,
+          body: {
+            message: "Relationship Not Found between UserId1: " + req.params.userId1 + " and UserId2: " + req.params.userId2
+          }
+        });
+      }
+    });
+  });
+})
+
+router.delete('/:userId1/relationships/:userId2', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET IsDeleted = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = false";
+    var parameters = ['UserRelationship', 1, req.params.userId1, req.params.userId2];
+    sql = mysql.format(sql, parameters);
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        res.status(500).send({
+          success: false,
+          error: {
+            message: error
+          }
+        });
+      } else if (results.affectedRows > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "Relationship deleted"
           }
         });
       } else {
