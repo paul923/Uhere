@@ -50,8 +50,7 @@ export default class FriendCard extends Component {
                   name="circle-with-minus"
                   color="red"
                 />
-            </TouchableOpacity>}
-          </View>
+              </TouchableOpacity>}
         </ListItem>
     );
   }
