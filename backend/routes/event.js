@@ -2,8 +2,29 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../db').pool;
 var mysql = require('../db').mysql;
+var pushModule = require('../push');
 var CronJob = require('cron').CronJob;
 
+// Return original date if original date is in future.
+// If not, return current date + 30 seconds - This is due to limitation of cron job module
+var getCronJobDate = function (originalDate) {
+  var dt = new Date();
+  dt.setSeconds( dt.getSeconds() + 10 );
+  var jobDate = originalDate > new Date() ? originalDate : dt;
+  return jobDate;
+}
+
+router.post('/push-test', function (req, res) {
+  const message = {
+    to: req.body.expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { data: 'goes here' },
+  };
+
+
+})
 
 //TODO: Apply sort filter
 router.get('/', function (req, res) {
@@ -449,11 +470,14 @@ router.post('/', function (req,res) {
       }
       if (results.insertId) {
         const eventId = results.insertId;
+        const pushNotificationUsers = req.body.users.map(x => [x.UserId]);
+        pushModule.sendInvitePushNotification(pushNotificationUsers, eventId)
         let users = [];
         if (req.body.users){
           users = req.body.users.map(x => [eventId, x.UserId, 'PENDING', false, null, 0]);
         }
         users.push([eventId, req.body.host, 'ACCEPTED', true, null, 0]);
+        pushNotificationUsers.push([req.body.host]);
         var eventUserSql = "INSERT INTO ?? VALUES ?";
         var parameters = ['EventUser'];
         eventUserSql = mysql.format(eventUserSql, parameters);
@@ -504,15 +528,21 @@ router.post('/', function (req,res) {
                 })
                 throw error;
               }
+              console.log('event time: ' + event.DateTime);
               var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
-              var beforeGameStartNotificationDate = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 45));
-              var jobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
-              var job = new CronJob(
-                thirtyMinutesBeforeEvent,
+              // var gameStartJobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
+              var gameStartJobDate = getCronJobDate(thirtyMinutesBeforeEvent);
+              var beforeGameStartNotificationDate = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 15));
+              // var beforeJobDate = beforeGameStartNotificationDate > new Date() ? beforeGameStartNotificationDate : new Date();
+              var beforeJobDate = getCronJobDate(beforeGameStartNotificationDate);
+              var jobDate = getCronJobDate(thirtyMinutesBeforeEvent);
+              var gameStartJob = new CronJob(
+                gameStartJobDate,
                 function() {
                   console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
                   pool.getConnection(function (err, connection) {
                     var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+
                     connection.query(sql, function (error, userResults, fields) {
                       if (error) {
                         connection.release();
@@ -520,6 +550,8 @@ router.post('/', function (req,res) {
                       if (userResults.length > 0) {
                         let notifications = [];
                         notifications = userResults.map(x => [eventId, x.UserId, 'START', new Date()]);
+                        const pushNotificationUsers = userResults.map(x => [x.UserId]);
+                        pushModule.sendStartPushNotification(pushNotificationUsers, eventId)
                         var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
                         var parameters = ['Notification'];
                         notificationSql = mysql.format(notificationSql, parameters);
@@ -535,10 +567,13 @@ router.post('/', function (req,res) {
                       }
                     })
                   })
-                }
+                },
+              	null,
+              	true,
+              	null
               )
-              var job = new CronJob(
-                beforeGameStartNotificationDate,
+              var beforeJob = new CronJob(
+                beforeJobDate,
                 function() {
                   console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
                   pool.getConnection(function (err, connection) {
@@ -550,6 +585,8 @@ router.post('/', function (req,res) {
                       if (userResults.length > 0) {
                         let notifications = [];
                         notifications = userResults.map(x => [eventId, x.UserId, 'BEFORE', new Date()]);
+                        const pushNotificationUsers = userResults.map(x => [x.UserId]);
+                        pushModule.sendBeforePushNotification(pushNotificationUsers, eventId)
                         var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
                         var parameters = ['Notification'];
                         notificationSql = mysql.format(notificationSql, parameters);
@@ -561,17 +598,21 @@ router.post('/', function (req,res) {
                       }
                     })
                   })
-                }
+                },
+              	null,
+              	true,
+              	null
               )
               var job = new CronJob(
               	jobDate,
               	function() {
               		console.log(`Cron Job For Location Sharing for Event ${eventId} Started`);
                   pool.getConnection(function (err, connection) {
-                    var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED`
+                    var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
                     connection.query(sql, function (error, userResults, fields) {
                       if (error) {
                         connection.release();
+                        return;
                       }
                       req.app.get('io').in('lobby').clients(function(error, clients) {
                         clients.forEach(function(socketId){

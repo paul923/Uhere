@@ -133,11 +133,11 @@ router.get('/:userId/relationships', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     var sql = `
-    SELECT User.*, UserRelationship.IsDeleted, UserRelationship.Type 
+    SELECT User.*, UserRelationship.IsDeleted, UserRelationship.Type
     FROM ??, ??
-    WHERE UserRelationship.UserId1 = ? 
-      and User.UserId = UserRelationship.UserId2 
-      and UserRelationship.IsDeleted = false 
+    WHERE UserRelationship.UserId1 = ?
+      and User.UserId = UserRelationship.UserId2
+      and UserRelationship.IsDeleted = false
       and User.IsDeleted = false
     `;
     var parameters = ['UserRelationship', 'User', req.params.userId];
@@ -155,7 +155,7 @@ router.get('/:userId/relationships', function (req, res) {
         const promises = []
         results.forEach(result => {
           var sql = `SELECT *
-          FROM User 
+          FROM User
           WHERE 1=1
           AND UserId = ?
           AND IsDeleted = false`;
@@ -201,17 +201,17 @@ router.get('/:userId/relationships/:userName', function (req, res) {
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
     var sql = `
-    SELECT User.*, 
-      (SELECT COUNT(UserId2) 
-      FROM UserRelationship 
-      WHERE UserId1 = '${req.params.userId}' 
-        AND UserId2 = User.UserId 
+    SELECT User.*,
+      (SELECT COUNT(UserId2)
+      FROM UserRelationship
+      WHERE UserId1 = '${req.params.userId}'
+        AND UserId2 = User.UserId
         AND IsDeleted = 0) HasRelationship,
-      (SELECT COUNT(IsDeleted) 
-      FROM UserRelationship 
-      WHERE UserId1 = '${req.params.userId}' 
-        AND UserId2 = User.UserId) HadRelationship 
-    FROM User 
+      (SELECT COUNT(IsDeleted)
+      FROM UserRelationship
+      WHERE UserId1 = '${req.params.userId}'
+        AND UserId2 = User.UserId) HadRelationship
+    FROM User
     WHERE Username = '${req.params.userName}'
     `;
     connection.query(sql, function (error, results, fields) {
@@ -354,12 +354,48 @@ router.patch('/:userId', function (req, res) {
   });
 })
 
+router.patch('/pushToken/:userId', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET PushToken = ? where UserId = ? AND (PushToken is null OR PushToken <> ?)";
+    var parameters = ['User_Justin', req.body.pushToken, req.params.userId, req.body.pushToken];
+    sql = mysql.format(sql, parameters);
+    console.log(sql);
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        res.status(500).send({
+          success: false,
+          error: {
+            message: "Database Error"
+          }
+        });
+      } else if (results.affectedRows > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "Push Token Updated"
+          }
+        });
+      } else {
+        res.status(304).send({
+          success: false,
+          error: {
+            message: "Push Token Not Updated"
+          }
+        });
+      }
+    });
+  });
+})
+
 router.patch('/:userId1/relationships/:userId2', function (req, res) {
   // Connecting to the database.
   pool.getConnection(function (err, connection) {
     if (err) throw err; // not connected!
-    var sql = "UPDATE ?? SET Type = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = false";
-    var parameters = ['UserRelationship', req.body.Type, req.params.userId1, req.params.userId2];
+    var sql = "UPDATE ?? SET IsDeleted = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = 1";
+    var parameters = ['UserRelationship', 0, req.params.userId1, req.params.userId2];
     sql = mysql.format(sql, parameters);
     connection.query(sql, function (error, results, fields) {
       connection.release();
@@ -374,7 +410,42 @@ router.patch('/:userId1/relationships/:userId2', function (req, res) {
         res.status(200).send({
           success: true,
           body: {
-            message: "Relationship Updated to " + req.body.Type
+            message: "Relationship Updated"
+          }
+        });
+      } else {
+        res.status(404).send({
+          success: false,
+          body: {
+            message: "Relationship Not Found between UserId1: " + req.params.userId1 + " and UserId2: " + req.params.userId2
+          }
+        });
+      }
+    });
+  });
+})
+
+router.delete('/:userId1/relationships/:userId2', function (req, res) {
+  // Connecting to the database.
+  pool.getConnection(function (err, connection) {
+    if (err) throw err; // not connected!
+    var sql = "UPDATE ?? SET IsDeleted = ? WHERE UserId1 = ? AND UserId2 = ? AND IsDeleted = false";
+    var parameters = ['UserRelationship', 1, req.params.userId1, req.params.userId2];
+    sql = mysql.format(sql, parameters);
+    connection.query(sql, function (error, results, fields) {
+      connection.release();
+      if (error) {
+        res.status(500).send({
+          success: false,
+          error: {
+            message: error
+          }
+        });
+      } else if (results.affectedRows > 0) {
+        res.status(200).send({
+          success: true,
+          body: {
+            message: "Relationship deleted"
           }
         });
       } else {
