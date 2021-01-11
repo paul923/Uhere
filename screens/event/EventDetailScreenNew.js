@@ -103,6 +103,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
         locationService.subscribe(onLocationUpdate);
         let interval = null;
         interval = setInterval( async () => {
+            // TODO:this calls API every second, how do i use event from loaded?
             let event = await getEvent(route.params.EventId);
             // TIMER
             if (new Date(event.DateTime) - new Date() > 0 && !goalInRef.current) {
