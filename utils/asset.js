@@ -18,6 +18,12 @@ export function getAvatarImage(avatarURI){
       return require("../assets/images/avatars/avatar_bird/avatar_bird.png");
     case "avatar-elephant":
       return require("../assets/images/avatars/avatar_elephant/avatar_elephant.png");
+    case "count-1":
+      return require("../assets/images/game/count/count_one.png");
+    case "count-2":
+      return require("../assets/images/game/count/count_two.png");
+    case "count-3":
+      return require("../assets/images/game/count/count_three.png");
   }
 }
 
