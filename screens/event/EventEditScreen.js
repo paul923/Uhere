@@ -103,7 +103,7 @@ export default function EventEditScreen({navigation, route}) {
     }
 
     async function fetchData() {
-        let location = await Location.getCurrentPositionAsync();
+      let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         setMapRegion(region);
     }
@@ -488,7 +488,7 @@ export default function EventEditScreen({navigation, route}) {
       return;
     }
     let url = '';
-    let location = await Location.getCurrentPositionAsync({});
+    let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
     try {
       url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURI(locationQuery) + '.json?' + qs.stringify({
         proximity: location.coords.longitude + ',' + location.coords.latitude,

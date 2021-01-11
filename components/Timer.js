@@ -1,10 +1,16 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Alert } from 'react-native';
 import { millisToMinutesAndSeconds } from "../utils/date";
 import { Appearance, useColorScheme } from 'react-native-appearance';
+import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
+import { updateArrivedTime } from '../api/event';
+import firebase from 'firebase';
+import DateTimePicker from 'react-native-modal-datetime-picker';
+import { rearg } from 'lodash';
 
 
-export default function Timer({ eventDateTime }) {
+export default function Timer({ eventDateTime, event }) {
     const [timer, setTimer] = React.useState(new Date(eventDateTime) - new Date() >= 1800000 ? 1800000 : new Date(eventDateTime) - new Date());
     let colorScheme = useColorScheme();
     React.useEffect(() => {
@@ -29,11 +35,11 @@ export default function Timer({ eventDateTime }) {
 
 const styles = StyleSheet.create({
     container: {
-        width:200,
-        height:60,
+        width: 200,
+        height: 60,
         backgroundColor: 'white',
-        justifyContent:'center',
-        alignItems:'center',
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 10,
     },
     normal: {

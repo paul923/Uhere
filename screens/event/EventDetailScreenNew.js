@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { formatDate, formatDateFormat } from "utils/date";
@@ -8,8 +8,9 @@ import EventMap from 'screens/event/EventMap'
 import SideMenu from 'react-native-side-menu'
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import * as Location from 'expo-location';
+import * as TaskManager from 'expo-task-manager';
 import firebase from 'firebase';
-import { getEvent } from 'api/event'
+import { getEvent, updateArrivedTime } from 'api/event'
 import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
 import UhereSideMenu from '../../components/UhereSideMenu';
@@ -19,27 +20,126 @@ import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
 import { getAvatarImage } from 'utils/asset'
 import { StackActions } from '@react-navigation/native';
-
+import { locationService } from '../../utils/locationService';
+import { millisToMinutesAndSeconds } from "../../utils/date";
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
 const LATITUDE_DELTA_MAP = 0.0922;
 const LONGITUDE_DELTA_MAP = LATITUDE_DELTA_MAP * ASPECT_RATIO;
 
+const GEO_FENCING_TASK_NAME = 'geofencing';
+
+
+// Task Manager 
+TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, error }) => {
+    if (error) {
+      console.log(error);
+      return;
+    }
+    if (eventType === Location.GeofencingEventType.Enter) {
+      console.log("You've entered region:", region);
+      locationService.setGoalin(true);
+      //Alert.alert("You've entered region");
+    } else if (eventType === Location.GeofencingEventType.Exit) {
+      console.log("You've left region:", region);
+      locationService.setGoalin(false);
+      //Alert.alert("You've left region");
+    }
+  });
+
 export default function EventDetailScreenNew({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
-    
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
     const [host, setHost] = React.useState();
+    
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [memberLocations, setMemberLocations] = React.useState([]);
-    
     const [isModalVisible, setModalVisible] = React.useState(false);
+    const [goalButton, setGoalButton] = React.useState(false);
+
+
+    const [me, _setMe] = React.useState();
+    const meRef = React.useRef(me);
+    const setMe = (value) => {
+        meRef.current = value;
+        _setMe(value);
+      }
+
+    const [goalIn, _setGoalIn] = React.useState();
+    const goalInRef = React.useRef(goalIn);
+    const setGoalIn = (value) => {
+        goalInRef.current = value;
+        _setGoalIn(value);
+      }
+
+      
+
+    const [timer, _setTimer] = React.useState();
+    const timerRef = React.useRef(timer);
+    const setTimer = (value) => {
+        timerRef.current = value;
+        _setTimer(value);
+      }
+
+    const [geofencingStarted, _setgeofencingStarted] = React.useState(false);
+    const geofencingStartedRef = React.useRef(geofencingStarted);
+    const setgeofencingStarted = (value) => {
+      geofencingStartedRef.current = value;
+      _setgeofencingStarted(value);
+    }
+
 
     const mapRef = React.useRef();
     const drawerRef = React.useRef(null);
+
+    const onLocationUpdate = (value) => {
+        setGoalButton(value);
+    }
+
+    React.useEffect(() => {
+        locationService.subscribe(onLocationUpdate);
+        let interval = null;
+        interval = setInterval( async () => {
+            // TODO:this calls API every second, how do i use event from loaded?
+            let event = await getEvent(route.params.EventId);
+            // TIMER
+            if (new Date(event.DateTime) - new Date() > 0 && !goalInRef.current) {
+                setTimer(millisToMinutesAndSeconds(new Date(event.DateTime) - new Date() >= 1800000 ? 1800000 : new Date(event.DateTime) - new Date()));
+            }
+            // geofencing 
+            if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
+                startGeoFencing(event.LocationGeolat, event.LocationGeolong);
+                setgeofencingStarted(true);
+            } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
+                setTimer('You Are In!');
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                clearInterval(interval);
+            } else if (new Date(event.DateTime) - new Date() <= 0) {
+                setTimer(0);
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                clearInterval(interval);
+                // TODO: Figure out Navigation
+                // navigation.navigate('History', {
+                //     EventId: event.EventId
+                // })
+            } else {
+                console.log('interval is running');
+            }
+        }, 1000);
+        return async () => {
+            clearInterval(interval);
+            let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+            if(started){
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                console.log("stop geo");
+            }
+            locationService.unsubscribe(onLocationUpdate);
+        };
+    }, []);
+
 
     React.useEffect(() => {
         const unsubscribeFocus = navigation.addListener('focus', () => {
@@ -80,7 +180,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }, [locations])
 
     async function _goToMyLocation() {
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         mapRef.current.animateToRegion(region);
     }
@@ -89,47 +189,61 @@ export default function EventDetailScreenNew({ navigation, route }) {
         mapRef.current.animateToRegion(region);
     }
 
+    async function startGeoFencing(latitude, longitude) {
+        console.log('starting geo fencing with radius 500m from', latitude, longitude);
+        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        let regions = [
+            {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                radius: 500,
+                notifyOnEnter: true,
+                notifyOnExit: true,
+            }
+        ]
+        // let regions = [
+        //     {
+        //         latitude: latitude,
+        //         longitude: longitude,
+        //         radius: 500,// in meters
+        //         notifyOnEnter: true,
+        //         notifyOnExit: true,
+        //     }
+        // ]
+        Location.startGeofencingAsync(GEO_FENCING_TASK_NAME, regions)
+    }
+
     async function fetchData() {
         let event = await getEvent(route.params.EventId);
         setEvent(event);
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         setMapRegion(region);
         setEventMembers(event.eventUsers);
         let host = event.eventUsers.find(m => m.IsHost === 1);
         setHost(host);
-        setIsLoading(false);
-        let interval = null;
-        interval = setInterval(() => {
-            if (new Date(event.DateTime) - new Date() > 0) {
-                
-            } else {
-                clearInterval(interval);
-                navigation.navigate('History', {
-                    EventId: event.EventId
-                })
-            }
-        }, 1000);
-        return () => clearInterval(interval);
+        let me = event.eventUsers.find(m => m.UserId === firebase.auth().currentUser.uid);
+        setMe(me);
+        setIsLoading(false); 
     }
 
     async function loadInitial() {
         socket.on('requestPosition', async () => {
-          let location = await Location.getCurrentPositionAsync();
-          let user = firebase.auth().currentUser.uid;
-          let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-          setLocations({...locations, [user]: position});
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+            let user = firebase.auth().currentUser.uid;
+            let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+            setLocations({ ...locations, [user]: position });
         })
-        socket.on('updatePosition', ({user, position}) => {
-          setLocations((prevLocations) => {
-            return {
-              ...prevLocations,
-              [user]: position
-            }
-          })
+        socket.on('updatePosition', ({ user, position }) => {
+            setLocations((prevLocations) => {
+                return {
+                    ...prevLocations,
+                    [user]: position
+                }
+            })
         })
-        socket.emit('requestPosition', {event: route.params.EventId});
-      }
+        socket.emit('requestPosition', { event: route.params.EventId });
+    }
 
 
     async function _fitAll() {
@@ -167,11 +281,17 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 showSideMenu={true}
                 onPressSideMenu={() => drawerRef.current.openDrawer()}
             />
-            {!isLoading && event && (
+            {!isLoading && event && timer && (
                 <React.Fragment>
                     {/* Timer */}
-                    <View style={styles.timer}>
-                        <Timer eventDateTime={event.DateTime} />
+                    {/* <View style={styles.timer}>
+                        <Timer eventDateTime={event.DateTime} event={event} />
+                    </View> */}
+                    {/* NEW TIMER */}
+                    <View style={styles.timerContainer}>
+                        <Text style={styles.timerFont}>
+                            {timer}
+                        </Text>
                     </View>
                     {/* MapView */}
                     <MapView
@@ -264,6 +384,20 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
                         </View>
                     </Modal>
+                    {/* Goal In */}
+                    {goalButton && !goalInRef.current && meRef.current.ArrivedTime === null && (
+                        <TouchableOpacity 
+                            style={styles.goalinStyle}
+                            onPress={()=>{
+                                updateArrivedTime(event.EventId,firebase.auth().currentUser.uid,new Date())
+                                setGoalIn(true);
+                                setGoalButton(false)}
+                            }
+                        >
+                            {/* TODO change png */}
+                            <Image source={require('../../assets/icons/event/goalinButton.png')} />
+                        </TouchableOpacity>
+                    )}
 
                     {/* Member Infos Box */}
                     <View style={styles.avatarContianer}>
@@ -302,6 +436,22 @@ export default function EventDetailScreenNew({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    timerContainer: {
+        width: 200,
+        height: 60,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        position: 'absolute',
+        alignSelf: 'center',
+        top: 110,
+        zIndex: 1,
+    },
+    timerFont: {
+        fontSize: 30,
+        color: '#15cdca',
     },
     horizontalLine: {
         backgroundColor: '#15cdca',
@@ -369,5 +519,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 163,
         right: 0,
+    },
+    goalinStyle: {
+        position: 'absolute',
+        alignSelf: 'center',
+        bottom: '40%',
     },
 });
