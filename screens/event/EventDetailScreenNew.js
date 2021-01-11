@@ -21,7 +21,7 @@ import Modal from 'react-native-modal';
 import { getAvatarImage } from 'utils/asset'
 import { StackActions } from '@react-navigation/native';
 import { locationService } from '../../utils/locationService';
-
+import { millisToMinutesAndSeconds } from "../../utils/date";
 
 const SCREEN = Dimensions.get('window');
 const ASPECT_RATIO = SCREEN.width / SCREEN.height;
@@ -53,12 +53,37 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
     const [host, setHost] = React.useState();
+    
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [memberLocations, setMemberLocations] = React.useState([]);
     const [isModalVisible, setModalVisible] = React.useState(false);
     const [goalButton, setGoalButton] = React.useState(false);
-   
+
+
+    const [me, _setMe] = React.useState();
+    const meRef = React.useRef(me);
+    const setMe = (value) => {
+        meRef.current = value;
+        _setMe(value);
+      }
+
+    const [goalIn, _setGoalIn] = React.useState();
+    const goalInRef = React.useRef(goalIn);
+    const setGoalIn = (value) => {
+        goalInRef.current = value;
+        _setGoalIn(value);
+      }
+
+      
+
+    const [timer, _setTimer] = React.useState();
+    const timerRef = React.useRef(timer);
+    const setTimer = (value) => {
+        timerRef.current = value;
+        _setTimer(value);
+      }
+
     const [geofencingStarted, _setgeofencingStarted] = React.useState(false);
     const geofencingStartedRef = React.useRef(geofencingStarted);
     const setgeofencingStarted = (value) => {
@@ -70,19 +95,29 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const mapRef = React.useRef();
     const drawerRef = React.useRef(null);
 
-    const onLocationUpdate = (goalin) => {
-        setGoalButton(goalin);
-      }
+    const onLocationUpdate = (value) => {
+        setGoalButton(value);
+    }
 
     React.useEffect(() => {
         locationService.subscribe(onLocationUpdate);
         let interval = null;
         interval = setInterval( async () => {
             let event = await getEvent(route.params.EventId);
+            // TIMER
+            if (new Date(event.DateTime) - new Date() > 0 && !goalInRef.current) {
+                setTimer(millisToMinutesAndSeconds(new Date(event.DateTime) - new Date() >= 1800000 ? 1800000 : new Date(event.DateTime) - new Date()));
+            }
+            // geofencing 
             if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
                 startGeoFencing(event.LocationGeolat, event.LocationGeolong);
                 setgeofencingStarted(true);
+            } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
+                setTimer('You Are In!');
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                clearInterval(interval);
             } else if (new Date(event.DateTime) - new Date() <= 0) {
+                setTimer(0);
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 clearInterval(interval);
                 // TODO: Figure out Navigation
@@ -90,7 +125,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 //     EventId: event.EventId
                 // })
             } else {
-                console.log("is this running?");
+                console.log('interval is running');
             }
         }, 1000);
         return async () => {
@@ -160,7 +195,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
             {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                radius: 50,
+                radius: 500,
                 notifyOnEnter: true,
                 notifyOnExit: true,
             }
@@ -186,24 +221,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
         setEventMembers(event.eventUsers);
         let host = event.eventUsers.find(m => m.IsHost === 1);
         setHost(host);
+        let me = event.eventUsers.find(m => m.UserId === firebase.auth().currentUser.uid);
+        setMe(me);
         setIsLoading(false); 
-        // let interval = null;
-        // interval = setInterval(() => {
-        //     if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
-        //         console.log("once");
-        //         startGeoFencing(event.LocationGeolat, event.LocationGeolong);
-        //         setgeofencingStarted(true);
-        //     } else if (new Date(event.DateTime) - new Date() <= 0) {
-        //         clearInterval(interval);
-        //         navigation.navigate('History', {
-        //             EventId: event.EventId
-        //         })
-        //     }
-        // }, 1000);
-        // return () => {
-        //     clearInterval(interval);
-        //     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-        // };
     }
 
     async function loadInitial() {
@@ -260,11 +280,17 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 showSideMenu={true}
                 onPressSideMenu={() => drawerRef.current.openDrawer()}
             />
-            {!isLoading && event && (
+            {!isLoading && event && timer && (
                 <React.Fragment>
                     {/* Timer */}
-                    <View style={styles.timer}>
+                    {/* <View style={styles.timer}>
                         <Timer eventDateTime={event.DateTime} event={event} />
+                    </View> */}
+                    {/* NEW TIMER */}
+                    <View style={styles.timerContainer}>
+                        <Text style={styles.timerFont}>
+                            {timer}
+                        </Text>
                     </View>
                     {/* MapView */}
                     <MapView
@@ -358,13 +384,12 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         </View>
                     </Modal>
                     {/* Goal In */}
-                    {goalButton && (
+                    {goalButton && !goalInRef.current && meRef.current.ArrivedTime === null && (
                         <TouchableOpacity 
                             style={styles.goalinStyle}
                             onPress={()=>{
                                 updateArrivedTime(event.EventId,firebase.auth().currentUser.uid,new Date())
-                                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                                console.log("stop geo");
+                                setGoalIn(true);
                                 setGoalButton(false)}
                             }
                         >
@@ -410,6 +435,22 @@ export default function EventDetailScreenNew({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    timerContainer: {
+        width: 200,
+        height: 60,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        position: 'absolute',
+        alignSelf: 'center',
+        top: 110,
+        zIndex: 1,
+    },
+    timerFont: {
+        fontSize: 30,
+        color: '#15cdca',
     },
     horizontalLine: {
         backgroundColor: '#15cdca',

@@ -40,7 +40,7 @@ function showTab(route) {
   if (!routeName) {
     routeName = route.params?.screen || 'Event';
   }
-  console.log(routeName);
+  //console.log(routeName);
 
 
   switch (routeName) {
