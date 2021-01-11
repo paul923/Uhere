@@ -18,7 +18,7 @@ export default function LocationSearchScreen({navigation}) {
 
   async function searchLocation() {
     let url = '';
-    let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+    let location = await Location.getCurrentPositionAsync({});
     try {
       url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + encodeURI(locationQuery) + '.json?' + qs.stringify({
         proximity: location.coords.longitude + ',' + location.coords.latitude,

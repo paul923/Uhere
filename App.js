@@ -28,7 +28,6 @@ import AppIntroSlider from './screens/introSlider';
 import SplashScreen from './screens/SplashScreen';
 
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import LocationPermissionScreen from './screens/LocationPermissionScreen'
 import NotificationPermissionScreen from './screens/NotificationPermissionScreen'
@@ -103,11 +102,12 @@ export default function App(props) {
 
   // first time installing app gives you 'undetermined' == ask Next Time
   async function checkLocationPermissionAsync() {
-    const { status, permissions } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status, ios, android } = await Location.requestPermissionsAsync();
     console.log('status', status);
-    console.log('permissions', permissions.location.scope);
+    console.log('ios', ios == null ? 'not ios' : ios.scope);
+    console.log('android', android == null ? 'not android' : android.scope);
     // first time installing give you undetermined
-    if (Platform.OS === 'ios' ? (status === 'granted' && permissions.location.scope === 'always') : (status === 'granted' && permissions.location.scope === 'fine')) {
+    if (Platform.OS === 'ios' ? (status === 'granted' && ios.scope === 'whenInUse') : (status === 'granted' && android.scope === 'fine')) {
       setLocationPermissionGranted(true);
     } else {
       setLocationPermissionGranted(false);

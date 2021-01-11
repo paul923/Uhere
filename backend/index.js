@@ -10,7 +10,6 @@ const userRouter = require('./routes/user');
 const notificationRouter = require('./routes/notification');
 const relationshipRouter = require('./routes/relationship');
 const groupRouter = require('./routes/group');
-const eventuserRouter = require('./routes/eventuser');
 dotenv.config();
 
 
@@ -160,7 +159,7 @@ app.use('/users', userRouter);
 app.use('/notifications', notificationRouter);
 app.use('/relationships', relationshipRouter);
 app.use('/groups', groupRouter);
-app.use('/eventuser', eventuserRouter);
+
 
 
 // Starting our server.

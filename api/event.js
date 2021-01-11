@@ -133,31 +133,6 @@ export async function updatePenaltyUser(eventId, userId) {
   }
 }
 
-export async function updateArrivedTime(eventId, userId, arrivedTime) {
-  try {
-    let url = `http://${backend}:3000/eventuser/${eventId}/${userId}`;
-    console.log(eventId, userId, arrivedTime);
-    let response = await fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ArrivedTime: arrivedTime
-    }),
-    });
-    let json = response.json();
-    if (json.success) {
-      return json.body;
-    } else {
-      return json.error;
-    }
-  } catch (error) {
-    return null;
-  }
-}
-
 
 export async function cancelEvent(eventId) {
   try {
