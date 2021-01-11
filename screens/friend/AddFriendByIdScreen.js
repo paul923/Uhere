@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import {Icon, Header, Avatar, Input, Button, ListItem, SearchBar} from 'react-native-elements'
-import { getUserByUsername, getUserByUserId, createRelationship, updateRelationship, getRelationshipByUsername } from 'api/user'
+import { getUserByUsername, getUserByUserId, createRelationship, addBackRelationship, getRelationshipByUsername } from 'api/user'
 import UhereHeader from '../../components/UhereHeader';
 import { getAvatarImage } from '../../utils/asset'
 
@@ -50,12 +50,17 @@ export default function AddFriendByIdScreen({ navigation, route }) {
       let response = await createRelationship(currentUser.UserId, resultUser.UserId);
       if(response){
         setAddedFlag(true);
+      } else {
+        alert("Failed to add. Please try again.")
       }
     }
     else{
-      let response = await updateRelationship(currentUser.UserId, resultUser.UserId, "Friend");
+      console.log("i'm here")
+      let response = await addBackRelationship(currentUser.UserId, resultUser.UserId);
       if(response){
         setAddedFlag(true);
+      } else {
+        alert("Failed to add. Please try again.")
       }
     }
   }

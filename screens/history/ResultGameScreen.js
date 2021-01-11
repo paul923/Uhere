@@ -13,15 +13,15 @@ import { updatePenaltyUser } from '../../api/event';
 const countData = [
   {
     Nickname: "3",
-    AvatarURI : "avatar-croco",
+    AvatarURI : "count-3",
   },
   {
     Nickname: "2",
-    AvatarURI : "avatar-bird",
+    AvatarURI : "count-2",
   },
   {
     Nickname: "1",
-    AvatarURI : "avatar-elephant",
+    AvatarURI : "count-1",
   },
 ];
 
@@ -105,7 +105,7 @@ export default function ResultGameScreen({navigation, route}){
         <View style={styles.avatarHolderContainer}>
           <Avatar
             overlayContainerStyle={styles.avatarStyle}
-            size={130}
+            size={120}
             source={stopFlag ? getAvatarImage(pickedUser.AvatarURI) : (avatarHolder ? getAvatarImage(avatarHolder.AvatarURI) : getAvatarImage("uhere"))}
             imageProps= {{
               style: {
