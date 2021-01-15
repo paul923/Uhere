@@ -102,6 +102,11 @@ export default function JustinTestScreen({navigation}) {
         title="ROULETTE TEST"
         onPress={() => navigation.navigate('RouletteTestScreen')}
         />
+      <Button
+        style={{flex: 1}}
+        title="LOG OUT"
+        onPress={() => firebaseSignOut()}
+        />
     </ScrollView>
   )
 }

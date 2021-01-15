@@ -54,7 +54,7 @@ export async function getRelationships(UserId) {
         if (json.success) {
             return json.body.results;
         } else {
-            return null;
+            return [];
         }
     } catch (error) {
         return null;
