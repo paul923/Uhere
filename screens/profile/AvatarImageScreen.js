@@ -1,115 +1,301 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
-import { Avatar, Header, Button, Icon } from 'react-native-elements';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, AsyncStorage, Image, ActivityIndicator } from 'react-native';
+import { Overlay, Icon, Avatar, Header, Button } from 'react-native-elements';
 import ColorPalette from 'components/react-native-color-palette/src';
+import { ScrollView } from 'react-native-gesture-handler';
+import AuthContext from 'contexts/AuthContext';
+import firebase from 'firebase';
+import Constants from "expo-constants";
+import UhereHeader from "../../components/UhereHeader";
+import { getAvatarImage, avatarData } from "../../utils/asset.js";
+
+const { manifest } = Constants;
+import { backend } from 'constants/Environment';
+import { updateUser, createUser } from '../../api/user'
 
 
-const avatarImages = [
-  {
-    key: '1',
-    name: 'Image1',
-    uri: 'https://img.insight.co.kr/static/2018/05/01/700/f9v32iy7li764c61kj2k.jpg'
-  },
-  {
-    key: '2',
-    name: 'Image2',
-    uri: 'https://img.insight.co.kr/static/2019/12/04/700/2pyx44485s6q97u8z8dd.jpg'
-  },
-  {
-    key: '3',
-    name: 'Image3',
-    uri: 'https://i.ytimg.com/vi/ljUwX9a2Cr4/maxresdefault.jpg'
-  },
-  {
-    key: '4',
-    name: 'Image4',
-    uri: 'https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory2&fname=http%3A%2F%2Fcfile4.uf.tistory.com%2Fimage%2F996B483A5D73B72B34D12F'
-  },
-  {
-    key: '5',
-    name: 'Image5',
-    uri: 'https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg'
-  },
-  {
-    key: '6',
-    name: 'Image6',
-    uri: 'https://img.insight.co.kr/static/2019/12/13/700/09yeacn8uz5cpkhf78qf.jpg'
-  },
-  {
-    key: '7',
-    name: 'Image7',
-    uri: 'https://cdn.ppomppu.co.kr/zboard/data3/tf_news/2017/0325/m_201712241490410521.jpg'
-  },
-  {
-    key: 'initial',
-    name: 'initial',
-    uri: undefined
-  },
-
-]
+const colorList = [
+  '#f2994a', '#fe6060', '#50e14d', '#4687e9', 
+  '#4f4f4f', '#bd5757', '#b030dd', '#975c5c', 
+  '#f2c94c', '#38c1ec', '#6e09ef', '#cb9f9f'];
 
 
-export default class AvatarImageScreen extends Component {
-  state = {
-    uri: ''
+export default function AvatarImageScreen({navigation, route}){
+  const [ username, setUsername] = React.useState(route.params && route.params.Username);
+  const [ nickname, setNickname] = React.useState(route.params && route.params.Nickname);
+  const [ currentUser, setCurrentUser ] = React.useState();
+  const [ buttonIndex, setIndex] = React.useState(0);
+  const [ buttonFlag, setFlag] = React.useState(true);
+  const [ selectedAvatarURI, setSelectedAvatarURI] = React.useState("avatar-rabbit");
+  const [ selectedColor, setSelectedColor] = React.useState(colorList[0]);
+  const { skipProfile, getUserInfo } = React.useContext(AuthContext);
+
+  React.useEffect(() => {
+    getUserInfo(firebase.auth().currentUser.uid).then(user => setCurrentUser(user));
+  }, []);
+
+  async function saveUser() {
+    console.log(currentUser);
+    if(!currentUser) {
+      let user = {
+        "UserId": firebase.auth().currentUser.uid,
+        "Username": username,
+        "Nickname": nickname,
+        "AvatarURI": selectedAvatarURI,
+        "AvatarColor": selectedColor,
+      }
+      let created = await createUser(user);
+      created ? alert("Registered!") : alert("Failed to register...")
+    } else {
+      let user = {
+        ...currentUser, 
+        Username: username, 
+        Nickname: nickname, 
+        AvatarURI: selectedAvatarURI, 
+        AvatarColor: selectedColor
+      }
+      let response = await updateUser(user);
+      response ? alert("Saved!") : alert("Failed to save...")
+    }
   }
 
+  return (
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+        <View style={styles.headerWrapper}>
+          <TouchableOpacity style={styles.headerSection} onPress={() => navigation.goBack()}>
+            <Text style={styles.headerLeftText}>Back</Text>
+          </TouchableOpacity>
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Header
-          leftComponent={
-            <Icon
-              name="arrow-left"
-              type="entypo"
-              color= "white"
-              size={30}
-              underlayColor= "transparent"
-              onPress={()=> this.props.navigation.goBack()}
-            />
-          }
-          centerComponent={{text: 'Select Your Avatar', style: {color: 'black', fontSize: 25}}}
-          containerStyle={{backgroundColor: 'transparent', borderBottomWidth: 0}}
-        />
-        <View style={styles.imageContainer}>
-          {
-            avatarImages.map((u, i) => {
-              return(
-                <View style={{margin: 5,}} key={i}>
-                  <Avatar
-                    key={u.key}
-                    rounded
-                    size={100}
-                    source={u.uri && {
-                      uri : u.uri
-                    }}
-                    title={u.uri ? undefined : this.props.route.params.initial}
-                    onPress={()=>{
-                      this.props.navigation.navigate('ProfileScreen', {uri: u.uri})
-                    }}
-                  />
-                </View>
-              )
-            })
-          }
+          <View style={styles.headerSection}>
+            <Text style={styles.headerCenterText}>Profile</Text>
+          </View>
+          <TouchableOpacity style={styles.headerSection} onPress={() => {saveUser()}} disabled={buttonFlag}>
+            <Text style={[styles.headerRightText, buttonFlag && {color: "#0B6968"}]}>Save</Text>
+          </TouchableOpacity>
         </View>
+      </View>
+      <View style={styles.bottomContainer}>
+        <View style={styles.bottomContentWrapper}>
+          <Avatar
+            containerStyle={{
+              borderWidth: 5,
+              borderColor: "#979797",
+              borderStyle: "solid",
+              alignSelf: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white',
+            }}
+            placeholderStyle= {{
+              backgroundColor: 'transparent',
+            }}
+            renderPlaceholderContent={<ActivityIndicator/>}
+            imageProps={{
+              resizeMode: 'contain',
+              style: {
+                width: 100,
+                alignItems: 'center',
+                alignSelf: 'center',
+                tintColor: currentUser && currentUser.AvatarColor ? currentUser.AvatarColor : selectedColor
+              },
+            }}
+            rounded
+            size="xlarge"
+            source={currentUser ? getAvatarImage(currentUser.AvatarURI) : getAvatarImage(selectedAvatarURI)}
+          />
+          <Text style={styles.displayName}>{route.params && route.params.Nickname}</Text>
+          <Text style={styles.userName}>@{route.params && route.params.Username}</Text>
+          <View style={styles.tabView}>
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity 
+                style={[
+                  styles.selectButton,
+                  {
+                    backgroundColor: buttonIndex != 0 ? "#f6f6f6" : "#ffffff",
+                    borderTopLeftRadius: 10
+                  }
+                ]} 
+                onPress={() => setIndex(0)}>
+                <Text style={[
+                  styles.buttonText,
+                  {color: buttonIndex != 0 ? "#bdbdbd" : "#f79939"}
+                ]}>Avatars</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[
+                  styles.selectButton,
+                  {
+                    backgroundColor: buttonIndex != 1 ? "#f6f6f6" : "#ffffff",
+                    borderTopRightRadius: 10
+                  }
+                ]} 
+                onPress={() => setIndex(1)}>
+                <Text style={[
+                  styles.buttonText,
+                  {color: buttonIndex != 1 ? "#bdbdbd" : "#f79939"}
+                ]}>Colors</Text>
+              </TouchableOpacity>
+            </View>
+            {(buttonIndex === 0) && renderAvatars()}
+            {(buttonIndex === 1) && renderColors()}
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+
+  function renderColors() {
+    return (
+      <View style={styles.colorsContainer}>
+        <ColorPalette
+          onChange={color => {
+            setSelectedColor(color);
+            setFlag(false);
+          }}
+          defaultColor={currentUser && currentUser.AvatarColor}
+          colors={colorList}
+          title={""}
+        />
       </View>
     );
   }
+  function renderAvatars() {
+    return (
+      <View style={styles.avatarsContainer}>
+        {avatarData.map((avatar, i)=> {
+          return(
+            <View style={styles.avatarWrapper} key={i}>
+              <TouchableOpacity onPress={() => {
+                setSelectedAvatarURI(avatar.AvatarURI)
+                setFlag(false);
+              }}>
+                <Image 
+                  style={{
+                    width: 75,
+                    height: 80,
+                    tintColor: currentUser && currentUser.AvatarColor ? currentUser.AvatarColor : selectedColor
+                  }}
+                  source={getAvatarImage(avatar.AvatarURI)}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+          )
+        })}
+      </View>
+    );
+  }
+
+  
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    backgroundColor: "#ffffff",
   },
-  imageContainer: {
-    marginTop: 30,
+  topContainer: {
+    height: 200,
+    width: "100%",
+    backgroundColor: "#15cdca",
+    padding: 15,
+    paddingTop: 50,
+  },
+  bottomContainer: {
+    backgroundColor: "#ffffff",
+    alignItems: 'center',
+    padding: 18,
+  },
+  headerWrapper: {
+    flexDirection: "row", 
+    height: 50,
+  },
+  headerSection: {
+    flex: 1, 
+    justifyContent:"center"
+  },
+  headerLeftText: {
+    textAlign : "left", 
+    color: "white", 
+    fontSize: 16, 
+    fontWeight: "500",
+  },
+  headerCenterText: {
+    flex: 1,
+    fontSize: 28,
+    fontWeight: "600",
+    color: "#ffffff",
+    textAlign : "center",
+  },
+  headerRightText: {
+    textAlign : "right", 
+    color: "white", 
+    fontSize: 16, 
+    fontWeight: "500",
+  },
+  bottomContentWrapper: {
+    top: -100
+  },
+  displayName: {
+    textAlign: "center",
+    fontSize: 27,
+    fontWeight: "600",
+  },
+  userName: {
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "600",
+    margin: 8
+  },
+  tabView: {
+    height: 260,
+    marginTop: 10,
+    backgroundColor: "#f6f6f6",
+    borderRadius: 10
+  },
+  buttonsContainer: {
+    flexDirection: "row"
+  },
+  selectButton: {
+    flex: 1,
+    borderWidth: 1,
+    height: 50,
     justifyContent: "center",
+    borderColor: "#e8e8e8",
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#f79939",
+    textAlign: "center",
+  },
+  avatarWrapper: {
+    width: "33.33%",
+    height: 100,
+    justifyContent: 'center',
+    alignItems: "center"
+  },
+  selectionContainer: {
+    width: 300,
+  },
+  avatarsContainer: {
+    flex: 1,
+    width: 300,
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderWidth: 5,
     flexWrap: 'wrap',
-  }
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+  },
+  colorsContainer: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
 });
