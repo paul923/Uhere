@@ -78,7 +78,7 @@ export default function App(props) {
       }
       if (finalStatus !== 'granted') {
         setNotificationPermissionGranted(false)
-        alert('Failed to get push token for push notification!');
+        //alert('Failed to get push token for push notification!');
         return;
       }
       setNotificationPermissionGranted(true)
@@ -131,6 +131,7 @@ export default function App(props) {
     if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
       console.log('App has come to the foreground!');
       checkLocationPermissionAsync();
+      registerForPushNotificationsAsync();
     }
     setAppState(nextAppState);
   };
