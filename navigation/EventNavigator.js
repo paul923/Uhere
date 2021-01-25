@@ -33,6 +33,9 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Create Event"
         component={CreateEventScreen}
+        options={{
+          gestureEnabled: false,
+        }}
       />
       <Stack.Screen
         name="Filter Event"
@@ -45,6 +48,9 @@ export default function EventNavigator({ navigation, route }) {
       <Stack.Screen
         name="Event Detail New"
         component={EventDetailScreenNew}
+        options={{
+          gestureEnabled: false,
+        }}
       />
       <Stack.Screen
         name="Event History"
