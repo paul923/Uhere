@@ -27,29 +27,7 @@ export default function LoginScreen({route, navigation}) {
   let firebaseUnsubscribe;
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    // Add Firebase listener when this screen is focused
-    const unsubscribeFocus = navigation.addListener('focus', () => {
-      // Listen for authentication state to change.
-      firebaseUnsubscribe = firebaseObject.auth().onAuthStateChanged((user) => {
-        if (user && !user.email) {
-          console.log("We are authenticated now!");
-          signIn(user.uid);
-        } else if (user && user.email && user.emailVerified) {
-          console.log("We are authenticated now!");
-          signIn(user.uid);
-        } else if (user && !user.emailVerified) {
-          alert("Email is not verified. Please verify the email");
-          firebaseObject.auth().signOut();
-        }
-      });
-    });
-
-    // Remove firebase listener when this screen is not focused
-    const unsubscribeBlur = navigation.addListener('blur', () => {
-      if (firebaseUnsubscribe) firebaseUnsubscribe();
-    });
-
-    return unsubscribeFocus && unsubscribeBlur;
+    
 
   }, []);
 
