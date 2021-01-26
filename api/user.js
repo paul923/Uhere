@@ -127,6 +127,7 @@ export async function updateUser(User) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                Username: User.Username,
                 Nickname: User.Nickname,
                 AvatarURI: User.AvatarURI,
                 AvatarColor: User.AvatarColor

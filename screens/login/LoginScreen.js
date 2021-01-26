@@ -128,6 +128,7 @@ export default function LoginScreen({route, navigation}) {
             inputStyle={inputFocus.emailInputFocus ? styles.inputFocusText : styles.inputText}
             inputContainerStyle={inputFocus.emailInputFocus ? styles.inputFocusContainer : styles.inputContainer}
             placeholder="Email"
+            autoCapitalize="none"
             placeholderTextColor="#c2c2c2"
             onChangeText={text => setLoginEmail(text)}
             value={loginEmail}
@@ -203,7 +204,7 @@ export default function LoginScreen({route, navigation}) {
 
         <View style={{flexDirection: 'row'}}>
           <Text style={{color: '#5D5D5D'}}>Don't have account?</Text>
-          <TouchableOpacity onPress={()=> navigation.navigate('Signup')}>
+          <TouchableOpacity onPress={()=> navigation.navigate('Signup')} hitSlop={{left: 10, right: 10, bottom: 10}}>
             <Text style={{color: '#15CDCA'}}> Register</Text>
           </TouchableOpacity>
         </View>
@@ -234,21 +235,20 @@ const styles = StyleSheet.create({
   },
 
   inputContainer: {
-    marginVertical: 10,
     backgroundColor: 'white',
-    padding: 5,
     borderRadius: 20,
     borderBottomWidth: 0,
+    paddingHorizontal: 15,
+    paddingVertical: 3
   },
 
   inputFocusContainer: {
-    marginVertical: 10,
     backgroundColor: 'white',
-    padding: 5,
     borderRadius: 20,
     borderWidth: 2,
     borderBottomWidth: 2,
-    borderColor: "#15CDCA"
+    borderColor: "#15CDCA",
+    paddingHorizontal: 15
   },
 
   inputIcon: {

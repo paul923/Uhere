@@ -239,7 +239,7 @@ export default function App(props) {
         console.log('User Info: ' + user);
         const expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
         await userapi.updatePushToken(data, expoPushToken);
-        if (user !== null) {
+        if (user && user.Username) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });

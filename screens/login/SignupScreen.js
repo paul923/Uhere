@@ -100,6 +100,7 @@ export default class SignUp extends Component {
               placeholder="Email"
               placeholderTextColor="#c2c2c2"
               onChangeText={text => this.setState({registerEmail: text})}
+              autoCapitalize={false}
               value={this.state.registerEmail}
               textContentType="emailAddress"
               keyboardType="email-address"
@@ -122,6 +123,7 @@ export default class SignUp extends Component {
               placeholder="Password (6 or more character)"
               placeholderTextColor="#c2c2c2"
               onChangeText={text => this.setState({registerPassword: text})}
+              autoCapitalize={false}
               value={this.state.registerPassword}
               textContentType="password"
               secureTextEntry
@@ -144,6 +146,7 @@ export default class SignUp extends Component {
               placeholder="Confirm Password"
               placeholderTextColor="#c2c2c2"
               onChangeText={text => this.setState({confirmPassword:text})}
+              autoCapitalize="none"
               secureTextEntry
               onFocus = {() => this.handlerFocus('confirmPasswordInputFocus')}
               onBlur = {() => this.handlerBlur('confirmPasswordInputFocus')}
@@ -213,22 +216,23 @@ const styles = StyleSheet.create({
 
   inputContainer: {
     backgroundColor: 'white',
-    padding: 5,
     borderRadius: 20,
     borderBottomWidth: 0,
+    paddingHorizontal: 15,
+    paddingVertical: 4
   },
 
   inputFocusContainer: {
     backgroundColor: 'white',
-    padding: 5,
     borderRadius: 20,
     borderWidth: 2,
     borderBottomWidth: 2,
-    borderColor: "#15CDCA"
+    borderColor: "#15CDCA",
+    paddingHorizontal: 15
   },
 
   inputOuterContainer: {
-    marginVertical: 15,
+    marginVertical: 0,
   },
 
   inputIcon: {
