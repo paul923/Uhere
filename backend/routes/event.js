@@ -14,6 +14,122 @@ var getCronJobDate = function (originalDate) {
   return jobDate;
 }
 
+var createGameStartCronJob = function(date, eventId) {
+  var job = new CronJob(
+    date,
+    function() {
+      console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
+      pool.getConnection(function (err, connection) {
+        var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+
+        connection.query(sql, function (error, userResults, fields) {
+          if (error) {
+            connection.release();
+          }
+          if (userResults.length > 0) {
+            let notifications = [];
+            notifications = userResults.map(x => [eventId, x.UserId, 'START', new Date()]);
+            const pushNotificationUsers = userResults.map(x => [x.UserId]);
+            pushModule.sendStartPushNotification(pushNotificationUsers, eventId)
+            var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
+            var parameters = ['Notification'];
+            notificationSql = mysql.format(notificationSql, parameters);
+            connection.query(notificationSql, [notifications], function (error, results, fields) {
+              if (error) {
+                connection.release();
+                throw error;
+              }
+              connection.release();
+            })
+          } else {
+            connection.release();
+          }
+        })
+      })
+    },
+    null,
+    true,
+    null
+  )
+}
+
+var createGameNotificationCronJob = function(date, eventId) {
+  var job = new CronJob(
+    date,
+    function() {
+      console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
+      pool.getConnection(function (err, connection) {
+        var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+        connection.query(sql, function (error, userResults, fields) {
+          if (error) {
+            connection.release();
+          }
+          if (userResults.length > 0) {
+            let notifications = [];
+            notifications = userResults.map(x => [eventId, x.UserId, 'BEFORE', new Date()]);
+            const pushNotificationUsers = userResults.map(x => [x.UserId]);
+            pushModule.sendBeforePushNotification(pushNotificationUsers, eventId)
+            var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
+            var parameters = ['Notification'];
+            notificationSql = mysql.format(notificationSql, parameters);
+            connection.query(notificationSql, [notifications], function (error, results, fields) {
+              connection.release();
+            })
+          } else {
+            connection.release();
+          }
+        })
+      })
+    },
+    null,
+    true,
+    null
+  )
+}
+
+var createLocationSharingCronJob = function(date, eventId, socketObj) {
+  var job = new CronJob(
+    date,
+    function() {
+      console.log(`Cron Job For Location Sharing for Event ${eventId} Started`);
+      pool.getConnection(function (err, connection) {
+        var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+        connection.query(sql, function (error, userResults, fields) {
+          if (error) {
+            connection.release();
+            return;
+          }
+          socketObj.in('lobby').clients(function(error, clients) {
+            clients.forEach(function(socketId){
+              const socket = socketObj.sockets.connected[socketId];
+              if (socket.events){
+                socket.events.push(eventId)
+              } else {
+                socket.events = [eventId]
+              }
+              if (userResults.some(user => {
+                return user.UserId === socket.userId
+              })){
+                console.log(`${socket.userId} Joined Room ${eventId}`)
+                socket.join(eventId);
+              }
+            })
+          })
+          eventJobSql = "UPDATE ?? SET IsProcessed = 1 WHERE EventId = ?";
+          parameters = ['EventJob', eventId]
+          eventJobSql = mysql.format(eventJobSql, parameters);
+          connection.query(eventJobSql, function (error, eventJobResult, fields) {
+            connection.release();
+          })
+        });
+      })
+    },
+    null,
+    true,
+    null
+  );
+}
+
 router.post('/push-test', function (req, res) {
   const message = {
     to: req.body.expoPushToken,
@@ -495,6 +611,7 @@ router.post('/', function (req,res) {
           }
           let notifications = [];
           notifications = req.body.users.map(x => [eventId, x.UserId, 'INVITE', new Date()]);
+
           var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
           var parameters = ['Notification'];
           notificationSql = mysql.format(notificationSql, parameters);
@@ -536,113 +653,10 @@ router.post('/', function (req,res) {
               // var beforeJobDate = beforeGameStartNotificationDate > new Date() ? beforeGameStartNotificationDate : new Date();
               var beforeJobDate = getCronJobDate(beforeGameStartNotificationDate);
               var jobDate = getCronJobDate(thirtyMinutesBeforeEvent);
-              var gameStartJob = new CronJob(
-                gameStartJobDate,
-                function() {
-                  console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
-                  pool.getConnection(function (err, connection) {
-                    var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+              createGameStartCronJob(gameStartJobDate, eventId);
+              createGameNotificationCronJob(beforeJobDate, eventId);
+              createLocationSharingCronJob(jobDate, eventId, req.app.get('io'));
 
-                    connection.query(sql, function (error, userResults, fields) {
-                      if (error) {
-                        connection.release();
-                      }
-                      if (userResults.length > 0) {
-                        let notifications = [];
-                        notifications = userResults.map(x => [eventId, x.UserId, 'START', new Date()]);
-                        const pushNotificationUsers = userResults.map(x => [x.UserId]);
-                        pushModule.sendStartPushNotification(pushNotificationUsers, eventId)
-                        var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
-                        var parameters = ['Notification'];
-                        notificationSql = mysql.format(notificationSql, parameters);
-                        connection.query(notificationSql, [notifications], function (error, results, fields) {
-                          if (error) {
-                            connection.release();
-                            throw error;
-                          }
-                          connection.release();
-                        })
-                      } else {
-                        connection.release();
-                      }
-                    })
-                  })
-                },
-              	null,
-              	true,
-              	null
-              )
-              var beforeJob = new CronJob(
-                beforeJobDate,
-                function() {
-                  console.log(`Cron Job For Start Notification of Event ${eventId} Started`);
-                  pool.getConnection(function (err, connection) {
-                    var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
-                    connection.query(sql, function (error, userResults, fields) {
-                      if (error) {
-                        connection.release();
-                      }
-                      if (userResults.length > 0) {
-                        let notifications = [];
-                        notifications = userResults.map(x => [eventId, x.UserId, 'BEFORE', new Date()]);
-                        const pushNotificationUsers = userResults.map(x => [x.UserId]);
-                        pushModule.sendBeforePushNotification(pushNotificationUsers, eventId)
-                        var notificationSql = "INSERT INTO ?? (EventId, UserId, Type, DateTime) VALUES ?";
-                        var parameters = ['Notification'];
-                        notificationSql = mysql.format(notificationSql, parameters);
-                        connection.query(notificationSql, [notifications], function (error, results, fields) {
-                          connection.release();
-                        })
-                      } else {
-                        connection.release();
-                      }
-                    })
-                  })
-                },
-              	null,
-              	true,
-              	null
-              )
-              var job = new CronJob(
-              	jobDate,
-              	function() {
-              		console.log(`Cron Job For Location Sharing for Event ${eventId} Started`);
-                  pool.getConnection(function (err, connection) {
-                    var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
-                    connection.query(sql, function (error, userResults, fields) {
-                      if (error) {
-                        connection.release();
-                        return;
-                      }
-                      req.app.get('io').in('lobby').clients(function(error, clients) {
-                        clients.forEach(function(socketId){
-                          const socket = req.app.get('io').sockets.connected[socketId];
-                          if (socket.events){
-                            socket.events.push(eventId)
-                          } else {
-                            socket.events = [eventId]
-                          }
-                          if (userResults.some(user => {
-                            return user.UserId === socket.userId
-                          })){
-                            console.log(`${socket.userId} Joined Room ${eventId}`)
-                            socket.join(eventId);
-                          }
-                        })
-                      })
-                      eventJobSql = "UPDATE ?? SET IsProcessed = 1 WHERE EventId = ?";
-                      parameters = ['EventJob', eventId]
-                      eventJobSql = mysql.format(eventJobSql, parameters);
-                      connection.query(eventJobSql, function (error, eventJobResult, fields) {
-                        connection.release();
-                      })
-                    });
-                  })
-              	},
-              	null,
-              	true,
-              	null
-              );
               res.status(201).send({
                 success: true,
                 body: {

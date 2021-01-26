@@ -38,11 +38,13 @@ export default class FriendCard extends Component {
               </View>
 
             </ListItem.Content>
-            <ListItem.CheckBox
-              {
-                ...this.props.checkBox
-              }
-              />
+            { this.props.checkBox && (
+              <ListItem.CheckBox
+                {
+                  ...this.props.checkBox
+                }
+                />
+            )}
             { this.props.editToggle && !this.props.meIcon &&
               <TouchableOpacity onPress={this.props.onPressDelete}>
                 <Icon
