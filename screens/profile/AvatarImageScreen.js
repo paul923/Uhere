@@ -26,12 +26,12 @@ export default function AvatarImageScreen({navigation, route}){
   const [ currentUser, setCurrentUser ] = React.useState();
   const [ buttonIndex, setIndex] = React.useState(0);
   const [ buttonFlag, setFlag] = React.useState(true);
-  const [ selectedAvatarURI, setSelectedAvatarURI] = React.useState("avatar-rabbit");
-  const [ selectedColor, setSelectedColor] = React.useState(colorList[0]);
+  const [ selectedAvatarURI, setSelectedAvatarURI] = React.useState(currentUser ? (currentUser.AvatarURI && currentUser.AvatarURI) : "avatar-rabbit");
+  const [ selectedColor, setSelectedColor] = React.useState(currentUser ? (currentUser.AvatarColor && currentUser.AvatarColor) : colorList[0]);
   const { skipProfile, getUserInfo } = React.useContext(AuthContext);
 
   React.useEffect(() => {
-    getUserInfo(firebase.auth().currentUser.uid).then(user => setCurrentUser(user));
+    getUserInfo(firebase.auth().currentUser.uid).then(user => {console.log("weat",user); setCurrentUser(user);});
   }, []);
 
   async function saveUser() {
@@ -45,7 +45,7 @@ export default function AvatarImageScreen({navigation, route}){
         "AvatarColor": selectedColor,
       }
       let created = await createUser(user);
-      created ? alert("Registered!") : alert("Failed to register...")
+      created ? skipProfile() : alert("Failed to register...")
     } else {
       let user = {
         ...currentUser, 
@@ -55,7 +55,9 @@ export default function AvatarImageScreen({navigation, route}){
         AvatarColor: selectedColor
       }
       let response = await updateUser(user);
-      response ? alert("Saved!") : alert("Failed to save...")
+      response ? 
+        skipProfile()
+        : alert("Failed to save...")
     }
   }
 
@@ -96,15 +98,15 @@ export default function AvatarImageScreen({navigation, route}){
                 width: 100,
                 alignItems: 'center',
                 alignSelf: 'center',
-                tintColor: currentUser && currentUser.AvatarColor ? currentUser.AvatarColor : selectedColor
+                tintColor: selectedColor
               },
             }}
             rounded
             size="xlarge"
-            source={currentUser ? getAvatarImage(currentUser.AvatarURI) : getAvatarImage(selectedAvatarURI)}
+            source={getAvatarImage(selectedAvatarURI)}
           />
-          <Text style={styles.displayName}>{route.params && route.params.Nickname}</Text>
-          <Text style={styles.userName}>@{route.params && route.params.Username}</Text>
+          <Text style={styles.displayName}>{route.params ? route.params.Nickname : (currentUser ? currentUser.Nickname : "")}</Text>
+          <Text style={styles.userName}>@{route.params ? route.params.Username : (currentUser ? currentUser.Username : "")}</Text>
           <View style={styles.tabView}>
             <View style={styles.buttonsContainer}>
               <TouchableOpacity 
@@ -173,7 +175,7 @@ export default function AvatarImageScreen({navigation, route}){
                   style={{
                     width: 75,
                     height: 80,
-                    tintColor: currentUser && currentUser.AvatarColor ? currentUser.AvatarColor : selectedColor
+                    tintColor: selectedColor
                   }}
                   source={getAvatarImage(avatar.AvatarURI)}
                   resizeMode="contain"
