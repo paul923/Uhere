@@ -11,7 +11,7 @@ export default function UhereHeader(props, {navigation}) {
       leftComponent={props.showBackButton && {icon: "left", type: "antdesign", size: 16, onPress: props.onPressBackButton}}
       centerComponent={
         props.title ?
-        <Text style={styles.headerTitle}>{props.title}</Text> :
+        <Text style={props.titleStyle ? props.titleStyle : styles.headerTitle}>{props.title}</Text> :
         <Image
           source={require('../assets/images/logos/logo_letter_colored/png/UhereCopy2.imageset/UhereCopy2.png')}
           style={styles.uhereLogo}

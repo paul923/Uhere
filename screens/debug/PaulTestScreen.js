@@ -79,9 +79,9 @@ export default function PaulTestScreen({ navigation }) {
         onPress={() => deleteGroup()}
       />
       <Button
-        title='AddFriendsScreen'
+        title='Avatar Screen'
         buttonStyle={styles.button}
-        onPress={()=> navigation.navigate("Test Screen 5")}
+        onPress={()=> navigation.navigate("Avatar Screen")}
       />
       <Button
         title='Add friend screen by id'
