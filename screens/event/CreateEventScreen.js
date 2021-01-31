@@ -17,7 +17,7 @@ import Constants from "expo-constants";
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
-
+import { getRelationships, getUserByUserId, deleteRelationship } from 'api/user'
 import { createEvent } from 'api/event';
 
 import FriendCard from 'components/FriendCard';
@@ -58,29 +58,7 @@ export default function CreateEventScreen({navigation}) {
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ locationHistory, setLocationHistory] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
-  const [ friends, setFriends] = React.useState([
-    {
-      title: "Group",
-      data: []
-    },
-    {
-      title: "All Contacts",
-      data: [{
-        UserId: "eIsb3yMPlScSy5QAtpnqfqzON8r1",
-        Username: "Crescent9723",
-        Nickname: "Crescent9723",
-        AvatarURI: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-        AvatarColor: "#D47FA6"
-      },
-      {
-        UserId: "dKnJbXjjXwg13Bfkb4jBUcwKzGU2",
-        Username: "chiyy1231",
-        Nickname: "chiyy1231",
-        AvatarURI: "https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg",
-        AvatarColor: "#D47FA6"
-      }]
-    }
-  ]);
+  const [ friends, setFriends] = React.useState([]);
   const [ friendQuery, setFriendQuery] = React.useState("");
   const [ filteredData, setFilteredData] = React.useState();
   const [ mapRegion, setMapRegion ] = React.useState();
@@ -89,16 +67,9 @@ export default function CreateEventScreen({navigation}) {
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     async function retrieveFriend() {
-      let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      let responseJson = await response.json();
-      responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
-      setFriends(responseJson.response);
+      let friends = await getRelationships(firebase.auth().currentUser.uid);
+      friends.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+      setFriends(friends);
     }
 
     async function fetchData() {
@@ -124,6 +95,7 @@ export default function CreateEventScreen({navigation}) {
 
 
     }
+    retrieveFriend()
     fetchData()
     fetchRecentLocation()
 
@@ -175,6 +147,7 @@ export default function CreateEventScreen({navigation}) {
     return (
     <FriendCard
       avatarUrl= {item.AvatarURI}
+      avatarColor= {item.AvatarColor}
       avatarTitle= {item.Nickname.substr(0, 2).toUpperCase()}
       displayName = {item.Nickname}
       userId = {item.Username}
@@ -182,8 +155,8 @@ export default function CreateEventScreen({navigation}) {
         size: 20,
         checkedIcon: 'dot-circle-o',
         uncheckedIcon: 'circle-o',
-        checkedColor:'#d3d3d3',
-        uncheckedColor: '#d3d3d3',
+        checkedColor:'#15CDCA',
+        uncheckedColor: '#15CDCA',
         checked: selectedMembers.includes(item),
         onPress: () => selectFriend(item)
       }}
@@ -293,13 +266,10 @@ export default function CreateEventScreen({navigation}) {
         </View>
         <View style={{flex: 1}}>
           <View style={styles.searchResultContainer}>
-            <SectionList
-              sections={friends}
+            <FlatList
+              data={friends}
               keyExtractor={(item, index) => item + index}
               renderItem={renderFriendsCard}
-              renderSectionHeader={({ section: { title } }) => (
-                <Text style={styles.locationSearchResultHeader}>{title}</Text>
-              )}
             />
           </View>
         </View>
