@@ -17,6 +17,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import Constants from "expo-constants";
 const { manifest } = Constants;
 import firebase from 'firebase';
+import firebaseObject from 'config/firebase';
 import { backend } from './constants/Environment';
 
 import MainAppNavigator from './navigation/MainAppNavigator';
@@ -35,7 +36,6 @@ import * as userapi from 'api/user';
 
 
 import { Image, Button, Text, Input, Icon, Divider } from 'react-native-elements';
-
 const Stack = createStackNavigator();
 
 import AuthContext from 'contexts/AuthContext';
@@ -58,6 +58,19 @@ export default function App(props) {
   React.useEffect(() => {
     registerForPushNotificationsAsync();
     checkLocationPermissionAsync();
+    firebaseObject.auth().onAuthStateChanged((user) => {
+      if (user && !user.email) {
+        console.log("We are authenticated now!");
+        authContext.signIn(user.uid);
+      } else if (user && user.email && user.emailVerified) {
+        console.log("We are authenticated now!");
+        authContext.signIn(user.uid);
+      } else if (user && !user.emailVerified) {
+        alert("Email is not verified. Please verify the email");
+        firebaseObject.auth().signOut();
+      }
+    });
+
   }, []);
 
   let [fontsLoaded] = useFonts({
@@ -78,7 +91,7 @@ export default function App(props) {
       }
       if (finalStatus !== 'granted') {
         setNotificationPermissionGranted(false)
-        alert('Failed to get push token for push notification!');
+        //alert('Failed to get push token for push notification!');
         return;
       }
       setNotificationPermissionGranted(true)
@@ -131,6 +144,7 @@ export default function App(props) {
     if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
       console.log('App has come to the foreground!');
       checkLocationPermissionAsync();
+      registerForPushNotificationsAsync();
     }
     setAppState(nextAppState);
   };
@@ -223,9 +237,10 @@ export default function App(props) {
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
         let user = await userapi.getUserByUserId(data);
+        console.log('User Info: ' + user);
         const expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
         await userapi.updatePushToken(data, expoPushToken);
-        if (user !== null) {
+        if (user && user.Username) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: true });
         } else {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });

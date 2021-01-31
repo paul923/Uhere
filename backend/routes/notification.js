@@ -35,7 +35,7 @@ router.get('/:userId', function(req, res, next) {
           }
         });
       } else {
-        res.status(204).send({
+        res.status(200).send({
           success: false,
           error: {
             message: "Not Found"
