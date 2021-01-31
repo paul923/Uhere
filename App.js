@@ -69,6 +69,7 @@ export default function App(props) {
         alert("Email is not verified. Please verify the email");
         firebaseObject.auth().signOut();
       }
+      console.log(state)
     });
 
   }, []);
@@ -161,7 +162,8 @@ export default function App(props) {
           return {
             ...prevState,
             userToken: action.token,
-            fetchToken: false
+            fetchToken: false,
+            autoLogin: true
           };
         case 'SIGN_IN':
           return {
@@ -212,7 +214,8 @@ export default function App(props) {
       showLoadingScreen: false,
       isLoggedIn: false,
       userToken: null,
-      skipProfile: false
+      skipProfile: false,
+      autoLogin: false,
     }
   );
 
@@ -381,8 +384,8 @@ export default function App(props) {
           </View>
         </Modal>
         <Spinner
-          visible={state.showLoadingScreen}
-          textContent={'Loading...'}
+          visible={state.fetchToken || (state.autoLogin && !state.isLoggedIn)}
+          textContent={'Fetching User Information...'}
           textStyle={styles.spinnerTextStyle}
         />
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
