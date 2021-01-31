@@ -13,6 +13,7 @@ import AddFriendSelectionScreen from '../screens/friend/AddFriendSelectionScreen
 import NotificationPermissionScreen from '../screens/NotificationPermissionScreen'
 import NotificationCardScreen from '../screens/debug/NotificationCardScreen'
 import ResultGameScreen from '../screens/history/ResultGameScreen'
+import AvatarImageScreen from '../screens/profile/AvatarImageScreen';
 
 
 const Stack = createStackNavigator();
@@ -28,8 +29,8 @@ export default function PaulsTabNavigator({ navigation, route }) {
         component={PaulTestScreen}
       />
       <Stack.Screen
-        name="Test Screen 1"
-        component={DrawerLayoutScreen}
+        name="Avatar Screen"
+        component={AvatarImageScreen}
       />
       <Stack.Screen
         name="Test Screen 2"

@@ -46,11 +46,14 @@ export default function NotificationScreen({ navigation, route }) {
   }
 
   async function setReadNotification(notifications) {
-    notifications.forEach(async notification => {
-      if (notification.isNew) {
-        await flagIsNewNotification(notification.NotificationId, false);
-      }
-    })
+    if (notifications.message !== "Not Found") {
+      notifications.forEach(async notification => {
+        if (notification.isNew) {
+          await flagIsNewNotification(notification.NotificationId, false);
+        }
+      })
+    }
+
   }
   return (
     <View style={styles.container}>
