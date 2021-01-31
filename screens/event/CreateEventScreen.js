@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, AsyncStorage, TouchableHighlight, Picker, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity, AsyncStorage, TouchableHighlight, Picker, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -398,24 +398,49 @@ export default function CreateEventScreen({navigation}) {
           <View style={{flexDirection: 'row'}}>
             <View style={{flex: 1}}>
               <Text style={styles.label}>Date</Text>
-              <CustomInput
-                placeholder='MM/DD/YYYY'
-                value={eventDate ? formatDate(eventDate) : ''}
-                onFocus={() => setShowDatePicker(true)}
-                onBlur={() => setShowDatePicker(false)}
-              />
+              {Platform.OS === 'ios' ? (
+                <DateTimePicker
+                  style={styles.label}
+                  value={eventDate}
+                  mode={"date"}
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, date) => {
+                    setEventDate(date);
+                  }}/>
+                ) : (
+                  <CustomInput
+                    placeholder='MM/DD/YYYY'
+                    value={eventDate ? formatDate(eventDate) : ''}
+                    onFocus={() => setShowDatePicker(true)}
+                    onBlur={() => setShowDatePicker(false)}
+                  />
+                )}
             </View>
             <View style={{flex: 1}}>
               <Text style={styles.label}>Time</Text>
-              <CustomInput
-                placeholder='00:00 AM/PM'
-                value={eventTime ? formatTime(eventTime) : ''}
-                onFocus={() => setShowTimePicker(true)}
-                onBlur={() => setShowTimePicker(false)}
-              />
+              {Platform.OS === 'ios' ? (
+                <DateTimePicker 
+                  style={styles.label}
+                  value={eventTime}
+                  mode={"time"}
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, date) => {
+                    setEventTime(date);
+                  }}
+                />
+              ) : (
+                  <CustomInput
+                    placeholder='00:00 AM/PM'
+                    value={eventTime ? formatTime(eventTime) : ''}
+                    onFocus={() => setShowTimePicker(true)}
+                    onBlur={() => setShowTimePicker(false)}
+                  />
+              )}
             </View>
           </View>
-          {showDatePicker && (
+          {Platform.OS === 'android' && showDatePicker && (
             <DateTimePicker
               value={eventDate}
               mode={"date"}
@@ -428,7 +453,7 @@ export default function CreateEventScreen({navigation}) {
               }}
             />
           )}
-          {showTimePicker && (
+          {Platform.OS === 'android' && showTimePicker && (
             <DateTimePicker
               value={eventTime}
               mode={"time"}
