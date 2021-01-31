@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
       var sql = `SELECT EventId
       FROM Event
       WHERE 1=1
-      AND NOW() Between DATE_SUB(Event.DateTime, INTERVAL 5000 MINUTE) AND Event.DateTime
+      AND NOW() Between DATE_SUB(Event.DateTime, INTERVAL 30 MINUTE) AND Event.DateTime
       AND EventID IN (
       	SELECT EventUser.EventID FROM EventUser
           where EventUser.UserId = '${userId}'
