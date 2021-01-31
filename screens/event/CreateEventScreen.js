@@ -25,7 +25,7 @@ import FriendTile from 'components/FriendTile';
 import CustomInput from 'components/CustomInput';
 import NextStep from 'components/NextStep';
 
-import {formatDate, formatTime, formatDateFormat, combineDateAndTime, createDateAsUTC} from 'utils/date';
+import {formatDate, formatHeaderDate, formatTime, formatDateFormat, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
 import googleSignInImage from 'assets/images/buttons/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
 import penaltyImage from 'assets/images/miscs/penalty.png';
@@ -411,7 +411,7 @@ export default function CreateEventScreen({navigation}) {
                 ) : (
                   <CustomInput
                     placeholder='MM/DD/YYYY'
-                    value={eventDate ? formatDate(eventDate) : ''}
+                    value={eventDate ? formatDateFormat(eventDate, 'dd MMM yyyy') : ''}
                     onFocus={() => setShowDatePicker(true)}
                     onBlur={() => setShowDatePicker(false)}
                   />
@@ -420,7 +420,7 @@ export default function CreateEventScreen({navigation}) {
             <View style={{flex: 1}}>
               <Text style={styles.label}>Time</Text>
               {Platform.OS === 'ios' ? (
-                <DateTimePicker 
+                <DateTimePicker
                   style={styles.label}
                   value={eventTime}
                   mode={"time"}
