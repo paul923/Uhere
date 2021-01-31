@@ -567,6 +567,7 @@ export default function CreateEventScreen({navigation}) {
             containerStyle={{flex: 5}}
             placeholder='Seach Location?'
             inputStyle={{color: '#000000'}}
+            onSubmitEditing={searchLocation}
             onFocus={() => setLocationSearching(true)}
             onChangeText={(text) => {
               if (text === "") {
