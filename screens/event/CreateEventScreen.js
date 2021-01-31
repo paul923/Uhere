@@ -347,7 +347,7 @@ export default function CreateEventScreen({navigation}) {
               value={maximumNumberOfMembers}
               onValueChange={(value) => { setEventMembers([]); setMaximumNumberOfMembers(value);}}
               step={1}
-              minimumValue={0}
+              minimumValue={1}
               maximumValue={9}
             />
           </View>
