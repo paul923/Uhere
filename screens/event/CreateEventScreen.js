@@ -573,6 +573,7 @@ export default function CreateEventScreen({navigation}) {
                 setLocationResult([]);
               }
               setLocationQuery(text)
+              searchLocation()
             }}
           />
           <TouchableOpacity onPress={searchLocation} style={{flex: 1}}>
