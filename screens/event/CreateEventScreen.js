@@ -134,12 +134,10 @@ export default function CreateEventScreen({navigation}) {
   }
 
   function friendSearch(text) {
-    setSearchText(text);
-
+    setFriendQuery(text);
     let filtered = friends.filter(function (item) {
       return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
     });
-
     setFilteredData(filtered)
   }
 
@@ -245,29 +243,18 @@ export default function CreateEventScreen({navigation}) {
         rightComponent={() => <Icon name="check" color='#000' underlayColor="transparent" onPress={() => {setEventMembers(selectedMembers); setStep("Setup")}} />}
         />
       <View style={{flex: 1}}>
-        <View style={styles.searchBoxAbsolute}>
-          <CustomInput
-            containerStyle={{flex: 5}}
-            placeholder='Seach by name or phone number'
-            inputStyle={{color: '#000000'}}
-            onChangeText={(text) => {
-              setFriendQuery(text)
-            }}
+          <SearchBar
+            lightTheme
+            placeholder='Seach Friends'
+            inputContainerStyle={{ height: 30, backgroundColor: '#FEFEFE' }}
+            containerStyle={styles.searchBarContainer}
+            onChangeText={friendSearch}
+            value={friendQuery}
           />
-          <TouchableOpacity onPress={() => setFriendQuery("")} style={{flex: 1}}>
-            <Icon name='close' color='#aeaeae'
-              containerStyle={{
-                borderRadius: 5,
-                justifyContent: 'center',
-                flex: 1,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
         <View style={{flex: 1}}>
-          <View style={styles.searchResultContainer}>
+          <View style={styles.friendsearchResultContainer}>
             <FlatList
-              data={friends}
+              data={filteredData && filteredData.length > 0 ? filteredData : (friendQuery.length === 0 && friends)}
               keyExtractor={(item, index) => item + index}
               renderItem={renderFriendsCard}
             />
@@ -844,6 +831,15 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       flexDirection: 'row'
     },
+    searchBarContainer: {
+      alignContent: 'center', 
+      backgroundColor: '#FEFEFE', 
+      marginHorizontal: 15, 
+      borderRadius: 5, 
+      borderTopColor: "#fff",
+      borderBottomColor: "#fff",
+      marginVertical: 10
+    },
     searchBox: {
       marginTop: 15,
       marginLeft: 20,
@@ -889,6 +885,15 @@ const styles = StyleSheet.create({
       letterSpacing: 0,
       paddingRight: 40,
       color: "#808080"
+    },
+    friendsearchResultContainer: {
+      flex: 1,
+      borderRadius: 10,
+      backgroundColor: "#fefefe",
+      marginTop: 20,
+      marginLeft: 20,
+      marginRight: 20,
+      marginBottom: 10
     },
     searchResultContainer: {
       flex: 1,
