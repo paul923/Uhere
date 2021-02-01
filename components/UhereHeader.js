@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerTitle:{
-
+    fontSize: 18,
+    fontWeight: "bold"
   },
   button: {
     margin: 5,

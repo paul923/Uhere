@@ -279,7 +279,7 @@ export default function CreateEventScreen({navigation}) {
 
         <ScrollView
           contentContainerStyle={{
-            height: 700,
+            
           }}>
 
           <View>
