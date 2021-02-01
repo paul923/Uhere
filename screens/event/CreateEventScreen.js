@@ -7,7 +7,7 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import * as Location from 'expo-location';
 import qs from 'qs';
-import { ListItem, Image, Button, Text, Slider, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
+import { ListItem, Image, Button, Text, Slider, Avatar, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import AuthContext from 'contexts/AuthContext';
@@ -24,7 +24,7 @@ import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
 import CustomInput from 'components/CustomInput';
 import NextStep from 'components/NextStep';
-
+import { getAvatarImage } from 'utils/asset';
 import {formatDate, formatTime, formatDateFormat, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
 import googleSignInImage from 'assets/images/buttons/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
@@ -323,15 +323,17 @@ export default function CreateEventScreen({navigation}) {
               {eventMembers.map((member, index) => {
                 if (index < 3) {
                   return (
-                      <Image
-                        key={index}
-                        source={{uri: member.AvatarURI}}
-                        style={styles.memberAvatar}
-                        containerStyle={styles.memberAvatarContainer}
-                        placeholderStyle={styles.memberAvatar}
-                        overlayContainerStyle={styles.memberAvatarContainer}
-                        resizeMode='contain'
-                      />
+                    <Avatar
+                      size={55}
+                      source={getAvatarImage(member.AvatarURI)}
+                      overlayContainerStyle={styles.memberAvatar}
+                      imageProps={{
+                        style: {
+                          tintColor: `${member.AvatarColor}`,
+                        }
+                      }}
+                      placeholderStyle={{ backgroundColor: "transparent" }}
+                    />
                   )
                 }
               })}
@@ -939,10 +941,12 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     memberAvatar: {
-      width: 40,
-      height: 40,
+      borderRadius: 10,
+      borderColor: '#15cdca',
+      borderWidth: 2,
+      margin: 5,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     memberAvatarContainer: {
       borderRadius: 10,
@@ -1127,5 +1131,12 @@ const styles = StyleSheet.create({
       color: "#000000",
       marginLeft: 15,
       marginRight: 15,
-    }
+    },
+    avatarOverlayContainer: {
+      overflow: 'hidden',
+      borderRadius: 15,
+      borderColor: "#d8d8d8",
+      borderWidth: 1,
+      backgroundColor: "#fff"
+    },
 });
