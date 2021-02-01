@@ -210,15 +210,18 @@ export default function CreateEventScreen({navigation}) {
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.reviewParticipantList}>
                 {eventMembers.map((member, index) => {
                     return (
-                      <View style={styles.reviewParticipantContainer}>
-                        <Image
+                      <View key ={index} style={styles.reviewParticipantContainer}>
+                        <Avatar
                           key={index}
-                          source={{uri: member.AvatarURI}}
-                          style={styles.reviewParticipantAvatar}
-                          containerStyle={styles.reviewParticipantAvatarContainer}
-                          placeholderStyle={styles.reviewParticipantAvatar}
-                          overlayContainerStyle={styles.reviewParticipantAvatarContainer}
-                          resizeMode='contain'
+                          size={55}
+                          source={getAvatarImage(member.AvatarURI)}
+                          overlayContainerStyle={styles.memberAvatar}
+                          imageProps={{
+                            style: {
+                              tintColor: `${member.AvatarColor}`,
+                            }
+                          }}
+                          placeholderStyle={{ backgroundColor: "transparent" }}
                         />
                         <Text style={styles.reviewParticipantName}>{member.Nickname}</Text>
                       </View>
