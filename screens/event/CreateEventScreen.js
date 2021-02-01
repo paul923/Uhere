@@ -7,7 +7,7 @@ import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Facebook from 'expo-facebook';
 import * as Location from 'expo-location';
 import qs from 'qs';
-import { ListItem, Image, Button, Text, Slider, Input, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
+import { ListItem, Image, Button, Text, Slider, Avatar, Icon, Divider, Header, SearchBar, CheckBox } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import AuthContext from 'contexts/AuthContext';
@@ -17,14 +17,14 @@ import Constants from "expo-constants";
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 const { manifest } = Constants;
 import { backend } from 'constants/Environment';
-
+import { getRelationships, getUserByUserId, deleteRelationship } from 'api/user'
 import { createEvent } from 'api/event';
 
 import FriendCard from 'components/FriendCard';
 import FriendTile from 'components/FriendTile';
 import CustomInput from 'components/CustomInput';
 import NextStep from 'components/NextStep';
-
+import { getAvatarImage } from 'utils/asset';
 import {formatDate, formatTime, formatDateFormat, combineDateAndTime, createDateAsUTC} from 'utils/date';
 
 import googleSignInImage from 'assets/images/buttons/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png';
@@ -58,29 +58,7 @@ export default function CreateEventScreen({navigation}) {
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ locationHistory, setLocationHistory] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
-  const [ friends, setFriends] = React.useState([
-    {
-      title: "Group",
-      data: []
-    },
-    {
-      title: "All Contacts",
-      data: [{
-        UserId: "eIsb3yMPlScSy5QAtpnqfqzON8r1",
-        Username: "Crescent9723",
-        Nickname: "Crescent9723",
-        AvatarURI: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80",
-        AvatarColor: "#D47FA6"
-      },
-      {
-        UserId: "dKnJbXjjXwg13Bfkb4jBUcwKzGU2",
-        Username: "chiyy1231",
-        Nickname: "chiyy1231",
-        AvatarURI: "https://lh3.googleusercontent.com/proxy/ajInWbANUxvZ5pd4vjow2p-d1pHN7NYKQBn5Z3gXmOGbMaLoD_SdskZxl9gEiWV7gsB-mnAuuVsfOlNpz9_g7K8GlFSn3SwRTr9pbwthUj6qV4IL-rKsJBbnhK966_hNbUxviIAV6XJ0rdzOuU9k6vv4LjS-fYPnDg",
-        AvatarColor: "#D47FA6"
-      }]
-    }
-  ]);
+  const [ friends, setFriends] = React.useState([]);
   const [ friendQuery, setFriendQuery] = React.useState("");
   const [ filteredData, setFilteredData] = React.useState();
   const [ mapRegion, setMapRegion ] = React.useState();
@@ -89,16 +67,9 @@ export default function CreateEventScreen({navigation}) {
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
     async function retrieveFriend() {
-      let response = await fetch(`http://${backend}:3000/relationship/${firebase.auth().currentUser.uid}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      let responseJson = await response.json();
-      responseJson.response.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
-      setFriends(responseJson.response);
+      let friends = await getRelationships(firebase.auth().currentUser.uid);
+      friends.sort((a,b) => a.Nickname.localeCompare(b.Nickname));
+      setFriends(friends);
     }
 
     async function fetchData() {
@@ -124,6 +95,7 @@ export default function CreateEventScreen({navigation}) {
 
 
     }
+    retrieveFriend()
     fetchData()
     fetchRecentLocation()
 
@@ -162,12 +134,10 @@ export default function CreateEventScreen({navigation}) {
   }
 
   function friendSearch(text) {
-    setSearchText(text);
-
+    setFriendQuery(text);
     let filtered = friends.filter(function (item) {
       return item.Nickname.toLowerCase().includes(text.toLowerCase()) || item.Username.toLowerCase().includes(text.toLowerCase())
     });
-
     setFilteredData(filtered)
   }
 
@@ -175,6 +145,7 @@ export default function CreateEventScreen({navigation}) {
     return (
     <FriendCard
       avatarUrl= {item.AvatarURI}
+      avatarColor= {item.AvatarColor}
       avatarTitle= {item.Nickname.substr(0, 2).toUpperCase()}
       displayName = {item.Nickname}
       userId = {item.Username}
@@ -182,8 +153,8 @@ export default function CreateEventScreen({navigation}) {
         size: 20,
         checkedIcon: 'dot-circle-o',
         uncheckedIcon: 'circle-o',
-        checkedColor:'#d3d3d3',
-        uncheckedColor: '#d3d3d3',
+        checkedColor:'#15CDCA',
+        uncheckedColor: '#15CDCA',
         checked: selectedMembers.includes(item),
         onPress: () => selectFriend(item)
       }}
@@ -272,34 +243,20 @@ export default function CreateEventScreen({navigation}) {
         rightComponent={() => <Icon name="check" color='#000' underlayColor="transparent" onPress={() => {setEventMembers(selectedMembers); setStep("Setup")}} />}
         />
       <View style={{flex: 1}}>
-        <View style={styles.searchBoxAbsolute}>
-          <CustomInput
-            containerStyle={{flex: 5}}
-            placeholder='Seach by name or phone number'
-            inputStyle={{color: '#000000'}}
-            onChangeText={(text) => {
-              setFriendQuery(text)
-            }}
+          <SearchBar
+            lightTheme
+            placeholder='Seach Friends'
+            inputContainerStyle={{ height: 30, backgroundColor: '#FEFEFE' }}
+            containerStyle={styles.searchBarContainer}
+            onChangeText={friendSearch}
+            value={friendQuery}
           />
-          <TouchableOpacity onPress={() => setFriendQuery("")} style={{flex: 1}}>
-            <Icon name='close' color='#aeaeae'
-              containerStyle={{
-                borderRadius: 5,
-                justifyContent: 'center',
-                flex: 1,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
         <View style={{flex: 1}}>
-          <View style={styles.searchResultContainer}>
-            <SectionList
-              sections={friends}
+          <View style={styles.friendsearchResultContainer}>
+            <FlatList
+              data={filteredData && filteredData.length > 0 ? filteredData : (friendQuery.length === 0 && friends)}
               keyExtractor={(item, index) => item + index}
               renderItem={renderFriendsCard}
-              renderSectionHeader={({ section: { title } }) => (
-                <Text style={styles.locationSearchResultHeader}>{title}</Text>
-              )}
             />
           </View>
         </View>
@@ -366,15 +323,18 @@ export default function CreateEventScreen({navigation}) {
               {eventMembers.map((member, index) => {
                 if (index < 3) {
                   return (
-                      <Image
-                        key={index}
-                        source={{uri: member.AvatarURI}}
-                        style={styles.memberAvatar}
-                        containerStyle={styles.memberAvatarContainer}
-                        placeholderStyle={styles.memberAvatar}
-                        overlayContainerStyle={styles.memberAvatarContainer}
-                        resizeMode='contain'
-                      />
+                    <Avatar
+                      key={index}
+                      size={55}
+                      source={getAvatarImage(member.AvatarURI)}
+                      overlayContainerStyle={styles.memberAvatar}
+                      imageProps={{
+                        style: {
+                          tintColor: `${member.AvatarColor}`,
+                        }
+                      }}
+                      placeholderStyle={{ backgroundColor: "transparent" }}
+                    />
                   )
                 }
               })}
@@ -573,6 +533,7 @@ export default function CreateEventScreen({navigation}) {
                 setLocationResult([]);
               }
               setLocationQuery(text)
+              searchLocation()
             }}
           />
           <TouchableOpacity onPress={searchLocation} style={{flex: 1}}>
@@ -873,6 +834,15 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       flexDirection: 'row'
     },
+    searchBarContainer: {
+      alignContent: 'center', 
+      backgroundColor: '#FEFEFE', 
+      marginHorizontal: 15, 
+      borderRadius: 5, 
+      borderTopColor: "#fff",
+      borderBottomColor: "#fff",
+      marginVertical: 10
+    },
     searchBox: {
       marginTop: 15,
       marginLeft: 20,
@@ -919,6 +889,15 @@ const styles = StyleSheet.create({
       paddingRight: 40,
       color: "#808080"
     },
+    friendsearchResultContainer: {
+      flex: 1,
+      borderRadius: 10,
+      backgroundColor: "#fefefe",
+      marginTop: 20,
+      marginLeft: 20,
+      marginRight: 20,
+      marginBottom: 10
+    },
     searchResultContainer: {
       flex: 1,
       borderRadius: 10,
@@ -963,10 +942,12 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     memberAvatar: {
-      width: 40,
-      height: 40,
+      borderRadius: 10,
+      borderColor: '#15cdca',
+      borderWidth: 2,
+      margin: 5,
       justifyContent: 'center',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     memberAvatarContainer: {
       borderRadius: 10,
@@ -1151,5 +1132,12 @@ const styles = StyleSheet.create({
       color: "#000000",
       marginLeft: 15,
       marginRight: 15,
-    }
+    },
+    avatarOverlayContainer: {
+      overflow: 'hidden',
+      borderRadius: 15,
+      borderColor: "#d8d8d8",
+      borderWidth: 1,
+      backgroundColor: "#fff"
+    },
 });
