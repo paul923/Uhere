@@ -324,6 +324,7 @@ export default function CreateEventScreen({navigation}) {
                 if (index < 3) {
                   return (
                     <Avatar
+                      key={index}
                       size={55}
                       source={getAvatarImage(member.AvatarURI)}
                       overlayContainerStyle={styles.memberAvatar}
