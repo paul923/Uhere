@@ -1,5 +1,9 @@
 import * as React from 'react';
 import { Modal, Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
+
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['ListItem']);
+
 import * as Font from 'expo-font';
 import { useFonts,
   OpenSans_400Regular,
@@ -69,6 +73,7 @@ export default function App(props) {
         alert("Email is not verified. Please verify the email");
         firebaseObject.auth().signOut();
       }
+      console.log(state)
     });
 
   }, []);
@@ -161,7 +166,8 @@ export default function App(props) {
           return {
             ...prevState,
             userToken: action.token,
-            fetchToken: false
+            fetchToken: false,
+            autoLogin: true
           };
         case 'SIGN_IN':
           return {
@@ -212,7 +218,8 @@ export default function App(props) {
       showLoadingScreen: false,
       isLoggedIn: false,
       userToken: null,
-      skipProfile: false
+      skipProfile: false,
+      autoLogin: false,
     }
   );
 
@@ -381,8 +388,10 @@ export default function App(props) {
           </View>
         </Modal>
         <Spinner
-          visible={state.showLoadingScreen}
-          textContent={'Loading...'}
+          color="white"
+          overlayColor="#15CDCA"
+          visible={state.fetchToken || (state.autoLogin && !state.isLoggedIn)}
+          textContent={'Fetching User Information...'}
           textStyle={styles.spinnerTextStyle}
         />
         <NavigationContainer ref={containerRef} initialState={initialNavigationState}>
@@ -416,7 +425,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   spinnerTextStyle: {
-    color: '#FFF'
+    color: 'white'
   },
   centeredView: {
     flex: 1,

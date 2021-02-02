@@ -11,6 +11,7 @@ import { ListItem, Image, Button, Text, Slider, Avatar, Icon, Divider, Header, S
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
 import AuthContext from 'contexts/AuthContext';
+import Spinner from 'react-native-loading-spinner-overlay';
 import firebase from 'firebase';
 import firebaseObject from 'config/firebase';
 import Constants from "expo-constants";
@@ -58,6 +59,8 @@ export default function CreateEventScreen({navigation}) {
   const [ locationResult, setLocationResult] = React.useState([]);
   const [ locationHistory, setLocationHistory] = React.useState([]);
   const [ penalty, setPenalty] = React.useState("cigarette");
+  const [ isLoading, setIsLoading] = React.useState(false);
+  const [ loadingMessage, setLoadingMessage] = React.useState("");
   const [ friends, setFriends] = React.useState([]);
   const [ friendQuery, setFriendQuery] = React.useState("");
   const [ filteredData, setFilteredData] = React.useState();
@@ -279,7 +282,7 @@ export default function CreateEventScreen({navigation}) {
 
         <ScrollView
           contentContainerStyle={{
-            
+
           }}>
 
           <View>
@@ -307,7 +310,7 @@ export default function CreateEventScreen({navigation}) {
               value={maximumNumberOfMembers}
               onValueChange={(value) => { setEventMembers([]); setMaximumNumberOfMembers(value);}}
               step={1}
-              minimumValue={0}
+              minimumValue={1}
               maximumValue={9}
             />
           </View>
@@ -321,7 +324,8 @@ export default function CreateEventScreen({navigation}) {
               alignContent: 'stretch',
               borderRadius: 5,
               backgroundColor: "#ffffff",
-              marginLeft: 20
+              marginLeft: 20,
+              height: 50,
             }}>
               {eventMembers.map((member, index) => {
                 if (index < 3) {
@@ -341,9 +345,13 @@ export default function CreateEventScreen({navigation}) {
                   )
                 }
               })}
-              <View style={styles.memberAvatarPlaceholder}>
-                <Text style={styles.memberCount}>+{eventMembers.length-4 < 0 ? 0 : eventMembers.length-4}</Text>
-              </View>
+              {
+                eventMembers.length > 4 && (
+                  <View style={styles.memberAvatarPlaceholder}>
+                    <Text style={styles.memberCount}>+{eventMembers.length-4}</Text>
+                  </View>
+                )
+              }
             </View>
             <TouchableOpacity onPress={() => { setSelectedMembers(eventMembers); setStep("SetupMember")}} style={{flex: 1}}>
               <Icon name='add' color='#ffffff'
@@ -374,7 +382,7 @@ export default function CreateEventScreen({navigation}) {
                 ) : (
                   <CustomInput
                     placeholder='MM/DD/YYYY'
-                    value={eventDate ? formatDate(eventDate) : ''}
+                    value={eventDate ? formatDateFormat(eventDate, 'dd MMM yyyy') : ''}
                     onFocus={() => setShowDatePicker(true)}
                     onBlur={() => setShowDatePicker(false)}
                   />
@@ -383,7 +391,7 @@ export default function CreateEventScreen({navigation}) {
             <View style={{flex: 1}}>
               <Text style={styles.label}>Time</Text>
               {Platform.OS === 'ios' ? (
-                <DateTimePicker 
+                <DateTimePicker
                   style={styles.label}
                   value={eventTime}
                   mode={"time"}
@@ -452,6 +460,8 @@ export default function CreateEventScreen({navigation}) {
   }
 
   async function searchLocation() {
+    setIsLoading(true);
+    setLoadingMessage("Searching Location...");
     if (locationQuery === ''){
       return;
     }
@@ -484,6 +494,8 @@ export default function CreateEventScreen({navigation}) {
         }
 
       })
+      setIsLoading(false);
+      setLoadingMessage("");
       setLocationResult(results);
     } catch (error) {
       console.error(error);
@@ -530,13 +542,13 @@ export default function CreateEventScreen({navigation}) {
             containerStyle={{flex: 5}}
             placeholder='Seach Location?'
             inputStyle={{color: '#000000'}}
+            onSubmitEditing={searchLocation}
             onFocus={() => setLocationSearching(true)}
             onChangeText={(text) => {
               if (text === "") {
                 setLocationResult([]);
               }
               setLocationQuery(text)
-              searchLocation()
             }}
           />
           <TouchableOpacity onPress={searchLocation} style={{flex: 1}}>
@@ -730,7 +742,13 @@ export default function CreateEventScreen({navigation}) {
   return (
 
     <View style={styles.container}>
-
+      <Spinner
+        color="white"
+        overlayColor="#15CDCA"
+        visible={isLoading}
+        textContent={loadingMessage}
+        textStyle={styles.spinnerTextStyle}
+      />
         {step === "Location" && LocationSearch()}
         {step === "Setup" && SetupMain()}
         {step === "SetupMember" && SetupMember()}
@@ -771,6 +789,9 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'stretch',
       backgroundColor: '#f1f1f1'
+    },
+    spinnerTextStyle: {
+      color: 'white'
     },
     stepContainer: {
       flexDirection: 'row',
@@ -838,10 +859,10 @@ const styles = StyleSheet.create({
       flexDirection: 'row'
     },
     searchBarContainer: {
-      alignContent: 'center', 
-      backgroundColor: '#FEFEFE', 
-      marginHorizontal: 15, 
-      borderRadius: 5, 
+      alignContent: 'center',
+      backgroundColor: '#FEFEFE',
+      marginHorizontal: 15,
+      borderRadius: 5,
       borderTopColor: "#fff",
       borderBottomColor: "#fff",
       marginVertical: 10

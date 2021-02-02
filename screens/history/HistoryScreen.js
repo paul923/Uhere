@@ -70,7 +70,7 @@ export default function HistoryScreen({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			{/* Header */}
-			
+
 			<UhereHeader
                 showBackButton={false}
             />
@@ -134,7 +134,6 @@ const styles = StyleSheet.create({
 	},
 	searchBar: {
 		flex: 1,
-		width: 380
 	},
 	listContainer: {
 		flex: 1,
