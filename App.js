@@ -384,6 +384,8 @@ export default function App(props) {
           </View>
         </Modal>
         <Spinner
+          color="white"
+          overlayColor="#15CDCA"
           visible={state.fetchToken || (state.autoLogin && !state.isLoggedIn)}
           textContent={'Fetching User Information...'}
           textStyle={styles.spinnerTextStyle}
@@ -419,7 +421,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   spinnerTextStyle: {
-    color: '#FFF'
+    color: 'white'
   },
   centeredView: {
     flex: 1,
