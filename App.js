@@ -1,5 +1,9 @@
 import * as React from 'react';
 import { Modal, Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
+
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['ListItem']);
+
 import * as Font from 'expo-font';
 import { useFonts,
   OpenSans_400Regular,
