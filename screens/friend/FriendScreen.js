@@ -25,6 +25,7 @@ export default function FriendScreen({navigation}) {
 
   React.useEffect(() => {
     retrieveData();
+    setEditToggle(false);
     // Sorts friends list on initial load
   }, [isFocused]);
 
@@ -44,7 +45,6 @@ export default function FriendScreen({navigation}) {
             let result = await deleteRelationship(firebase.auth().currentUser.uid, user.UserId)
             if (result) {
               let newData = friendsData.filter(friend => friend.UserId !== user.UserId);
-              console.log("new data",newData)
               setFriendsData(newData);
             } else {
               alert("Delete failed. Something went wrong.")
@@ -66,7 +66,6 @@ export default function FriendScreen({navigation}) {
       user,
       ...friends
     ]
-    console.log('friends:', combinedFriends);
     setFriendsData(combinedFriends);
     setIsLoading(false)
   }
@@ -91,8 +90,10 @@ export default function FriendScreen({navigation}) {
     switch(action) {
       case 'Add Friend By Id' : 
         navigation.navigate(action);
+        break;
       case 'Edit Friend':
         setEditToggle(!editToggle);
+        break;
     }
   }
 
@@ -101,6 +102,7 @@ export default function FriendScreen({navigation}) {
     <TouchableWithoutFeedback onPress={() => setEditToggle(false)}>
     <View style={styles.container}>
       <UhereHeader
+        title={editToggle && "Edit Friends"}
         rightComponent={ editToggle &&
           <TouchableOpacity onPress={() => setEditToggle(false)}>
             <Text style={{color: '#808080'}}>Done</Text>
