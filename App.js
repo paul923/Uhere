@@ -73,7 +73,6 @@ export default function App(props) {
         alert("Email is not verified. Please verify the email");
         firebaseObject.auth().signOut();
       }
-      console.log(state)
     });
 
   }, []);
@@ -165,9 +164,7 @@ export default function App(props) {
         case 'RESTORE_TOKEN':
           return {
             ...prevState,
-            userToken: action.token,
             fetchToken: false,
-            autoLogin: true
           };
         case 'SIGN_IN':
           return {
@@ -244,7 +241,7 @@ export default function App(props) {
         // After getting token, we need to persist the token using `AsyncStorage`
         // In the example, we'll use a dummy token
         let user = await userapi.getUserByUserId(data);
-        console.log('User Info: ' + user);
+        AsyncStorage.setItem('userToken', data);
         const expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
         await userapi.updatePushToken(data, expoPushToken);
         if (user && user.Username) {
@@ -253,7 +250,10 @@ export default function App(props) {
           dispatch({ type: 'SIGN_IN', token: data, skipProfile: false });
         }
       },
-      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signOut: () => {
+        AsyncStorage.removeItem('userToken');
+        dispatch({ type: 'SIGN_OUT' });
+      },
       signUp: async data => {
         // In a production app, we need to send user data to server and get a token
         // We will also need to handle errors if sign up failed
@@ -286,10 +286,19 @@ export default function App(props) {
       let userToken;
 
       try {
-        AsyncStorage.getItem('userToken').then(userToken => {
-          if (!userToken) {
-            dispatch({ type: 'RESTORE_TOKEN', token: userToken })
+        AsyncStorage.getItem('userToken').then(async userToken => {
+          if (userToken) {
+            let user = await userapi.getUserByUserId(userToken);
+            AsyncStorage.setItem('userToken', userToken);
+            const expoPushToken = (await Notifications.getExpoPushTokenAsync()).data;
+            await userapi.updatePushToken(userToken, expoPushToken);
+            if (user && user.Username) {
+              dispatch({ type: 'SIGN_IN', token: userToken, skipProfile: true });
+            } else {
+              dispatch({ type: 'SIGN_IN', token: userToken, skipProfile: false });
+            }
           }
+          dispatch({ type: 'RESTORE_TOKEN'});
         });
       } catch (e) {
         // Restoring token failed
@@ -390,7 +399,7 @@ export default function App(props) {
         <Spinner
           color="white"
           overlayColor="#15CDCA"
-          visible={state.fetchToken || (state.autoLogin && !state.isLoggedIn)}
+          visible={state.fetchToken}
           textContent={'Fetching User Information...'}
           textStyle={styles.spinnerTextStyle}
         />
