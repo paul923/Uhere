@@ -27,7 +27,7 @@ export default function LoginScreen({route, navigation}) {
   let firebaseUnsubscribe;
   // Load any resources or data that we need prior to rendering the app
   React.useEffect(() => {
-    
+
 
   }, []);
 
@@ -206,6 +206,11 @@ export default function LoginScreen({route, navigation}) {
           <Text style={{color: '#5D5D5D'}}>Don't have account?</Text>
           <TouchableOpacity onPress={()=> navigation.navigate('Signup')} hitSlop={{left: 10, right: 10, bottom: 10}}>
             <Text style={{color: '#15CDCA'}}> Register</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity onPress={()=> navigation.navigate('TermsAndConditions')} hitSlop={{left: 10, right: 10, bottom: 10}}>
+            <Text style={{color: '#15CDCA'}}>Terms And Conditions</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

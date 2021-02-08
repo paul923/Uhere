@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from '../screens/login/LoginScreen'
 import SignupScreen from '../screens/login/SignupScreen'
 import ForgotPasswordScreen from '../screens/login/ForgotPasswordScreen'
+import TermsScreen from '../screens/TermsScreen'
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,10 @@ export default function LoginNavigator({ navigation, route }) {
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPasswordScreen}
+      />
+      <Stack.Screen
+        name="TermsAndConditions"
+        component={TermsScreen}
       />
     </Stack.Navigator>
   )

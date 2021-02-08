@@ -63,7 +63,8 @@
     "react-native-web": "~0.13.7",
     "socket.io-client": "^2.3.0",
     "use-socket.io-client": "^1.1.0",
-    "expo-notifications": "~0.7.2"
+    "expo-notifications": "~0.7.2",
+    "react-native-webview": "10.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
