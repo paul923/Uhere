@@ -37,14 +37,14 @@ export default function EventNavigator({ navigation, route }) {
           gestureEnabled: false,
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Filter Event"
         component={FilterEventScreen}
-      />
-      <Stack.Screen
+      /> */}
+      {/* <Stack.Screen
         name="Event Detail"
         component={EventDetailScreen}
-      />
+      /> */}
       <Stack.Screen
         name="Event Detail New"
         component={EventDetailScreenNew}
@@ -52,22 +52,22 @@ export default function EventNavigator({ navigation, route }) {
           gestureEnabled: false,
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Event History"
         component={EventHistoryDetail}
-      />
-      <Stack.Screen
+      /> */}
+      {/* <Stack.Screen
 				name="HistoryDetail"
 				component={HistoryDetail}
-			/>
+			/> */}
       <Stack.Screen
         name="Event Edit"
         component={EventEditScreen}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Location Search"
         component={LocationSearchScreen}
-      />
+      /> */}
     </Stack.Navigator>
   )
 }

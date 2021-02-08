@@ -13,7 +13,7 @@ export default function HistoryScreen({ navigation, route }) {
 
 	React.useEffect(() => {
 		async function fetchData() {
-			let events = await getEvents('ACCEPTED', true, 10, 0);
+			let events = await getEvents('ACCEPTED', true, 100, 0);
 			if (events.message === "Not Found") {
 				setEvents([]);
 				setFilteredEvents([]);
