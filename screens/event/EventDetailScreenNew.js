@@ -53,58 +53,77 @@ export default function EventDetailScreenNew({ navigation, route }) {
     const [event, setEvent] = React.useState(null);
     const [mapRegion, setMapRegion] = React.useState();
     const [host, setHost] = React.useState();
-    
     const [eventMembers, setEventMembers] = React.useState(null);
     const [locations, setLocations] = React.useState({});
     const [memberLocations, setMemberLocations] = React.useState([]);
     const [isModalVisible, setModalVisible] = React.useState(false);
     const [goalButton, setGoalButton] = React.useState(false);
-
-
     const [me, _setMe] = React.useState();
     const meRef = React.useRef(me);
     const setMe = (value) => {
         meRef.current = value;
         _setMe(value);
       }
-
     const [goalIn, _setGoalIn] = React.useState();
     const goalInRef = React.useRef(goalIn);
     const setGoalIn = (value) => {
         goalInRef.current = value;
         _setGoalIn(value);
       }
-
-      
-
     const [timer, _setTimer] = React.useState();
     const timerRef = React.useRef(timer);
     const setTimer = (value) => {
         timerRef.current = value;
         _setTimer(value);
       }
-
     const [geofencingStarted, _setgeofencingStarted] = React.useState(false);
     const geofencingStartedRef = React.useRef(geofencingStarted);
     const setgeofencingStarted = (value) => {
       geofencingStartedRef.current = value;
       _setgeofencingStarted(value);
     }
-
-
     const mapRef = React.useRef();
     const drawerRef = React.useRef(null);
-
     const onLocationUpdate = (value) => {
         setGoalButton(value);
     }
 
-    React.useEffect(() => {
+    async function fetchData() {
+        let event = await getEvent(route.params.EventId);
+        setEvent(event);
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        setMapRegion(region);
+        setEventMembers(event.eventUsers);
+        let host = event.eventUsers.find(m => m.IsHost === 1);
+        setHost(host);
+        let me = event.eventUsers.find(m => m.UserId === firebase.auth().currentUser.uid);
+        setMe(me);
+        setIsLoading(false); 
+    }
+
+    async function loadInitial() {
+        socket.on('requestPosition', async () => {
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+            let user = firebase.auth().currentUser.uid;
+            let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+            setLocations({ ...locations, [user]: position });
+        })
+        socket.on('updatePosition', ({ user, position }) => {
+            setLocations((prevLocations) => {
+                return {
+                    ...prevLocations,
+                    [user]: position
+                }
+            })
+        })
+        socket.emit('requestPosition', { event: route.params.EventId });
+    }
+    async function startinterval() {
         locationService.subscribe(onLocationUpdate);
+        let event = await getEvent(route.params.EventId);
         let interval = null;
-        interval = setInterval( async () => {
-            // TODO:this calls API every second, how do i use event from loaded?
-            let event = await getEvent(route.params.EventId);
+        interval = setInterval(async () => {
             // TIMER
             if (new Date(event.DateTime) - new Date() > 0 && !goalInRef.current) {
                 setTimer(millisToMinutesAndSeconds(new Date(event.DateTime) - new Date() >= 1800000 ? 1800000 : new Date(event.DateTime) - new Date()));
@@ -115,20 +134,53 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 setgeofencingStarted(true);
             } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
                 setTimer('You Are In!');
-                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                clearInterval(interval);
+                //Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                if(started){
+                    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                    console.log("stop geo");
+                }
+                if (new Date(event.DateTime) - new Date() <= 0) {
+                    clearInterval(interval);
+                    navigation.dispatch(StackActions.popToTop());
+
+                    navigation.navigate('History', {
+                        screen: 'HistoryDetail', params: {
+                            EventId: event.EventId
+                        }
+                    });
+
+                    //navigation.navigate('History')
+                    //navigation.navigate('HistoryDetail', {EventId: event.EventId})
+                }
+                console.log('interval is running 1');
             } else if (new Date(event.DateTime) - new Date() <= 0) {
                 setTimer(0);
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 clearInterval(interval);
-                // TODO: Figure out Navigation
-                // navigation.navigate('History', {
-                //     EventId: event.EventId
-                // })
+                navigation.dispatch(StackActions.popToTop());
+                navigation.navigate('History', {
+                    screen: 'HistoryDetail', params: {
+                        EventId: event.EventId
+                    }
+                });
+                //navigation.navigate('History')
+                //navigation.navigate('HistoryDetail', {EventId: event.EventId})
             } else {
-                console.log('interval is running');
+                console.log('interval is running 2');
             }
         }, 1000);
+        return interval;
+    }
+    React.useEffect(() => {
+        const unsubscribeFocus = navigation.addListener('focus', () => {
+            fetchData();
+            loadInitial();
+          });
+          return unsubscribeFocus;
+    }, []);
+    React.useEffect(() => {
+        let interval = startinterval();
         return async () => {
             clearInterval(interval);
             let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
@@ -139,16 +191,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
             locationService.unsubscribe(onLocationUpdate);
         };
     }, []);
-
-
-    React.useEffect(() => {
-        const unsubscribeFocus = navigation.addListener('focus', () => {
-            fetchData();
-            loadInitial();
-          });
-          return unsubscribeFocus;
-    }, []);
-
     React.useEffect(() => {
         if(!isLoading){
             Object.keys(locations).map((key) => {
@@ -212,39 +254,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
         // ]
         Location.startGeofencingAsync(GEO_FENCING_TASK_NAME, regions)
     }
-
-    async function fetchData() {
-        let event = await getEvent(route.params.EventId);
-        setEvent(event);
-        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-        setMapRegion(region);
-        setEventMembers(event.eventUsers);
-        let host = event.eventUsers.find(m => m.IsHost === 1);
-        setHost(host);
-        let me = event.eventUsers.find(m => m.UserId === firebase.auth().currentUser.uid);
-        setMe(me);
-        setIsLoading(false); 
-    }
-
-    async function loadInitial() {
-        socket.on('requestPosition', async () => {
-            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-            let user = firebase.auth().currentUser.uid;
-            let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-            setLocations({ ...locations, [user]: position });
-        })
-        socket.on('updatePosition', ({ user, position }) => {
-            setLocations((prevLocations) => {
-                return {
-                    ...prevLocations,
-                    [user]: position
-                }
-            })
-        })
-        socket.emit('requestPosition', { event: route.params.EventId });
-    }
-
 
     async function _fitAll() {
         let location = await Location.getCurrentPositionAsync();
