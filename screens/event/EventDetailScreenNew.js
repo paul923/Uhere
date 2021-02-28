@@ -171,8 +171,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
         return interval;
     }
     React.useEffect(() => {
-        fetchData();
         loadInitial();
+        fetchData();
         let interval = startinterval();
         return async () => {
             clearInterval(interval);
@@ -394,21 +394,28 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             {
                                 memberLocations.map(memberLocation => {
                                     if (memberLocation.member.UserId !== firebase.auth().currentUser.uid) {
-                                        let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, longitude: locations[memberLocation.member.UserId].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
-                                        return (
-                                            <TouchableOpacity
-                                                style={styles.avatarView}
-                                                key={memberLocation.member.UserId}
-                                                onPress={() => mapRef.current.animateToRegion(memberRegion)}
-                                            >
-                                                <Image
-                                                    source={getAvatarImage(memberLocation.member.AvatarURI)}
-                                                    style={[styles.memberAvatar,{tintColor: memberLocation.member.AvatarColor, borderColor: memberLocation.member.AvatarColor,}]}
-                                                    resizeMode='contain'
-                                                />
-                                                <Text>{memberLocation.member.Nickname}</Text>
-                                            </TouchableOpacity>
-                                        )
+                                        try {
+                                            let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, 
+                                                longitude: locations[memberLocation.member.UserId].longitude, 
+                                                latitudeDelta: LATITUDE_DELTA_MAP, 
+                                                longitudeDelta: LONGITUDE_DELTA_MAP }
+                                                return (
+                                                    <TouchableOpacity
+                                                        style={styles.avatarView}
+                                                        key={memberLocation.member.UserId}
+                                                        onPress={() => mapRef.current.animateToRegion(memberRegion)}
+                                                    >
+                                                        <Image
+                                                            source={getAvatarImage(memberLocation.member.AvatarURI)}
+                                                            style={[styles.memberAvatar,{tintColor: memberLocation.member.AvatarColor, borderColor: memberLocation.member.AvatarColor,}]}
+                                                            resizeMode='contain'
+                                                        />
+                                                        <Text>{memberLocation.member.Nickname}</Text>
+                                                    </TouchableOpacity>
+                                                )    
+                                        } catch (error) {
+                                            
+                                        }
                                     }
                                 })
                             }
