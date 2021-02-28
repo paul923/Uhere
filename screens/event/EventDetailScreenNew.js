@@ -151,7 +151,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     //navigation.navigate('History')
                     //navigation.navigate('HistoryDetail', {EventId: event.EventId})
                 }
-                console.log('interval is running 1');
+                //console.log('interval is running 1');
             } else if (new Date(event.DateTime) - new Date() <= 0) {
                 setTimer(0);
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
@@ -165,7 +165,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 //navigation.navigate('History')
                 //navigation.navigate('HistoryDetail', {EventId: event.EventId})
             } else {
-                console.log('interval is running 2');
+                //console.log('interval is running 2');
             }
         }, 1000);
         return interval;
@@ -231,25 +231,15 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     async function startGeoFencing(latitude, longitude) {
         console.log('starting geo fencing with radius 500m from', latitude, longitude);
-        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         let regions = [
             {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                radius: 500,
+                latitude: latitude,
+                longitude: longitude,
+                radius: 500,// in meters
                 notifyOnEnter: true,
                 notifyOnExit: true,
             }
         ]
-        // let regions = [
-        //     {
-        //         latitude: latitude,
-        //         longitude: longitude,
-        //         radius: 500,// in meters
-        //         notifyOnEnter: true,
-        //         notifyOnExit: true,
-        //     }
-        // ]
         Location.startGeofencingAsync(GEO_FENCING_TASK_NAME, regions)
     }
 

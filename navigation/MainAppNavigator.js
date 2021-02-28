@@ -88,9 +88,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     const location = locations[0]
     if (firebase.auth().currentUser){
       let user = firebase.auth().currentUser.uid;
-      let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
-      let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
-      let position = { latitude: location.coords.latitude += randomMovelat, longitude: location.coords.longitude += randomMovelon }
+      //let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
+      //let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
+      let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
       socket.emit('position', {
           user,
           position
