@@ -171,13 +171,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
         return interval;
     }
     React.useEffect(() => {
-        const unsubscribeFocus = navigation.addListener('focus', () => {
-            fetchData();
-            loadInitial();
-          });
-          return unsubscribeFocus;
-    }, []);
-    React.useEffect(() => {
+        fetchData();
+        loadInitial();
         let interval = startinterval();
         return async () => {
             clearInterval(interval);
@@ -280,11 +275,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
             />
             {!isLoading && event && timer && (
                 <React.Fragment>
-                    {/* Timer */}
-                    {/* <View style={styles.timer}>
-                        <Timer eventDateTime={event.DateTime} event={event} />
-                    </View> */}
-                    {/* NEW TIMER */}
+                    {/* TIMER */}
                     <View style={styles.timerContainer}>
                         <Text style={styles.timerFont}>
                             {timer}
@@ -314,7 +305,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         {/* Member Markers */}
                         {
                             memberLocations.map(memberLocation => {
-                                if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
+                                if (memberLocation.member.UserId !== firebase.auth().currentUser.uid) {
                                     return (
                                         <MapView.Marker.Animated
                                             key={memberLocation.member.UserId}
@@ -402,7 +393,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             {/* eventMembers */}
                             {
                                 memberLocations.map(memberLocation => {
-                                    if (/*memberLocation.member.UserId !== firebase.auth().currentUser.uid*/true) {
+                                    if (memberLocation.member.UserId !== firebase.auth().currentUser.uid) {
                                         let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, longitude: locations[memberLocation.member.UserId].longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
                                         return (
                                             <TouchableOpacity
