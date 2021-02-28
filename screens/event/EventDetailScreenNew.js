@@ -141,7 +141,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 if (new Date(event.DateTime) - new Date() <= 0) {
                     clearInterval(interval);
                     navigation.dispatch(StackActions.popToTop());
-
                     navigation.navigate('History', {
                         screen: 'HistoryDetail', params: {
                             EventId: event.EventId
@@ -153,7 +152,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 }
                 //console.log('interval is running 1');
             } else if (new Date(event.DateTime) - new Date() <= 0) {
-                setTimer(0);
+                //setTimer(0);
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 clearInterval(interval);
                 navigation.dispatch(StackActions.popToTop());
