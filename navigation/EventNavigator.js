@@ -6,14 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import TabBarIcon from 'components/TabBarIcon';
 import EventScreen from 'screens/event/EventScreen';
 import CreateEventScreen from 'screens/event/CreateEventScreen';
-import FilterEventScreen from 'screens/event/FilterEventScreen';
-import EventDetailScreen from 'screens/event/EventDetailScreen';
-import DetailEditPage from 'screens/event/DetailEditPage'
-import LocationSearchScreen from 'screens/event/LocationSearchScreen'
-import EventHistoryDetail from 'screens/event/EventHistoryDetail'
 import EventDetailScreenNew from 'screens/event/EventDetailScreenNew';
-import HistoryDetail from 'screens/history/HistoryDetail'
-import HistoryScreen from 'screens/history/HistoryScreen';
 import EventEditScreen from 'screens/event/EventEditScreen';
 
 const Stack = createStackNavigator();
@@ -37,14 +30,6 @@ export default function EventNavigator({ navigation, route }) {
           gestureEnabled: false,
         }}
       />
-      {/* <Stack.Screen
-        name="Filter Event"
-        component={FilterEventScreen}
-      /> */}
-      {/* <Stack.Screen
-        name="Event Detail"
-        component={EventDetailScreen}
-      /> */}
       <Stack.Screen
         name="Event Detail New"
         component={EventDetailScreenNew}
@@ -52,22 +37,10 @@ export default function EventNavigator({ navigation, route }) {
           gestureEnabled: false,
         }}
       />
-      {/* <Stack.Screen
-        name="Event History"
-        component={EventHistoryDetail}
-      /> */}
-      {/* <Stack.Screen
-				name="HistoryDetail"
-				component={HistoryDetail}
-			/> */}
       <Stack.Screen
         name="Event Edit"
         component={EventEditScreen}
       />
-      {/* <Stack.Screen
-        name="Location Search"
-        component={LocationSearchScreen}
-      /> */}
     </Stack.Navigator>
   )
 }

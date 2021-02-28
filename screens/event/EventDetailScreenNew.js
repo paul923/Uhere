@@ -3,8 +3,6 @@ import { StyleSheet, StatusBar, Platform, View, Text, Image, Dimensions, ScrollV
 import { Avatar, Header, Button, Icon, ListItem } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { formatDate, formatDateFormat } from "utils/date";
-import EventDetailWithMiniMap from 'screens/event/EventDetailWithMiniMap'
-import EventMap from 'screens/event/EventMap'
 import SideMenu from 'react-native-side-menu'
 import DrawerLayout from 'react-native-gesture-handler/DrawerLayout';
 import * as Location from 'expo-location';
