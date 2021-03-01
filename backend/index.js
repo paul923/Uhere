@@ -155,13 +155,23 @@ io.on('connection', (socket) => {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+app.use(function(req, res, next){
+  console.log('Request Incoming: ');
+  console.log(req.protocol + '://' + req.get('host') + req.originalUrl);
+  next();
+})
 app.use('/events', eventRouter);
 app.use('/users', userRouter);
 app.use('/notifications', notificationRouter);
 app.use('/relationships', relationshipRouter);
 app.use('/groups', groupRouter);
 app.use('/eventuser', eventuserRouter);
-
+app.use(function(req, res, next){
+  console.log('Request Finished: ');
+  console.log(req.protocol + '://' + req.get('host') + req.originalUrl);
+  next();
+})
 
 // Starting our server.
 server.listen(3000, () => {
