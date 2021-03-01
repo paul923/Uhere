@@ -62,7 +62,7 @@ pool.getConnection(function (err, connection) {
                     return user.UserId === socket.userId
                   })){
                     console.log(`${socket.userId} Joined Room ${event.EventId}`)
-                    socket.join(eventId);
+                    socket.join(event.EventId);
                   }
                 })
               })
