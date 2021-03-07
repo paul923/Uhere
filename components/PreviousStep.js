@@ -15,20 +15,7 @@ export default function PreviousStep(props) {
         fontWeight: "700",
         letterSpacing: 0,
         marginLeft: 20
-      }}>{props.confirm ? 'CONFIRM' : 'PREVIOUS STEP'}</Text>
-      <View style={{
-        flex: 1,
-        justifyContent: "center",
-        alignitems: "center",
-      }}>
-      <Image
-        source={{ uri: 'https://img.icons8.com/carbon-copy/2x/left.png'}}
-        resizeMode="contain"
-        style={{
-          height: 40,
-        }}
-      />
-      </View>
+      }}>{props.confirm ? 'CONFIRM' : 'PREVIOUS'}</Text>
     </TouchableOpacity>
   )
 }
@@ -37,9 +24,9 @@ const styles = StyleSheet.create({
   activeStyle: {
     borderRadius: 20,
     zIndex: 999,
-    width: 125,
+    width: 300,
     height: 80,
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
     margin: 20,
     backgroundColor: '#15cdca',
     flexDirection: 'row',
@@ -48,9 +35,9 @@ const styles = StyleSheet.create({
   disabledStyle: {
     borderRadius: 20,
     zIndex: 999,
-    width: 125,
+    width: 300,
     height: 80,
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
     margin: 20,
     backgroundColor: '#15cdca30',
     flexDirection: 'row',
