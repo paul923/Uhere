@@ -129,6 +129,53 @@ var createLocationSharingCronJob = function(date, eventId, socketObj) {
     null
   );
 }
+var endLocationSharingCronJob = function(date, eventId, socketObj) {
+  var job = new CronJob(
+    date,
+    function() {
+      console.log(`Cron Job For End Location Sharing for Event ${eventId} Started`);
+      pool.getConnection(function (err, connection) {
+        var sql = `select UserId FROM EventUser where EventID = '${eventId}' and Status = 'ACCEPTED'`
+        connection.query(sql, function (error, userResults, fields) {
+          if (error) {
+            connection.release();
+            return;
+          }
+          socketObj.in('lobby').clients(function(error, clients) {
+            clients.forEach(function(socketId){
+              const socket = socketObj.sockets.connected[socketId];
+              if (socket.events){
+                if (!socket.events.includes(eventId)) {
+                  socket.events.push(eventId)
+                }
+              } else {
+                socket.events = [eventId]
+              }
+              if (userResults.some(user => {
+                return user.UserId === socket.userId
+              })){
+                console.log(`${socket.userId} Left Room ${eventId}`)
+                socket.leave(eventId);
+                console.log(socket.events);
+                socket.events = socket.events.filter(event => event !== eventId);
+                console.log(socket.events);
+              }
+            })
+          })
+          eventJobSql = "UPDATE ?? SET IsProcessed = 1 WHERE EventId = ?";
+          parameters = ['EventJob', eventId]
+          eventJobSql = mysql.format(eventJobSql, parameters);
+          connection.query(eventJobSql, function (error, eventJobResult, fields) {
+            connection.release();
+          })
+        });
+      })
+    },
+    null,
+    true,
+    null
+  );
+}
 
 router.post('/push-test', function (req, res) {
   const message = {
@@ -646,6 +693,7 @@ router.post('/', function (req,res) {
                 throw error;
               }
               console.log('event time: ' + event.DateTime);
+              var gameEndJobDate = new Date(event.DateTime);
               var thirtyMinutesBeforeEvent = new Date(event.DateTime.setMinutes(event.DateTime.getMinutes() - 30));
               // var gameStartJobDate = thirtyMinutesBeforeEvent > new Date() ? thirtyMinutesBeforeEvent : new Date();
               var gameStartJobDate = getCronJobDate(thirtyMinutesBeforeEvent);
@@ -656,6 +704,7 @@ router.post('/', function (req,res) {
               createGameStartCronJob(gameStartJobDate, eventId);
               createGameNotificationCronJob(beforeJobDate, eventId);
               createLocationSharingCronJob(jobDate, eventId, req.app.get('io'));
+              endLocationSharingCronJob(gameEndJobDate, eventId, req.app.get('io'));
 
               res.status(201).send({
                 success: true,

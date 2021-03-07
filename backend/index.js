@@ -54,7 +54,9 @@ pool.getConnection(function (err, connection) {
                 clients.forEach(function(socketId){
                   const socket = io.sockets.connected[socketId];
                   if (socket.events){
-                    socket.events.push(event.EventId)
+                    if (!socket.events.includes(event.EventId)) {
+                      socket.events.push(event.EventId)
+                    }
                   } else {
                     socket.events = [event.EventId]
                   }
