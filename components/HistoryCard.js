@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
   avatarTitle: {
+    color: "black",
     fontSize: 10
   },
   memberAvatar: {
