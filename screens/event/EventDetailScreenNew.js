@@ -142,6 +142,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     clearInterval(interval);
                     navigation.dispatch(StackActions.popToTop());
                     navigation.navigate('History', {
+                        screen: 'HistoryScreen'});
+                    navigation.navigate('History', {
                         screen: 'HistoryDetail', params: {
                             EventId: event.EventId
                         }
@@ -156,6 +158,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 clearInterval(interval);
                 navigation.dispatch(StackActions.popToTop());
+                navigation.navigate('History', {
+                    screen: 'HistoryScreen'});
                 navigation.navigate('History', {
                     screen: 'HistoryDetail', params: {
                         EventId: event.EventId

@@ -76,7 +76,7 @@ export default function CreateEventScreen({navigation}) {
     }
 
     async function fetchData() {
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         setMapRegion(region);
     }

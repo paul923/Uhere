@@ -13,9 +13,9 @@ export default function HistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
     const [event, setEvent] = React.useState();
     const [user, setUser] = React.useState();
+    const [isHost, setisHost] = React.useState();
     const [results, setResults] = React.useState();
     const [myRank, setMyRank] = React.useState();
-    const [lateCount, setLateCount] = React.useState(null);
 
     React.useEffect(() => {
         async function fetchData() {
@@ -25,6 +25,9 @@ export default function HistoryDetail({ navigation, route }) {
             event.eventUsers.forEach(eventUser => {
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
                     setUser(eventUser);
+                }
+                if (eventUser.UserId === firebase.auth().currentUser.uid && eventUser.IsHost) {
+                    setisHost(true);
                 }
                 let result = {
                     UserId: eventUser.UserId,
@@ -151,7 +154,7 @@ export default function HistoryDetail({ navigation, route }) {
                     </View>
                     <Button
                         title="Play Game"
-                        disabled={event.PenaltyUser || results.filter(user => user.LateFlag === 'LATE').length === 0 ? true : false}
+                        disabled={event.PenaltyUser !== null || results.filter(user => user.LateFlag === 'LATE').length === 0 || !isHost }
                         containerStyle= {{
                             marginVertical: 10
                         }}
