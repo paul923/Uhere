@@ -23,11 +23,14 @@ export default function HistoryDetail({ navigation, route }) {
             setEvent(event)
             let results = [];
             event.eventUsers.forEach(eventUser => {
+                if (eventUser.Status !== 'ACCEPTED') {
+                    return;
+                }
                 if (eventUser.UserId === firebase.auth().currentUser.uid) {
                     setUser(eventUser);
-                }
-                if (eventUser.UserId === firebase.auth().currentUser.uid && eventUser.IsHost) {
-                    setisHost(true);
+                    if (eventUser.IsHost) {
+                        setisHost(true);
+                    }
                 }
                 let result = {
                     UserId: eventUser.UserId,
@@ -129,6 +132,11 @@ export default function HistoryDetail({ navigation, route }) {
                         size="large"
                         rounded
                         source={getAvatarImage(user.AvatarURI)}
+                        imageProps= {{
+                            style: {
+                                tintColor: user.AvatarColor
+                            }
+                        }}
                         placeholderStyle={{backgroundColor: "transparent"}}
                     />
                     <View style={styles.textContainer}>
@@ -141,6 +149,8 @@ export default function HistoryDetail({ navigation, route }) {
                     </View>
                     <View style={styles.timeline}>
                         <Timeline
+                            lineColor={'#15cdca'}
+                            circleColor={'#15cdca'}
                             data={results}
                             showTime={false}
                             circleSize={25}
@@ -154,7 +164,8 @@ export default function HistoryDetail({ navigation, route }) {
                     </View>
                     <Button
                         title="Play Game"
-                        disabled={event.PenaltyUser !== null || results.filter(user => user.LateFlag === 'LATE').length === 0 || !isHost }
+                        disabled={event.PenaltyUser !== null || results.filter(user => user.LateFlag === 'LATE').length === 1 || !isHost }
+                        buttonStyle={{backgroundColor:"#15cdca"}}
                         containerStyle= {{
                             marginVertical: 10
                         }}
