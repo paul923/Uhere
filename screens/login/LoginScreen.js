@@ -189,7 +189,7 @@ export default function LoginScreen({route, navigation}) {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={signInWithFacebook}>
+          {/* <TouchableOpacity onPress={signInWithFacebook}>
             <Icon
               name="facebook-with-circle"
               type="entypo"
@@ -198,7 +198,7 @@ export default function LoginScreen({route, navigation}) {
               style={styles.loginIcon}
               iconStyle={{marginHorizontal: 10}}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
         </View>
 
