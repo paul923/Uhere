@@ -179,7 +179,7 @@ export default function MainAppNavigator({ navigation, route }) {
           tabBarVisible: showTab(route)
         })}
       />
-      {/* Test Screens */}
+      {/* Nitification Screens */}
       <BottomTab.Screen
         name="Notification"
         component={NotificationNavigator}
@@ -190,6 +190,7 @@ export default function MainAppNavigator({ navigation, route }) {
           tabBarVisible: showTab(route)
         })}
       />
+      {/* Test Screens */}
       <BottomTab.Screen
         name="Justin"
         component={JustinTabNavigator}
