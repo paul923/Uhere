@@ -48,7 +48,7 @@ export default function CreateEventScreen({navigation}) {
   const [ eventMembers, setEventMembers] = React.useState([]);
   const [ selectedMembers, setSelectedMembers] = React.useState([]);
   const [ eventDate, setEventDate] = React.useState(new Date());
-  const [ eventTime, setEventTime] = React.useState(new Date());
+  const [ eventTime, setEventTime] = React.useState(new Date(new Date().getTime() + 30*60000));
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
   const [ showTimePicker, setShowTimePicker] = React.useState(false);
   const [ maximumNumberOfMembers, setMaximumNumberOfMembers] = React.useState(1);

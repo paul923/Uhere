@@ -11,16 +11,16 @@ import { getAvatarImage, avatarData } from "../../utils/asset.js";
 
 export default function HistoryDetail({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
-    const [event, setEvent] = React.useState();
+    const [penaltyUser, setPenaltyUser] = React.useState();
     const [user, setUser] = React.useState();
     const [isHost, setisHost] = React.useState();
     const [results, setResults] = React.useState();
     const [myRank, setMyRank] = React.useState();
+    const [playbutton, setPlaybutton] = React.useState(false);
 
     React.useEffect(() => {
         async function fetchData() {
             let event = await getEvent(route.params.EventId);
-            setEvent(event)
             let results = [];
             event.eventUsers.forEach(eventUser => {
                 if (eventUser.Status !== 'ACCEPTED') {
@@ -32,8 +32,12 @@ export default function HistoryDetail({ navigation, route }) {
                         setisHost(true);
                     }
                 }
+                if (eventUser.UserId === event.PenaltyUser) {
+                    setPenaltyUser(eventUser);
+                }
                 let result = {
                     UserId: eventUser.UserId,
+                    time: eventUser.ArrivedTime === null ? new Date(8640000000000000) : new Date(eventUser.ArrivedTime),
                     LateFlag: eventUser.ArrivedTime === null ? "LATE" : formatTime(convertDateToLocalTimezone(new Date(eventUser.ArrivedTime))),
                     EventId: eventUser.EventId,
                     Nickname: eventUser.Nickname,
@@ -54,6 +58,15 @@ export default function HistoryDetail({ navigation, route }) {
             let myresult = results[index];
             setMyRank(myresult.LateFlag === "LATE" ? "late" : stringifyNumber(index + 1));
             setIsLoading(false);
+            let nopaneltyuser = event.PenaltyUser === null
+            let morethanonelate = results.filter(user => user.LateFlag === 'LATE').length > 1
+            if (!morethanonelate) {
+                let onlyonelateuser = results.find(user => user.LateFlag === 'LATE')
+                setPenaltyUser(onlyonelateuser);
+            }
+            if (nopaneltyuser && morethanonelate) {
+                setPlaybutton(true);
+            }
         }
         fetchData();
     }, []);
@@ -140,9 +153,9 @@ export default function HistoryDetail({ navigation, route }) {
                         placeholderStyle={{backgroundColor: "transparent"}}
                     />
                     <View style={styles.textContainer}>
-                        <Text style={styles.descriptionText}>
-                            Congratulate {results[results.length - 1].title} for having the honors to buy everyone!
-                        </Text>
+                        {penaltyUser && (<Text style={styles.descriptionText}>
+                            Congratulate {penaltyUser.Nickname} for having the honors to buy everyone!
+                        </Text>)}
                         <Text style={styles.titleText}>
                             You arrived {myRank}!
                         </Text>
@@ -164,7 +177,7 @@ export default function HistoryDetail({ navigation, route }) {
                     </View>
                     <Button
                         title="Play Game"
-                        disabled={event.PenaltyUser !== null || results.filter(user => user.LateFlag === 'LATE').length === 1 || !isHost }
+                        disabled={ !playbutton || !isHost }
                         buttonStyle={{backgroundColor:"#15cdca"}}
                         containerStyle= {{
                             marginVertical: 10

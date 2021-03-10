@@ -191,7 +191,7 @@ export default function MainAppNavigator({ navigation, route }) {
         })}
       />
       {/* Test Screens */}
-      {/* <BottomTab.Screen
+      <BottomTab.Screen
         name="Justin"
         component={JustinTabNavigator}
         options={{
@@ -200,7 +200,7 @@ export default function MainAppNavigator({ navigation, route }) {
           headerMode: 'none'
         }}
       />
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Jay"
         component={JaysTabNavigator}
         options={({ route }) => ({

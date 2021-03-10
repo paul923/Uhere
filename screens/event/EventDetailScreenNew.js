@@ -90,7 +90,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
         let event = await getEvent(route.params.EventId);
         setEvent(event);
         let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP*0.16, longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
         setMapRegion(region);
         setEventMembers(event.eventUsers);
         let host = event.eventUsers.find(m => m.IsHost === 1);
@@ -132,7 +132,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 setgeofencingStarted(true);
             } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
                 setTimer('You Are In!');
-                //Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
                 let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
                 if(started){
                     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
@@ -148,11 +147,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             EventId: event.EventId
                         }
                     });
-
-                    //navigation.navigate('History')
-                    //navigation.navigate('HistoryDetail', {EventId: event.EventId})
                 }
-                //console.log('interval is running 1');
             } else if (new Date(event.DateTime) - new Date() <= 0) {
                 //setTimer(0);
                 Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
@@ -165,10 +160,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         EventId: event.EventId
                     }
                 });
-                //navigation.navigate('History')
-                //navigation.navigate('HistoryDetail', {EventId: event.EventId})
             } else {
-                //console.log('interval is running 2');
+                
             }
         }, 1000);
         return interval;
@@ -219,7 +212,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     async function _goToMyLocation() {
         let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP*0.16, longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
         mapRef.current.animateToRegion(region);
     }
     async function _goToEventLocation() {
@@ -228,12 +221,12 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }
 
     async function startGeoFencing(latitude, longitude) {
-        console.log('starting geo fencing with radius 500m from', latitude, longitude);
+        console.log('starting geo fencing with radius 100m from', latitude, longitude);
         let regions = [
             {
                 latitude: latitude,
                 longitude: longitude,
-                radius: 500,// in meters
+                radius: 100,// in meters
                 notifyOnEnter: true,
                 notifyOnExit: true,
             }
@@ -300,7 +293,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                 latitude: event.LocationGeolat,
                                 longitude: event.LocationGeolong,
                             }}
-                            radius={500} // in meters
+                            radius={100} // in meters
                             strokeWidth={1}
                             strokeColor='#FAFAFA'
                             fillColor='rgba(0, 12, 214, 0.2)'
@@ -385,8 +378,9 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                 setGoalButton(false)}
                             }
                         >
-                            {/* TODO change png */}
-                            <Image source={require('../../assets/icons/event/goalinButton.png')} />
+                            <Image source={require('../../assets/icons/event/goalinButton.png')}
+                                resizeMode='contain'
+                                style={{width: 60, height: 60}} />
                         </TouchableOpacity>
                     )}
 
@@ -400,8 +394,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                         try {
                                             let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, 
                                                 longitude: locations[memberLocation.member.UserId].longitude, 
-                                                latitudeDelta: LATITUDE_DELTA_MAP, 
-                                                longitudeDelta: LONGITUDE_DELTA_MAP }
+                                                latitudeDelta: LATITUDE_DELTA_MAP*0.16, 
+                                                longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
                                                 return (
                                                     <TouchableOpacity
                                                         style={styles.avatarView}
@@ -521,6 +515,7 @@ const styles = StyleSheet.create({
     goalinStyle: {
         position: 'absolute',
         alignSelf: 'center',
-        bottom: '40%',
+        bottom: 150,
+        zIndex: 1,
     },
 });
