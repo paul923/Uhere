@@ -70,41 +70,19 @@ export default function HistoryScreen({ navigation, route }) {
 	return (
 		<View style={styles.container}>
 			{/* Header */}
-
 			<UhereHeader
                 showBackButton={false}
             />
-			<View style={styles.searchBar}>
+			<View style={{flex: 1, paddingTop: 30}}>
 				<Text style={styles.historyText}>History</Text>
 				{/* Search Bar */}
 				<SearchBar
-					round={true}
-					lightTheme={true}
+					lightTheme
 					placeholder="search for your past events here"
-					autoCapitalize='none'
-					autoCorrect={false}
+					inputContainerStyle={{height: 30, backgroundColor: '#FEFEFE'}}
+					containerStyle={styles.searchBarContainer}
 					onChangeText={(searchText) => filterEvents(searchText)}
-					value={searchText}
-					containerStyle={{
-						backgroundColor: "white",
-						margin: 10,
-						borderColor: "#C4C4C4",
-						borderWidth: 1,
-						borderRadius: 10,
-						padding: 3
-					}}
-					inputContainerStyle={{
-						backgroundColor: "white"
-					}}
-					inputStyle={{
-						backgroundColor: "white"
-					}}
-					leftIconContainerStyle={{
-						backgroundColor: "white"
-					}}
-					rightIconContainerStyle={{
-						backgroundColor: "white"
-					}}
+					value={searchText}		
 				/>
 				{/* History List */}
 				<FlatList
@@ -124,16 +102,24 @@ export default function HistoryScreen({ navigation, route }) {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#f5f5f5",
 	},
 	historyText: {
-		fontSize: 25,
-		marginVertical: 10,
+		fontSize: 24,
+		fontWeight: "500",
+		letterSpacing: 0,
 		color: "#15cdca",
+		marginHorizontal: 15,
 	},
-	searchBar: {
-		flex: 1,
+	searchBarContainer: {
+		alignContent: 'center',
+		backgroundColor: '#FEFEFE',
+		marginHorizontal: 15,
+		borderRadius: 5,
+		borderTopColor: "#fff",
+		borderBottomColor: "#fff",
+		marginVertical: 10
 	},
 	listContainer: {
 		flex: 1,

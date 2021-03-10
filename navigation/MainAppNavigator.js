@@ -153,7 +153,7 @@ export default function MainAppNavigator({ navigation, route }) {
         name="Friend"
         component={FriendsTabNavigator}
         options={{
-          title: 'Friend',
+          title: 'Friends',
           tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-person" />,
           header: null
         }}
@@ -191,7 +191,7 @@ export default function MainAppNavigator({ navigation, route }) {
         })}
       />
       {/* Test Screens */}
-      <BottomTab.Screen
+      {/* <BottomTab.Screen
         name="Justin"
         component={JustinTabNavigator}
         options={{
@@ -219,9 +219,7 @@ export default function MainAppNavigator({ navigation, route }) {
           headerMode: 'none',
           tabBarVisible: showTab(route)
         })}
-
-      />
-
+      /> */}
     </BottomTab.Navigator>
   )
 }
