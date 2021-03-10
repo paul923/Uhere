@@ -13,7 +13,6 @@ import socket from 'config/socket';
 import UhereHeader from '../../components/UhereHeader';
 import UhereSideMenu from '../../components/UhereSideMenu';
 import EventMenuContent from '../../components/EventMenuContent'
-import Timer from 'components/Timer'
 import MapView, { AnimatedRegion, Marker } from 'react-native-maps';
 import Modal from 'react-native-modal';
 import { getAvatarImage } from 'utils/asset'
@@ -86,27 +85,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
         setGoalButton(value);
     }
 
-    async function fetchData() {
-        let event = await getEvent(route.params.EventId);
-        setEvent(event);
-        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP*0.16, longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
-        setMapRegion(region);
-        setEventMembers(event.eventUsers);
-        let host = event.eventUsers.find(m => m.IsHost === 1);
-        setHost(host);
-        let me = event.eventUsers.find(m => m.UserId === firebase.auth().currentUser.uid);
-        setMe(me);
-        setIsLoading(false); 
-    }
-
-    async function loadInitial() {
-        socket.on('requestPosition', async () => {
-            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-            let user = firebase.auth().currentUser.uid;
-            let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-            setLocations({ ...locations, [user]: position });
-        })
+    React.useEffect(() => {
+        socket.emit('requestPosition', { event: route.params.EventId });
         socket.on('updatePosition', ({ user, position }) => {
             setLocations((prevLocations) => {
                 return {
@@ -115,59 +95,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
                 }
             })
         })
-        socket.emit('requestPosition', { event: route.params.EventId });
-    }
-    async function startinterval() {
-        locationService.subscribe(onLocationUpdate);
-        let event = await getEvent(route.params.EventId);
-        let interval = null;
-        interval = setInterval(async () => {
-            // TIMER
-            if (new Date(event.DateTime) - new Date() > 0 && !goalInRef.current) {
-                setTimer(millisToMinutesAndSeconds(new Date(event.DateTime) - new Date() >= 1800000 ? 1800000 : new Date(event.DateTime) - new Date()));
-            }
-            // geofencing 
-            if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
-                startGeoFencing(event.LocationGeolat, event.LocationGeolong);
-                setgeofencingStarted(true);
-            } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
-                setTimer('You Are In!');
-                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
-                if(started){
-                    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                    console.log("stop geo");
-                }
-                if (new Date(event.DateTime) - new Date() <= 0) {
-                    clearInterval(interval);
-                    navigation.dispatch(StackActions.popToTop());
-                    navigation.navigate('History', {
-                        screen: 'HistoryScreen'});
-                    navigation.navigate('History', {
-                        screen: 'HistoryDetail', params: {
-                            EventId: event.EventId
-                        }
-                    });
-                }
-            } else if (new Date(event.DateTime) - new Date() <= 0) {
-                //setTimer(0);
-                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                clearInterval(interval);
-                navigation.dispatch(StackActions.popToTop());
-                navigation.navigate('History', {
-                    screen: 'HistoryScreen'});
-                navigation.navigate('History', {
-                    screen: 'HistoryDetail', params: {
-                        EventId: event.EventId
-                    }
-                });
-            } else {
-                
-            }
-        }, 1000);
-        return interval;
-    }
-    React.useEffect(() => {
-        loadInitial();
         fetchData();
         let interval = startinterval();
         return async () => {
@@ -209,6 +136,93 @@ export default function EventDetailScreenNew({ navigation, route }) {
             })
         }
     }, [locations])
+
+    async function fetchData() {
+        let event = await getEvent(route.params.EventId);
+        setEvent(event);
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta: LATITUDE_DELTA_MAP*0.16, longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
+        setMapRegion(region);
+        setEventMembers(event.eventUsers);
+        let host = event.eventUsers.find(m => m.IsHost === 1);
+        setHost(host);
+        let me = event.eventUsers.find(m => m.UserId === firebase.auth().currentUser.uid);
+        setMe(me);
+        setIsLoading(false); 
+    }
+
+    async function loadInitial() {
+        socket.on('requestPosition', async () => {
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+            let user = firebase.auth().currentUser.uid;
+            let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+            setLocations({ ...locations, [user]: position });
+        })
+        socket.on('updatePosition', ({ user, position }) => {
+            setLocations((prevLocations) => {
+                return {
+                    ...prevLocations,
+                    [user]: position
+                }
+            })
+        })
+        socket.emit('requestPosition', { event: route.params.EventId });
+    }
+
+    async function startinterval() {
+        locationService.subscribe(onLocationUpdate);
+        let event = await getEvent(route.params.EventId);
+        let interval = null;
+        interval = setInterval(async () => {
+            // TIMER
+            if (new Date(event.DateTime) - new Date() > 0 && !goalInRef.current) {
+                setTimer(millisToMinutesAndSeconds(new Date(event.DateTime) - new Date() >= 1800000 ? 1800000 : new Date(event.DateTime) - new Date()));
+            }
+            // geofencing 
+            if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
+                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                if(!started){
+                    startGeoFencing(event.LocationGeolat, event.LocationGeolong);
+                    setgeofencingStarted(true);
+                }
+                //startGeoFencing(event.LocationGeolat, event.LocationGeolong);
+                //setgeofencingStarted(true);
+            } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
+                setTimer('You Are In!');
+                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                if(started){
+                    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                    console.log("stop ", GEO_FENCING_TASK_NAME);
+                }
+                if (new Date(event.DateTime) - new Date() <= 0) {
+                    clearInterval(interval);
+                    navigation.dispatch(StackActions.popToTop());
+                    navigation.navigate('History', {
+                        screen: 'HistoryScreen'});
+                    navigation.navigate('History', {
+                        screen: 'HistoryDetail', params: {
+                            EventId: event.EventId
+                        }
+                    });
+                }
+            } else if (new Date(event.DateTime) - new Date() <= 0) {
+                //setTimer(0);
+                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                clearInterval(interval);
+                navigation.dispatch(StackActions.popToTop());
+                navigation.navigate('History', {
+                    screen: 'HistoryScreen'});
+                navigation.navigate('History', {
+                    screen: 'HistoryDetail', params: {
+                        EventId: event.EventId
+                    }
+                });
+            } else {
+                
+            }
+        }, 1000);
+        return interval;
+    }
 
     async function _goToMyLocation() {
         let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});

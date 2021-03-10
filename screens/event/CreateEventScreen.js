@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, Platform, TouchableOpacity, AsyncStorage, TouchableHighlight, Picker, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
+import { StyleSheet, View, Platform, TouchableOpacity, TouchableHighlight, FlatList, SectionList, Dimensions, Keyboard } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
@@ -47,7 +48,7 @@ export default function CreateEventScreen({navigation}) {
   const [ eventDescription, setEventDescription] = React.useState("");
   const [ eventMembers, setEventMembers] = React.useState([]);
   const [ selectedMembers, setSelectedMembers] = React.useState([]);
-  const [ eventDate, setEventDate] = React.useState(new Date());
+  const [ eventDate, setEventDate] = React.useState(new Date(new Date().getTime() + 30*60000));
   const [ eventTime, setEventTime] = React.useState(new Date(new Date().getTime() + 30*60000));
   const [ showDatePicker, setShowDatePicker] = React.useState(false);
   const [ showTimePicker, setShowTimePicker] = React.useState(false);
@@ -374,7 +375,7 @@ export default function CreateEventScreen({navigation}) {
                   style={styles.label}
                   value={eventDate}
                   mode={"date"}
-                  is24Hour={true}
+                  is24Hour={false}
                   display="default"
                   onChange={(event, date) => {
                     setEventDate(date);
@@ -648,8 +649,8 @@ export default function CreateEventScreen({navigation}) {
   async function addRecentLocation(item) {
     let locations = await AsyncStorage.getItem("recentLocation");
     locations = JSON.parse(locations);
-    let isExist = locations.some(location => location.address === item.address);
     if (locations) {
+      let isExist = locations.some(location => location.address === item.address);
       if (isExist) {
         if (locations.length < 10) {
           locations = locations.filter(location => location.address !== item.address);

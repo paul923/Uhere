@@ -40,7 +40,7 @@ function showTab(route) {
   if (!routeName) {
     routeName = route.params?.screen || 'Event';
   }
-  console.log(routeName);
+  //console.log(routeName);
 
 
   switch (routeName) {
@@ -82,20 +82,20 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     console.log(error.message);
     return;
   }
-  console.log(socket.id);
   if (data) {
     const { locations } = data;
     const location = locations[0]
     if (firebase.auth().currentUser){
       let user = firebase.auth().currentUser.uid;
-      //let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
-      //let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
       let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+      // let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
+      // let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
+      // let position = { latitude: location.coords.latitude +=randomMovelat, longitude: location.coords.longitude+=randomMovelon }
       socket.emit('position', {
           user,
           position
       })
-      //console.log(user + ": " + JSON.stringify(position));
+      console.log('emit',user, JSON.stringify(position));
     }
   }
 });
@@ -105,7 +105,6 @@ export default function MainAppNavigator({ navigation, route }) {
   React.useEffect(() => {
     socket.connect();
     socket.emit('joinLobby', {userId: firebase.auth().currentUser.uid});
-    console.log(socket.id);
     async function runBackgroundLocationTask() {
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,

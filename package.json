@@ -15,6 +15,7 @@
     "@expo-google-fonts/open-sans": "^0.1.0",
     "@expo/vector-icons": "^10.0.0",
     "@material-ui/core": "^4.9.9",
+    "@react-native-async-storage/async-storage": "^1.14.1",
     "@react-native-community/datetimepicker": "3.0.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-navigation/bottom-tabs": "^5.0.0",
@@ -32,6 +33,7 @@
     "expo-linking": "^1.0.5",
     "expo-localization": "~9.0.0",
     "expo-location": "~9.0.0",
+    "expo-notifications": "~0.7.2",
     "expo-permissions": "~9.3.0",
     "expo-task-manager": "^8.4.0",
     "expo-web-browser": "~8.5.0",
@@ -61,10 +63,9 @@
     "react-native-timeline-flatlist": "^0.7.3",
     "react-native-vector-icons": "^6.7.0",
     "react-native-web": "~0.13.7",
+    "react-native-webview": "10.7.0",
     "socket.io-client": "^2.3.0",
-    "use-socket.io-client": "^1.1.0",
-    "expo-notifications": "~0.7.2",
-    "react-native-webview": "10.7.0"
+    "use-socket.io-client": "^1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

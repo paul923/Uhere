@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Modal, Platform, StatusBar, StyleSheet, View, AsyncStorage, AppState, Keyboard, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
-
+import { Modal, Platform, StatusBar, StyleSheet, View, AppState, Keyboard, TouchableWithoutFeedback, TouchableHighlight } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['ListItem']);
 
@@ -119,8 +119,6 @@ export default function App(props) {
   // first time installing app gives you 'undetermined' == ask Next Time
   async function checkLocationPermissionAsync() {
     const { status, permissions } = await Permissions.askAsync(Permissions.LOCATION);
-    console.log('status', status);
-    console.log('permissions', permissions.location.scope);
     // first time installing give you undetermined
     if (Platform.OS === 'ios' ? (status === 'granted' && permissions.location.scope === 'always') : (status === 'granted' && permissions.location.scope === 'always')) {
       setLocationPermissionGranted(true);
