@@ -140,7 +140,7 @@ export default function MainAppNavigator({ navigation, route }) {
   }, []);
 
   return (
-    <BottomTab.Navigator initialRouteName="Event" tabBarOptions={{
+    <BottomTab.Navigator initialRouteName="Friend" tabBarOptions={{
       keyboardHidesTabBar: true,
       activeTintColor: '#15cdca',
       inactiveTintColor: '#121212',

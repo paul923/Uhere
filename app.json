@@ -9,9 +9,9 @@
       "web"
     ],
     "userInterfaceStyle": "automatic",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "orientation": "portrait",
-    "icon": "./assets/images/miscs/penalty.png",
+    "icon": "./assets/icons/app-store.png",
     "scheme": "myapp",
     "splash": {
       "image": "./assets/images/miscs/splash.png",
@@ -35,7 +35,7 @@
           "fetch"
         ]
       },
-      "bundleIdentifier": "fluid.uhere",
+      "bundleIdentifier": "dev.expo.client.mk7mnqylmjoqtwisb5jpwya2at4rlwekbaa6qkjglsuw2",
       "googleServicesFile": "./config/GoogleService-Info.plist",
       "config": {
         "googleSignIn": {

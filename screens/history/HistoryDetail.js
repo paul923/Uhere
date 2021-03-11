@@ -53,20 +53,22 @@ export default function HistoryDetail({ navigation, route }) {
                 results.push(result);
             });
             results.sort((a, b) => (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0));
-            setResults(results);
-            let index = results.findIndex(x => x.UserId === firebase.auth().currentUser.uid);
-            let myresult = results[index];
-            setMyRank(myresult.LateFlag === "LATE" ? "late" : stringifyNumber(index + 1));
-            setIsLoading(false);
             let nopaneltyuser = event.PenaltyUser === null
             let morethanonelate = results.filter(user => user.LateFlag === 'LATE').length > 1
             if (!morethanonelate) {
                 let onlyonelateuser = results.find(user => user.LateFlag === 'LATE')
+                let index = results.findIndex(x => x.UserId === onlyonelateuser.UserId);
+                results[index].Penalty = true;
                 setPenaltyUser(onlyonelateuser);
             }
             if (nopaneltyuser && morethanonelate) {
                 setPlaybutton(true);
             }
+            setResults(results);
+            let index = results.findIndex(x => x.UserId === firebase.auth().currentUser.uid);
+            let myresult = results[index];
+            setMyRank(myresult.LateFlag === "LATE" ? "late" : stringifyNumber(index + 1));
+            setIsLoading(false);
         }
         fetchData();
     }, []);

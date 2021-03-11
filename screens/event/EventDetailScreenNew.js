@@ -86,6 +86,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }
 
     React.useEffect(() => {
+        socket.connect();
         socket.emit('requestPosition', { event: route.params.EventId });
         socket.on('updatePosition', ({ user, position }) => {
             setLocations((prevLocations) => {
@@ -206,8 +207,11 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     });
                 }
             } else if (new Date(event.DateTime) - new Date() <= 0) {
-                //setTimer(0);
-                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                if(started){
+                    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                    console.log("stop ", GEO_FENCING_TASK_NAME);
+                }
                 clearInterval(interval);
                 navigation.dispatch(StackActions.popToTop());
                 navigation.navigate('History', {
@@ -217,8 +221,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
                         EventId: event.EventId
                     }
                 });
-            } else {
-                
             }
         }, 1000);
         return interval;
@@ -226,7 +228,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
 
     async function _goToMyLocation() {
         let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
-        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP*0.16, longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
+        let region = { latitude: location.coords.latitude, longitude: location.coords.longitude, latitudeDelta:LATITUDE_DELTA_MAP, longitudeDelta: LONGITUDE_DELTA_MAP }
         mapRef.current.animateToRegion(region);
     }
     async function _goToEventLocation() {
@@ -249,7 +251,7 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }
 
     async function _fitAll() {
-        let location = await Location.getCurrentPositionAsync();
+        let location = await Location.getCurrentPositionAsync({accuracy:Location.Accuracy.Balanced});
         let coordinates = []
         // user's location
         coordinates.push({ latitude: location.coords.latitude, longitude: location.coords.longitude });
@@ -346,6 +348,15 @@ export default function EventDetailScreenNew({ navigation, route }) {
                             source={require('../../assets/icons/event/info_location.png')}
                         />
                     </TouchableOpacity>
+                    {/* Fit All */}
+                    <TouchableOpacity 
+                        style={styles.allLocationStyle}
+                        onPress={_fitAll}
+                        >
+                        <Image
+                            source={require('../../assets/icons/event/icon_all.png')}
+                        />
+                    </TouchableOpacity>
                     {/* Information */}
                     <TouchableOpacity 
                         style={styles.informationStyle}
@@ -408,8 +419,8 @@ export default function EventDetailScreenNew({ navigation, route }) {
                                         try {
                                             let memberRegion = { latitude: locations[memberLocation.member.UserId].latitude, 
                                                 longitude: locations[memberLocation.member.UserId].longitude, 
-                                                latitudeDelta: LATITUDE_DELTA_MAP*0.16, 
-                                                longitudeDelta: LONGITUDE_DELTA_MAP*0.16 }
+                                                latitudeDelta: LATITUDE_DELTA_MAP, 
+                                                longitudeDelta: LONGITUDE_DELTA_MAP }
                                                 return (
                                                     <TouchableOpacity
                                                         style={styles.avatarView}
@@ -519,6 +530,11 @@ const styles = StyleSheet.create({
     meetingLocationStyle: {
         position: 'absolute',
         top: 150,
+        right: 0,
+    },
+    allLocationStyle: {
+        position: 'absolute',
+        top: 200,
         right: 0,
     },
     informationStyle: {
