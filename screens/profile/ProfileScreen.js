@@ -50,7 +50,7 @@ export default function ProfileSceen({navigation}) {
         contentContainerStyle={styles.contentContainerStyle}
       >
         <Input 
-          placeholder="Nick Name"
+          placeholder="Display Name"
           onChangeText={value => {
             setNickname(value);
           }}
