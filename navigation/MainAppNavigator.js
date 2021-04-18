@@ -73,32 +73,36 @@ function showTab(route) {
   }
 
 }
+const LOCATION_SETTINGS = {
+  accuracy: Location.Accuracy.Balanced,
+  timeInterval: 5000,
+  distanceInterval: 0,
+};
+// const LOCATION_TASK_NAME = 'background-location-task';
 
-const LOCATION_TASK_NAME = 'background-location-task';
-
-TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
-  if (error) {
-    // Error occurred - check `error.message` for more details.
-    console.log(error.message);
-    return;
-  }
-  if (data) {
-    const { locations } = data;
-    const location = locations[0]
-    if (firebase.auth().currentUser){
-      let user = firebase.auth().currentUser.uid;
-      let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
-      // let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
-      // let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
-      // let position = { latitude: location.coords.latitude +=randomMovelat, longitude: location.coords.longitude+=randomMovelon }
-      socket.emit('position', {
-          user,
-          position
-      })
-      console.log('emit',user, JSON.stringify(position));
-    }
-  }
-});
+// TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+//   if (error) {
+//     // Error occurred - check `error.message` for more details.
+//     console.log(error.message);
+//     return;
+//   }
+//   if (data) {
+//     const { locations } = data;
+//     const location = locations[0]
+//     if (firebase.auth().currentUser){
+//       let user = firebase.auth().currentUser.uid;
+//       let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+//       // let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
+//       // let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
+//       // let position = { latitude: location.coords.latitude +=randomMovelat, longitude: location.coords.longitude+=randomMovelon }
+//       socket.emit('position', {
+//           user,
+//           position
+//       })
+//       console.log('emit',user, JSON.stringify(position));
+//     }
+//   }
+// });
 
 export default function MainAppNavigator({ navigation, route }) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -106,10 +110,16 @@ export default function MainAppNavigator({ navigation, route }) {
     socket.connect();
     socket.emit('joinLobby', {userId: firebase.auth().currentUser.uid});
     async function runBackgroundLocationTask() {
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
-        timeInterval: 5000,
-        distanceInterval: 0,
+      await Location.watchPositionAsync(LOCATION_SETTINGS, (location) => {
+        let user = firebase.auth().currentUser.uid;
+        //let randomMovelat = Math.random() * (0.01 - (-0.01)) + (-0.01);
+        //let randomMovelon = Math.random() * (0.01 - (-0.01)) + (-0.01);
+        let position = { latitude: location.coords.latitude, longitude: location.coords.longitude }
+        //let position = { latitude: location.coords.latitude += randomMovelat, longitude: location.coords.longitude += randomMovelon }
+        socket.emit('position', {
+          user,
+          position
+        })
       });
     }
     runBackgroundLocationTask();

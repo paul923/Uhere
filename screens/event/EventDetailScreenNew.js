@@ -29,21 +29,21 @@ const GEO_FENCING_TASK_NAME = 'geofencing';
 
 
 // Task Manager 
-TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, error }) => {
-    if (error) {
-      console.log(error);
-      return;
-    }
-    if (eventType === Location.GeofencingEventType.Enter) {
-      console.log("You've entered region:", region);
-      locationService.setGoalin(true);
-      //Alert.alert("You've entered region");
-    } else if (eventType === Location.GeofencingEventType.Exit) {
-      console.log("You've left region:", region);
-      locationService.setGoalin(false);
-      //Alert.alert("You've left region");
-    }
-  });
+// TaskManager.defineTask(GEO_FENCING_TASK_NAME, ({ data: { eventType, region }, error }) => {
+//     if (error) {
+//       console.log(error);
+//       return;
+//     }
+//     if (eventType === Location.GeofencingEventType.Enter) {
+//       console.log("You've entered region:", region);
+//       locationService.setGoalin(true);
+//       //Alert.alert("You've entered region");
+//     } else if (eventType === Location.GeofencingEventType.Exit) {
+//       console.log("You've left region:", region);
+//       locationService.setGoalin(false);
+//       //Alert.alert("You've left region");
+//     }
+//   });
 
 export default function EventDetailScreenNew({ navigation, route }) {
     const [isLoading, setIsLoading] = React.useState(true);
@@ -86,7 +86,6 @@ export default function EventDetailScreenNew({ navigation, route }) {
     }
 
     React.useEffect(() => {
-        socket.connect();
         socket.emit('requestPosition', { event: route.params.EventId });
         socket.on('updatePosition', ({ user, position }) => {
             setLocations((prevLocations) => {
@@ -100,11 +99,11 @@ export default function EventDetailScreenNew({ navigation, route }) {
         let interval = startinterval();
         return async () => {
             clearInterval(interval);
-            let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
-            if(started){
-                Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                console.log("stop geo");
-            }
+            // let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+            // if(started){
+            //     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+            //     console.log("stop geo");
+            // }
             locationService.unsubscribe(onLocationUpdate);
         };
     }, []);
@@ -181,20 +180,18 @@ export default function EventDetailScreenNew({ navigation, route }) {
             }
             // geofencing 
             if (new Date(event.DateTime) - new Date() <= 1800000 && !geofencingStartedRef.current) {
-                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
-                if(!started){
-                    startGeoFencing(event.LocationGeolat, event.LocationGeolong);
-                    setgeofencingStarted(true);
-                }
-                //startGeoFencing(event.LocationGeolat, event.LocationGeolong);
-                //setgeofencingStarted(true);
+                // let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                // if(!started){
+                //     startGeoFencing(event.LocationGeolat, event.LocationGeolong);
+                //     setgeofencingStarted(true);
+                // }
             } else if (goalInRef.current || meRef.current.ArrivedTime !== null) {
                 setTimer('You Are In!');
-                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
-                if(started){
-                    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                    console.log("stop ", GEO_FENCING_TASK_NAME);
-                }
+                // let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                // if(started){
+                //     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                //     console.log("stop ", GEO_FENCING_TASK_NAME);
+                // }
                 if (new Date(event.DateTime) - new Date() <= 0) {
                     clearInterval(interval);
                     navigation.dispatch(StackActions.popToTop());
@@ -207,11 +204,11 @@ export default function EventDetailScreenNew({ navigation, route }) {
                     });
                 }
             } else if (new Date(event.DateTime) - new Date() <= 0) {
-                let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
-                if(started){
-                    Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
-                    console.log("stop ", GEO_FENCING_TASK_NAME);
-                }
+                // let started = await Location.hasStartedGeofencingAsync(GEO_FENCING_TASK_NAME);
+                // if(started){
+                //     Location.stopGeofencingAsync(GEO_FENCING_TASK_NAME);
+                //     console.log("stop ", GEO_FENCING_TASK_NAME);
+                // }
                 clearInterval(interval);
                 navigation.dispatch(StackActions.popToTop());
                 navigation.navigate('History', {

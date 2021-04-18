@@ -120,7 +120,7 @@ export default function App(props) {
   async function checkLocationPermissionAsync() {
     const { status, permissions } = await Permissions.askAsync(Permissions.LOCATION);
     // first time installing give you undetermined
-    if (Platform.OS === 'ios' ? (status === 'granted' && permissions.location.scope === 'always') : (status === 'granted' && permissions.location.scope === 'always')) {
+    if (Platform.OS === 'ios' ? (status === 'granted' && permissions.location.scope === 'whenInUse') : (status === 'granted' && permissions.location.scope === 'whenInUse')) {
       setLocationPermissionGranted(true);
     } else {
       setLocationPermissionGranted(false);
